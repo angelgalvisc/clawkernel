@@ -264,9 +264,9 @@ done
 # ── R07: Conformance levels ────────────────────────────────────────────────
 echo "[R07] Conformance levels..."
 
-L1_RE="^(claw\\.initialize|claw\\.initialized|claw\\.status|claw\\.shutdown)$"
-L2_RE="^(claw\\.initialize|claw\\.initialized|claw\\.status|claw\\.shutdown|claw\\.tool\\.call|claw\\.tool\\.approve|claw\\.tool\\.deny)$"
-L3_RE="^(claw\\.initialize|claw\\.initialized|claw\\.status|claw\\.shutdown|claw\\.tool\\.call|claw\\.tool\\.approve|claw\\.tool\\.deny|claw\\.swarm\\.delegate|claw\\.swarm\\.report|claw\\.swarm\\.broadcast|claw\\.swarm\\.discover|claw\\.memory\\.query|claw\\.memory\\.store|claw\\.memory\\.compact)$"
+L1_RE="^(claw\\.initialize|claw\\.initialized|claw\\.status|claw\\.shutdown|claw\\.heartbeat)$"
+L2_RE="^(claw\\.initialize|claw\\.initialized|claw\\.status|claw\\.shutdown|claw\\.heartbeat|claw\\.tool\\.call|claw\\.tool\\.approve|claw\\.tool\\.deny)$"
+L3_RE="^(claw\\.initialize|claw\\.initialized|claw\\.status|claw\\.shutdown|claw\\.heartbeat|claw\\.tool\\.call|claw\\.tool\\.approve|claw\\.tool\\.deny|claw\\.swarm\\.delegate|claw\\.swarm\\.report|claw\\.swarm\\.broadcast|claw\\.swarm\\.discover|claw\\.memory\\.query|claw\\.memory\\.store|claw\\.memory\\.compact)$"
 
 current_level=""
 line_num=0

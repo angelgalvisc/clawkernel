@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/channel.schema.json",
+  "title": "CKP Channel Primitive",
+  "description": "Abstracts communication surfaces — how humans or systems reach the agent. Section 5.3.",
+  "type": "object",
+  "properties": {
+    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
+    "kind": { "const": "Channel" },
+    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "telegram", "discord", "whatsapp", "slack", "email",
+            "webhook", "cli", "voice", "web", "lark", "matrix",
+            "line", "wechat", "qq", "dingtalk", "custom"
+          ],
+          "description": "REQUIRED. Channel type."
+        },
+        "transport": {
+          "type": "string",
+          "enum": ["polling", "webhook", "websocket", "stdio"],
+          "description": "REQUIRED. Transport mechanism for this channel."
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "secret_ref": { "$ref": "definitions.schema.json#/$defs/secretRef" }
+          },
+          "required": ["secret_ref"],
+          "additionalProperties": false,
+          "description": "REQUIRED. Authentication for the channel platform."
+        },
+        "access_control": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["open", "allowlist", "pairing", "role-based"]
+            },
+            "allowed_ids": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "REQUIRED for 'allowlist' mode."
+            },
+            "pairing": {
+              "type": "object",
+              "properties": {
+                "code_expiry_minutes": { "type": "integer", "minimum": 1 },
+                "max_pending": { "type": "integer", "minimum": 1 }
+              },
+              "required": ["code_expiry_minutes", "max_pending"],
+              "additionalProperties": false,
+              "description": "REQUIRED for 'pairing' mode."
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string" },
+                  "role": { "type": "string", "enum": ["admin", "user", "viewer"] }
+                },
+                "required": ["id", "role"],
+                "additionalProperties": false
+              },
+              "description": "REQUIRED for 'role-based' mode."
+            }
+          },
+          "required": ["mode"],
+          "allOf": [
+            {
+              "if": { "properties": { "mode": { "const": "allowlist" } } },
+              "then": { "required": ["mode", "allowed_ids"] }
+            },
+            {
+              "if": { "properties": { "mode": { "const": "pairing" } } },
+              "then": { "required": ["mode", "pairing"] }
+            },
+            {
+              "if": { "properties": { "mode": { "const": "role-based" } } },
+              "then": { "required": ["mode", "roles"] }
+            }
+          ],
+          "additionalProperties": false
+        },
+        "processing": {
+          "type": "object",
+          "properties": {
+            "max_message_length": { "type": "integer", "minimum": 1 },
+            "rate_limit": {
+              "type": "object",
+              "properties": {
+                "messages_per_minute": { "type": "integer", "minimum": 1 },
+                "burst": { "type": "integer", "minimum": 1 }
+              },
+              "additionalProperties": false
+            },
+            "typing_indicator": { "type": "boolean" },
+            "read_receipts": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "features": {
+          "type": "object",
+          "properties": {
+            "voice": { "type": "boolean" },
+            "files": { "type": "boolean" },
+            "reactions": { "type": "boolean" },
+            "threads": { "type": "boolean" },
+            "inline_images": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["type", "transport", "auth"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["claw", "kind", "metadata", "spec"],
+  "additionalProperties": false
+}

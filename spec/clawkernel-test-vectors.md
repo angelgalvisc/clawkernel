@@ -1,6 +1,6 @@
 # Claw Kernel Protocol Conformance Test Vectors
 
-**Version:** 0.2.0-draft
+**Version:** 0.2.0
 **Status:** Informative
 **Companion to:** Claw Kernel Protocol Specification (`clawkernel-spec.md`)
 
@@ -259,6 +259,25 @@ spec:
 
 **Expected:** Error response with code `-32700` (Parse error). The JSON payload has an unclosed brace.
 **Reference:** Section 9.4, Error Codes.
+
+### TV-L1-13: Heartbeat Notification
+
+**Input (JSON-RPC notification from Agent):**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "claw.heartbeat",
+  "params": {
+    "state": "READY",
+    "uptime_ms": 120000,
+    "timestamp": "2026-02-22T10:32:00Z"
+  }
+}
+```
+
+**Expected:** Valid notification (no `id` field). The `state` field MUST be a valid lifecycle state. The `uptime_ms` field MUST be a non-negative integer. The `timestamp` field MUST be an ISO 8601 UTC string. Operators receiving this notification SHOULD NOT send a response (per JSON-RPC 2.0 notification semantics).
+**Reference:** Section 9.3.1, `claw.heartbeat`.
 
 ---
 

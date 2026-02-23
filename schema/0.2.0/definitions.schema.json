@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/definitions.schema.json",
+  "title": "CKP Common Definitions",
+  "description": "Shared definitions for Claw Kernel Protocol v0.2.0 schemas.",
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-.+)?$",
+      "description": "Semantic version string (MAJOR.MINOR.PATCH[-prerelease])."
+    },
+    "protocolVersion": {
+      "type": "string",
+      "const": "0.2.0",
+      "description": "CKP protocol version."
+    },
+    "kebabName": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9]([a-zA-Z0-9-]{0,62})$",
+      "description": "1-63 chars: ALPHA / DIGIT / hyphen (per ABNF 'name' production)."
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "name": { "$ref": "#/$defs/kebabName" },
+        "version": { "$ref": "#/$defs/semver" },
+        "labels": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": ["name"]
+    },
+    "secretRef": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Environment variable or secret store key."
+    },
+    "durationString": {
+      "type": "string",
+      "pattern": "^[0-9]+(s|m|h|d)$",
+      "description": "Duration string (e.g., '30d', '24h', '90s')."
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["Identity", "Provider", "Channel", "Tool", "Skill", "Memory", "Sandbox", "Policy", "Swarm", "Claw"]
+    }
+  }
+}

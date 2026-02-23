@@ -12,7 +12,7 @@
   <strong>Claw Kernel Protocol (CKP)</strong> — Open standard for stateful agent runtimes
 </p>
 
-[![Version](https://img.shields.io/badge/spec-v0.2.0--draft-blue)](spec/clawkernel-spec.md)
+[![Version](https://img.shields.io/badge/spec-v0.2.0-blue)](spec/clawkernel-spec.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![Coherence Gate](https://img.shields.io/badge/coherence-PASS-brightgreen)](reports/coherence-report.md)
 [![Spec tokens](https://img.shields.io/badge/spec_suite-~30k_tokens-orange)](spec/)
@@ -61,7 +61,9 @@ Three conformance levels (L1 Minimal, L2 Standard, L3 Full) allow implementation
 
 2. **[Runtime Profile](spec/clawkernel-runtime-profile.md)** — Informative. Recommended practices for implementers: defaults, retry semantics, transport extensions, secret resolution.
 
-3. **[Test Vectors](spec/clawkernel-test-vectors.md)** — Informative. 30 conformance test vectors organized by level (L1 / L2 / L3).
+3. **[Test Vectors](spec/clawkernel-test-vectors.md)** — Informative. 31 conformance test vectors organized by level (L1 / L2 / L3).
+
+4. **[JSON Schema + TypeScript](schema/0.2.0/)** — Canonical type definitions for all 9 primitives, the manifest, and JSON-RPC methods.
 
 ---
 
@@ -85,21 +87,22 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 
 | Item | Status |
 |------|--------|
-| Specification | `v0.2.0-draft` |
+| Specification | `v0.2.0` |
 | Primitives defined | 9 / 9 |
-| JSON-RPC methods | 14 specified |
+| JSON-RPC methods | 15 specified |
 | ABNF grammar | Complete |
-| Test vectors | 30 (12 L1 + 10 L2 + 8 L3) |
+| Test vectors | 31 (13 L1 + 10 L2 + 8 L3) |
 | Error codes | 11 core |
 | Coherence gate | 10 rules, PASS |
+| JSON Schema | 11 schemas (9 primitives + manifest + definitions) |
+| TypeScript types | `schema.ts` — canonical source of truth |
 | Reference implementation | Planned |
-| TypeScript schema | Planned |
 
 ---
 
 ## Contributing
 
-CKP is in active draft. Feedback, issues, and proposals are welcome.
+CKP is released. Feedback, issues, and proposals are welcome.
 
 Before submitting changes to the specification, run the coherence gate and ensure it passes:
 

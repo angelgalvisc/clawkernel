@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/memory.schema.json",
+  "title": "CKP Memory Primitive",
+  "description": "Defines how the agent persists and retrieves information across sessions. Section 5.6.",
+  "type": "object",
+  "properties": {
+    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
+    "kind": { "const": "Memory" },
+    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "stores": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "type": {
+                "type": "string",
+                "enum": ["conversation", "semantic", "key-value", "workspace"]
+              },
+              "backend": {
+                "type": "string",
+                "enum": ["sqlite", "postgresql", "filesystem", "sqlite-vec", "pgvector", "qdrant", "custom"]
+              },
+              "retention": {
+                "type": "object",
+                "properties": {
+                  "max_age": { "$ref": "definitions.schema.json#/$defs/durationString" },
+                  "max_entries": { "type": "integer", "minimum": 1 }
+                },
+                "additionalProperties": false
+              },
+              "compaction": {
+                "type": "object",
+                "properties": {
+                  "enabled": { "type": "boolean" },
+                  "strategy": {
+                    "type": "string",
+                    "enum": ["summarize", "truncate", "sliding-window"]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "embedding": {
+                "type": "object",
+                "properties": {
+                  "provider_ref": { "type": "string" },
+                  "model": { "type": "string" },
+                  "dimensions": { "type": "integer", "minimum": 1 }
+                },
+                "required": ["provider_ref", "model", "dimensions"],
+                "additionalProperties": false
+              },
+              "search": {
+                "type": "object",
+                "properties": {
+                  "strategy": {
+                    "type": "string",
+                    "enum": ["vector-only", "fts-only", "hybrid"]
+                  },
+                  "fusion": {
+                    "type": "string",
+                    "enum": ["reciprocal-rank", "linear-combination"]
+                  },
+                  "top_k": { "type": "integer", "minimum": 1 }
+                },
+                "additionalProperties": false
+              },
+              "scope": {
+                "type": "string",
+                "enum": ["global", "per-identity", "per-channel"]
+              },
+              "encryption": { "type": "boolean" },
+              "path": { "type": "string" },
+              "isolation": {
+                "type": "string",
+                "enum": ["shared", "per-identity", "per-channel"]
+              },
+              "max_size_mb": { "type": "integer", "minimum": 1 }
+            },
+            "required": ["name", "type"],
+            "additionalProperties": false
+          },
+          "description": "REQUIRED. At least one memory store."
+        }
+      },
+      "required": ["stores"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["claw", "kind", "metadata", "spec"],
+  "additionalProperties": false
+}

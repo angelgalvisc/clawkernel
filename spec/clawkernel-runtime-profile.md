@@ -1,6 +1,6 @@
 # Claw Kernel Protocol Runtime Profile
 
-**Version:** 0.2.0-draft
+**Version:** 0.2.0
 **Date:** February 2026
 **Status:** Informative Companion Document
 **Companion to:** Claw Kernel Protocol Specification (`clawkernel-spec.md`)

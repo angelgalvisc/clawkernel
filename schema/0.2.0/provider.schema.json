@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/provider.schema.json",
+  "title": "CKP Provider Primitive",
+  "description": "Abstracts LLM inference endpoints with fallback chains, cost routing, and token governance. Section 5.2.",
+  "type": "object",
+  "properties": {
+    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
+    "kind": { "const": "Provider" },
+    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "enum": ["openai-compatible", "anthropic-native", "custom"],
+          "description": "REQUIRED. Protocol for communicating with the LLM endpoint."
+        },
+        "endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "REQUIRED. Base URL for the inference API."
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "REQUIRED. Model identifier."
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["bearer", "api-key-header", "oauth2", "none"]
+            },
+            "secret_ref": { "$ref": "definitions.schema.json#/$defs/secretRef" }
+          },
+          "required": ["type"],
+          "if": {
+            "properties": { "type": { "not": { "const": "none" } } }
+          },
+          "then": {
+            "required": ["type", "secret_ref"]
+          },
+          "additionalProperties": false,
+          "description": "REQUIRED. Authentication configuration."
+        },
+        "streaming": {
+          "type": "boolean",
+          "description": "Enable streaming responses."
+        },
+        "hints": {
+          "type": "object",
+          "properties": {
+            "cost_priority": { "type": "number", "minimum": 0, "maximum": 1 },
+            "speed_priority": { "type": "number", "minimum": 0, "maximum": 1 },
+            "intelligence_priority": { "type": "number", "minimum": 0, "maximum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "fallback": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "provider_ref": { "type": "string" }
+            },
+            "required": ["provider_ref"],
+            "additionalProperties": false
+          },
+          "description": "Fallback chain — tried in order if primary fails."
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "tokens_per_day": { "type": "integer", "minimum": 0 },
+            "tokens_per_request": { "type": "integer", "minimum": 0 },
+            "requests_per_minute": { "type": "integer", "minimum": 0 },
+            "max_context_window": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "retry": {
+          "type": "object",
+          "properties": {
+            "max_attempts": { "type": "integer", "minimum": 1 },
+            "backoff": { "type": "string", "enum": ["exponential", "linear", "constant"] },
+            "initial_delay_ms": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["protocol", "endpoint", "model", "auth"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["claw", "kind", "metadata", "spec"],
+  "additionalProperties": false
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/identity.schema.json",
+  "title": "CKP Identity Primitive",
+  "description": "Defines who the agent is: personality, context files, locale, capabilities, and autonomy level. Section 5.1.",
+  "type": "object",
+  "properties": {
+    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
+    "kind": { "const": "Identity" },
+    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "personality": {
+          "type": "string",
+          "minLength": 1,
+          "description": "REQUIRED. Natural-language description of the agent's personality and behavior."
+        },
+        "context_files": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Persistent context files maintained across sessions."
+        },
+        "locale": {
+          "type": "string",
+          "description": "Default locale for the agent's responses (e.g., 'en-US')."
+        },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Declared high-level capabilities (informational, not enforced)."
+        },
+        "autonomy": {
+          "type": "string",
+          "enum": ["observer", "supervised", "autonomous"],
+          "default": "supervised",
+          "description": "How much the agent can do without human approval."
+        }
+      },
+      "required": ["personality"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["claw", "kind", "metadata", "spec"],
+  "additionalProperties": false
+}

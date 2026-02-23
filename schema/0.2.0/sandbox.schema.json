@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/sandbox.schema.json",
+  "title": "CKP Sandbox Primitive",
+  "description": "Defines the execution environment for tools: isolation level, resource limits, network, filesystem, secrets. Section 5.7.",
+  "type": "object",
+  "properties": {
+    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
+    "kind": { "const": "Sandbox" },
+    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["none", "process", "wasm", "container", "vm"],
+          "description": "REQUIRED. Isolation level."
+        },
+        "runtime": {
+          "type": "string",
+          "enum": ["docker", "apple-container", "wasmtime", "firecracker", "gvisor", "native"],
+          "description": "Runtime implementation (level-dependent)."
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "network": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": ["deny", "allowlist", "allow-all"]
+                },
+                "allowed_hosts": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "ssrf_protection": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": { "type": "boolean" },
+                    "block_private_ips": { "type": "boolean" },
+                    "dns_pinning": { "type": "boolean" }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "filesystem": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": ["deny", "read-only", "scoped", "full"]
+                },
+                "mount_paths": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "path": { "type": "string" },
+                      "permissions": { "type": "string", "enum": ["ro", "rw"] }
+                    },
+                    "required": ["path", "permissions"],
+                    "additionalProperties": false
+                  }
+                },
+                "denied_paths": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
+              "additionalProperties": false
+            },
+            "secrets": {
+              "type": "object",
+              "properties": {
+                "injection": {
+                  "type": "string",
+                  "enum": ["host-boundary", "environment", "file-mount"]
+                },
+                "encryption": { "type": "string" },
+                "leak_detection": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": { "type": "boolean" },
+                    "patterns": { "type": "integer", "minimum": 0 }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "shell": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": ["deny", "restricted", "full"]
+                },
+                "blocked_commands": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "blocked_patterns": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "resource_limits": {
+          "type": "object",
+          "properties": {
+            "memory_mb": { "type": "integer", "minimum": 0 },
+            "cpu_shares": { "type": "integer", "minimum": 0 },
+            "max_processes": { "type": "integer", "minimum": 0 },
+            "max_open_files": { "type": "integer", "minimum": 0 },
+            "timeout_ms": { "type": "integer", "minimum": 0 },
+            "max_output_bytes": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["level"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["claw", "kind", "metadata", "spec"],
+  "additionalProperties": false
+}

@@ -1,8 +1,8 @@
 # Claw Kernel Protocol Specification
 
-**Version:** 0.2.0-draft
+**Version:** 0.2.0
 **Date:** February 2026
-**Status:** Draft Proposal
+**Status:** Released
 **URI Scheme:** `claw://`
 **License:** Apache 2.0
 
@@ -1353,6 +1353,7 @@ Like MCP, CKP uses JSON-RPC 2.0 as its wire format for communication between Age
 | `claw.initialized` | Operator → Agent | Notification | Confirm handshake complete |
 | `claw.status` | Operator → Agent | Request | Query agent lifecycle state |
 | `claw.shutdown` | Operator → Agent | Request | Graceful shutdown |
+| `claw.heartbeat` | Agent → Operator | Notification | Proactive liveness signal |
 | `claw.tool.call` | Agent → Service | Request | Execute a tool |
 | `claw.tool.approve` | User → Agent | Request | Approve a pending tool execution |
 | `claw.tool.deny` | User → Agent | Request | Deny a pending tool execution |
@@ -1532,6 +1533,34 @@ The Agent MUST return the current lifecycle state as defined in Section 8.
 | `drained` | REQUIRED | `true` if all in-flight operations completed before timeout. |
 
 Upon receiving `claw.shutdown`, the Agent MUST transition to STOPPING state and attempt to drain in-flight operations.
+
+##### `claw.heartbeat`
+
+**Direction:** Agent → Operator | **Type:** Notification
+
+The Agent SHOULD emit `claw.heartbeat` notifications at a regular interval while in the `READY` state. The interval is configured in the manifest or defaults to 30 seconds. This enables Operators to detect unresponsive agents without polling.
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "claw.heartbeat",
+  "params": {
+    "state": "READY",
+    "uptime_ms": 120000,
+    "timestamp": "2026-02-22T10:32:00Z"
+  }
+}
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `state` | REQUIRED | Current lifecycle state (same values as `claw.status`). |
+| `uptime_ms` | REQUIRED | Milliseconds since initialization completed. |
+| `timestamp` | REQUIRED | ISO 8601 UTC timestamp of this heartbeat. |
+
+No response (notification). If the Operator does not receive a heartbeat within `2 × interval`, it SHOULD consider the Agent potentially unresponsive and MAY invoke `claw.status` to confirm.
+
+> **Normative:** The default heartbeat interval is 30 seconds. Implementations MAY allow configuration via a `heartbeat_interval_ms` field in the manifest's `metadata.annotations`. The Agent MUST NOT emit heartbeats before `claw.initialize` completes or after entering the `STOPPING` state.
 
 #### 9.3.2 Tool Execution
 
@@ -2136,6 +2165,7 @@ Implementations MUST support the methods required by their declared conformance 
 | Method Group | Level 1 | Level 2 | Level 3 |
 |---|---|---|---|
 | `claw.initialize`, `claw.status`, `claw.shutdown` | MUST | MUST | MUST |
+| `claw.heartbeat` | SHOULD | SHOULD | MUST |
 | `claw.initialized` | SHOULD | SHOULD | SHOULD |
 | `claw.tool.call`, `claw.tool.approve`, `claw.tool.deny` | — | MUST | MUST |
 | `claw.swarm.delegate`, `claw.swarm.report`, `claw.swarm.broadcast`, `claw.swarm.discover` | — | — | MUST |
@@ -2463,7 +2493,7 @@ spec:
 
 The TypeScript schema is the **canonical source of truth** for all type definitions in this specification. Where the prose specification and the TypeScript schema conflict, the TypeScript schema takes precedence. The JSON Schema is auto-generated from the TypeScript source and is provided for tooling convenience.
 
-> Until the TypeScript schema for version 0.2.0 is published, the JSON-RPC examples and field tables in Sections 5 and 9 of this specification are authoritative.
+> The TypeScript schema and JSON Schema files for version 0.2.0 are published in the `schema/0.2.0/` directory of this repository.
 
 | Resource | URL |
 |----------|-----|

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/tool.schema.json",
+  "title": "CKP Tool Primitive",
+  "description": "Defines an executable function the agent can invoke. Strict superset of MCP Tool. Section 5.4.",
+  "type": "object",
+  "properties": {
+    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
+    "kind": { "const": "Tool" },
+    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable description (same as MCP tool.description)."
+        },
+        "input_schema": {
+          "type": "object",
+          "description": "Input parameters (JSON Schema, same as MCP tool.inputSchema)."
+        },
+        "output_schema": {
+          "type": "object",
+          "description": "Output schema (extension over MCP)."
+        },
+        "sandbox_ref": {
+          "type": "string",
+          "description": "Which sandbox this tool executes in."
+        },
+        "policy_ref": {
+          "type": "string",
+          "description": "Which policy governs this tool's execution."
+        },
+        "mcp_source": {
+          "type": "object",
+          "properties": {
+            "uri": { "type": "string", "minLength": 1 },
+            "tool_name": { "type": "string" }
+          },
+          "required": ["uri"],
+          "additionalProperties": false,
+          "description": "MCP server source — if this tool is served by an MCP server."
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {
+            "readOnlyHint": { "type": "boolean" },
+            "destructiveHint": { "type": "boolean" },
+            "idempotentHint": { "type": "boolean" },
+            "openWorldHint": { "type": "boolean" }
+          },
+          "additionalProperties": true,
+          "description": "MCP-compatible tool annotations (untrusted)."
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Timeout for tool execution."
+        },
+        "retry": {
+          "type": "object",
+          "properties": {
+            "max_attempts": { "type": "integer", "minimum": 1 },
+            "backoff": { "type": "string", "enum": ["exponential", "linear", "constant"] }
+          },
+          "additionalProperties": false
+        }
+      },
+      "if": {
+        "not": { "required": ["mcp_source"] }
+      },
+      "then": {
+        "required": ["description", "input_schema"]
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["claw", "kind", "metadata", "spec"],
+  "additionalProperties": false
+}

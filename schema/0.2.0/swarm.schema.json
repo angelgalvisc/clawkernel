@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/swarm.schema.json",
+  "title": "CKP Swarm Primitive",
+  "description": "Defines multi-agent coordination: topology, message passing, aggregation, failure handling. Section 5.9.",
+  "type": "object",
+  "properties": {
+    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
+    "kind": { "const": "Swarm" },
+    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "topology": {
+          "type": "string",
+          "enum": ["leader-worker", "peer-to-peer", "pipeline", "broadcast", "hierarchical"],
+          "description": "REQUIRED. Coordination topology."
+        },
+        "agents": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "identity_ref": { "type": "string" },
+              "role": { "type": "string" },
+              "provider_ref": { "type": "string" },
+              "count": { "type": "integer", "minimum": 1 }
+            },
+            "required": ["identity_ref", "role"],
+            "additionalProperties": false
+          },
+          "description": "REQUIRED. Participating agents."
+        },
+        "coordination": {
+          "type": "object",
+          "properties": {
+            "message_passing": {
+              "type": "string",
+              "enum": ["queue", "shared-memory", "event-bus", "direct"]
+            },
+            "backend": {
+              "type": "string",
+              "enum": ["sqlite-wal", "redis", "nats", "in-process"]
+            },
+            "concurrency": {
+              "type": "object",
+              "properties": {
+                "max_parallel": { "type": "integer", "minimum": 1 },
+                "sequential_within_agent": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["message_passing", "backend", "concurrency"],
+          "additionalProperties": false,
+          "description": "REQUIRED. How agents exchange messages."
+        },
+        "aggregation": {
+          "type": "object",
+          "properties": {
+            "strategy": {
+              "type": "string",
+              "enum": ["leader-decides", "majority-vote", "merge", "chain", "best-of-n"]
+            },
+            "cost_aware": { "type": "boolean" },
+            "timeout_ms": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["strategy"],
+          "additionalProperties": false,
+          "description": "REQUIRED. How results are combined."
+        },
+        "failure": {
+          "type": "object",
+          "properties": {
+            "retry_per_agent": { "type": "integer", "minimum": 0 },
+            "dead_letter": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "max_retries": { "type": "integer", "minimum": 0 }
+              },
+              "additionalProperties": false
+            },
+            "circuit_breaker": {
+              "type": "object",
+              "properties": {
+                "failure_threshold": { "type": "integer", "minimum": 1 },
+                "reset_timeout_ms": { "type": "integer", "minimum": 0 }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "resource_limits": {
+          "type": "object",
+          "properties": {
+            "max_total_tokens": { "type": "integer", "minimum": 0 },
+            "max_total_cost_usd": { "type": "number", "minimum": 0 },
+            "max_duration_ms": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["topology", "agents", "coordination", "aggregation"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["claw", "kind", "metadata", "spec"],
+  "additionalProperties": false
+}

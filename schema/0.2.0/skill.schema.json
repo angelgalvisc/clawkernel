@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/skill.schema.json",
+  "title": "CKP Skill Primitive",
+  "description": "Defines a composed workflow built from multiple tools with natural-language instructions. Section 5.5.",
+  "type": "object",
+  "properties": {
+    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
+    "kind": { "const": "Skill" },
+    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "REQUIRED. Human-readable description of what this skill accomplishes."
+        },
+        "tools_required": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "REQUIRED. Tools this skill needs to function."
+        },
+        "instruction": {
+          "type": "string",
+          "minLength": 1,
+          "description": "REQUIRED. Natural-language instructions for the LLM."
+        },
+        "input_schema": {
+          "type": "object",
+          "description": "Input parameters the user provides when invoking this skill."
+        },
+        "output_schema": {
+          "type": "object",
+          "description": "Expected output structure."
+        },
+        "permissions": {
+          "type": "object",
+          "properties": {
+            "network": { "type": "boolean" },
+            "filesystem": {
+              "type": "string",
+              "enum": ["none", "read-only", "write-workspace", "full"]
+            },
+            "approval_required": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "estimates": {
+          "type": "object",
+          "properties": {
+            "avg_tokens": { "type": "integer", "minimum": 0 },
+            "avg_duration_seconds": { "type": "integer", "minimum": 0 },
+            "avg_tool_calls": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["description", "tools_required", "instruction"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["claw", "kind", "metadata", "spec"],
+  "additionalProperties": false
+}
