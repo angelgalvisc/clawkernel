@@ -1,73 +1,80 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 400" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
   <defs>
     <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
       <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.1"/>
     </filter>
-  </defs>
-
-  <!-- Background -->
-  <rect width="960" height="400" fill="white" rx="8"/>
-
-  <!-- Left column: Agent Frameworks -->
-  <rect x="40" y="40" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="150" y="62" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Chat &amp; Messaging</text>
-  <text x="150" y="82" text-anchor="middle" font-size="12" fill="#6b7280">WhatsApp, Telegram, Slack</text>
-
-  <rect x="40" y="124" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="150" y="146" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Agent Frameworks</text>
-  <text x="150" y="166" text-anchor="middle" font-size="12" fill="#6b7280">NanoClaw, OpenClaw, ZeroClaw</text>
-
-  <rect x="40" y="208" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="150" y="230" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">IDEs &amp; Dev Tools</text>
-  <text x="150" y="250" text-anchor="middle" font-size="12" fill="#6b7280">Claude Code, Cursor, Goose</text>
-
-  <rect x="40" y="292" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="150" y="314" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Custom Agents</text>
-  <text x="150" y="334" text-anchor="middle" font-size="12" fill="#6b7280">Your agent, any runtime</text>
-
-  <!-- Center: CKP -->
-  <rect x="355" y="100" width="250" height="200" rx="12" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
-  <text x="480" y="185" text-anchor="middle" font-weight="700" font-size="20" fill="#1e40af">CKP</text>
-  <text x="480" y="210" text-anchor="middle" font-size="13" fill="#3b82f6">Standardized protocol</text>
-  <text x="480" y="232" text-anchor="middle" font-size="11" fill="#60a5fa">claw.yaml · JSON-RPC 2.0 · claw://</text>
-
-  <!-- Right column: Capabilities -->
-  <rect x="700" y="40" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="810" y="62" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Tools &amp; Skills</text>
-  <text x="810" y="82" text-anchor="middle" font-size="12" fill="#6b7280">Bash, API calls, workflows</text>
-
-  <rect x="700" y="124" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="810" y="146" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Security</text>
-  <text x="810" y="166" text-anchor="middle" font-size="12" fill="#6b7280">Policy, Sandbox, Approval</text>
-
-  <rect x="700" y="208" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="810" y="230" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Memory &amp; State</text>
-  <text x="810" y="250" text-anchor="middle" font-size="12" fill="#6b7280">Conversation, KV, Semantic</text>
-
-  <rect x="700" y="292" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="810" y="314" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Multi-Agent Swarms</text>
-  <text x="810" y="334" text-anchor="middle" font-size="12" fill="#6b7280">Coordinate, delegate, report</text>
-
-  <!-- Arrows: Left to Center -->
-  <line x1="260" y1="72" x2="355" y2="170" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-  <line x1="260" y1="156" x2="355" y2="185" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-  <line x1="260" y1="240" x2="355" y2="210" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-  <line x1="260" y1="324" x2="355" y2="240" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-
-  <!-- Arrows: Center to Right -->
-  <line x1="605" y1="170" x2="700" y2="72" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-  <line x1="605" y1="185" x2="700" y2="156" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-  <line x1="605" y1="210" x2="700" y2="240" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-  <line x1="605" y1="240" x2="700" y2="324" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-
-  <!-- Arrowhead marker -->
-  <defs>
     <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
       <polygon points="0 0, 8 3, 0 6" fill="#9ca3af"/>
     </marker>
   </defs>
 
+  <!-- Background -->
+  <rect width="960" height="480" fill="white" rx="8"/>
+
+  <!-- Left column: Agent Runtimes -->
+  <rect x="40" y="60" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="150" y="82" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Chat &amp; Messaging</text>
+  <text x="150" y="102" text-anchor="middle" font-size="12" fill="#6b7280">WhatsApp, Telegram, Slack</text>
+
+  <rect x="40" y="148" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="150" y="170" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Agent Frameworks</text>
+  <text x="150" y="190" text-anchor="middle" font-size="12" fill="#6b7280">NanoClaw, OpenClaw, ZeroClaw</text>
+
+  <rect x="40" y="236" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="150" y="258" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">IDEs &amp; Dev Tools</text>
+  <text x="150" y="278" text-anchor="middle" font-size="12" fill="#6b7280">Claude Code, Cursor, Goose</text>
+
+  <rect x="40" y="324" width="220" height="64" rx="8" fill="white" stroke="#d1d5db" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="150" y="346" text-anchor="middle" font-weight="600" font-size="14" fill="#111827">Custom Agents</text>
+  <text x="150" y="366" text-anchor="middle" font-size="12" fill="#6b7280">Your agent, any runtime</text>
+
+  <!-- Center: CKP -->
+  <rect x="355" y="120" width="250" height="220" rx="12" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+  <text x="480" y="200" text-anchor="middle" font-weight="700" font-size="22" fill="#1e40af">CKP</text>
+  <text x="480" y="225" text-anchor="middle" font-size="13" fill="#3b82f6">Standardized protocol</text>
+  <text x="480" y="248" text-anchor="middle" font-size="11" fill="#60a5fa">claw.yaml · JSON-RPC 2.0 · claw://</text>
+  <text x="480" y="268" text-anchor="middle" font-size="11" fill="#60a5fa">10 primitives · 3 levels · 31 tests</text>
+
+  <!-- Right column: 10 Primitives by level -->
+
+  <!-- L1 Core -->
+  <rect x="700" y="36" width="220" height="72" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="710" y="55" font-weight="600" font-size="11" fill="#166534">L1 CORE</text>
+  <text x="810" y="74" text-anchor="middle" font-weight="600" font-size="13" fill="#111827">Identity · Provider · Channel</text>
+  <text x="810" y="94" text-anchor="middle" font-size="11" fill="#6b7280">Who, which LLM, where to listen</text>
+
+  <!-- L2 Standard -->
+  <rect x="700" y="128" width="220" height="72" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="710" y="147" font-weight="600" font-size="11" fill="#1e40af">L2 STANDARD</text>
+  <text x="810" y="166" text-anchor="middle" font-weight="600" font-size="13" fill="#111827">Tool · Sandbox · Policy</text>
+  <text x="810" y="186" text-anchor="middle" font-size="11" fill="#6b7280">Execute, isolate, govern</text>
+
+  <!-- L3 Full -->
+  <rect x="700" y="220" width="220" height="72" rx="8" fill="#faf5ff" stroke="#c4b5fd" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="710" y="239" font-weight="600" font-size="11" fill="#6b21a8">L3 FULL</text>
+  <text x="810" y="258" text-anchor="middle" font-weight="600" font-size="13" fill="#111827">Skill · Memory · Swarm</text>
+  <text x="810" y="278" text-anchor="middle" font-size="11" fill="#6b7280">Compose, persist, coordinate</text>
+
+  <!-- Optional: Telemetry -->
+  <rect x="700" y="312" width="220" height="72" rx="8" fill="#fefce8" stroke="#fde047" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="710" y="331" font-weight="600" font-size="11" fill="#854d0e">OPTIONAL</text>
+  <text x="810" y="350" text-anchor="middle" font-weight="600" font-size="13" fill="#111827">Telemetry</text>
+  <text x="810" y="370" text-anchor="middle" font-size="11" fill="#6b7280">Observe, trace, redact</text>
+
+  <!-- Arrows: Left to Center -->
+  <line x1="260" y1="92" x2="355" y2="195" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="260" y1="180" x2="355" y2="215" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="260" y1="268" x2="355" y2="240" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="260" y1="356" x2="355" y2="275" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- Arrows: Center to Right -->
+  <line x1="605" y1="185" x2="700" y2="72" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="605" y1="210" x2="700" y2="164" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="605" y1="240" x2="700" y2="256" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="605" y1="270" x2="700" y2="348" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
   <!-- Labels -->
-  <text x="150" y="385" text-anchor="middle" font-size="12" fill="#9ca3af" font-style="italic">Agent runtimes</text>
-  <text x="810" y="385" text-anchor="middle" font-size="12" fill="#9ca3af" font-style="italic">Capabilities &amp; primitives</text>
+  <text x="150" y="418" text-anchor="middle" font-size="12" fill="#9ca3af" font-style="italic">Agent runtimes</text>
+  <text x="480" y="370" text-anchor="middle" font-size="12" fill="#93c5fd" font-style="italic">Bidirectional JSON-RPC</text>
+  <text x="810" y="418" text-anchor="middle" font-size="12" fill="#9ca3af" font-style="italic">10 primitives by conformance level</text>
 </svg>
