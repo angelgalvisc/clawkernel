@@ -30,21 +30,9 @@
 
 The Claw Kernel Protocol defines ten primitives for describing, composing, and interoperating autonomous AI agents. It provides a declarative manifest format (`claw.yaml`) with ABNF grammar, a JSON-RPC 2.0 wire format, and a `claw://` URI scheme for addressing agent components.
 
-```
-  claw.yaml
-  =========
-
-  L1 Core        Identity · Provider · Channel
-                                |
-  L2 Standard    Tool · Policy · Sandbox
-                   |
-  L3 Full        Skill · Memory · Swarm
-
-  Optional       Telemetry
-
-  ─────────────────────────────────────────
-  Wire:  JSON-RPC 2.0 over stdio / WS / HTTP
-```
+<p align="center">
+  <img src="assets/ckp-architecture.svg" alt="CKP Architecture: Agent runtimes on the left, CKP standardized protocol in the center, capabilities and primitives on the right" width="720" />
+</p>
 
 CKP is complementary to MCP (Model Context Protocol). Where MCP standardizes how LLM hosts discover and invoke tools, CKP standardizes how autonomous agents are assembled, secured, and orchestrated as first-class runtime entities.
 
