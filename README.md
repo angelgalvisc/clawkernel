@@ -12,7 +12,7 @@
   <strong>Claw Kernel Protocol (CKP)</strong> — The missing protocol between AI agents
 </p>
 
-[![Version](https://img.shields.io/badge/spec-v0.2.0-blue)](spec/clawkernel-spec.md)
+[![Version](https://img.shields.io/badge/spec-v0.2.1-blue)](spec/clawkernel-spec.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![Coherence Gate](https://img.shields.io/badge/coherence-PASS-brightgreen)](reports/coherence-report.md)
 [![Spec tokens](https://img.shields.io/badge/spec_suite-~30k_tokens-orange)](spec/)
