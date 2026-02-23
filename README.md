@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Claw Kernel Protocol (CKP)</strong> — Open standard for stateful agent runtimes
+  <strong>Claw Kernel Protocol (CKP)</strong> — The missing protocol between AI agents
 </p>
 
 [![Version](https://img.shields.io/badge/spec-v0.2.0-blue)](spec/clawkernel-spec.md)
@@ -22,6 +22,45 @@
 ## What is CKP?
 
 The Claw Kernel Protocol defines ten primitives for describing, composing, and interoperating autonomous AI agents. It provides a declarative manifest format (`claw.yaml`) with ABNF grammar, a JSON-RPC 2.0 wire format, and a `claw://` URI scheme for addressing agent components.
+
+```
+                         claw.yaml
+                            │
+              ┌─────────────┼─────────────┐
+              ▼             ▼             ▼
+         ┌─────────┐  ┌─────────┐  ┌─────────┐
+         │Identity │  │Provider │  │Channel  │   L1 Core
+         │         │  │Claude,  │  │Telegram,│
+         │who am I │  │GPT,     │  │Slack,   │
+         │         │  │Ollama   │  │CLI, ... │
+         └─────────┘  └─────────┘  └────┬────┘
+                                        │
+              ┌─────────────┬───────────┤
+              ▼             ▼           ▼
+         ┌─────────┐  ┌─────────┐  ┌─────────┐
+         │  Tool   │  │ Policy  │  │ Sandbox │   L2 Standard
+         │execute  │  │allow/   │  │isolate  │
+         │functions│  │deny/    │  │per-tool │
+         │         │  │approve  │  │         │
+         └─────────┘  └─────────┘  └─────────┘
+              │
+              ├─────────────┬─────────────┐
+              ▼             ▼             ▼
+         ┌─────────┐  ┌─────────┐  ┌─────────┐
+         │  Skill  │  │ Memory  │  │  Swarm  │   L3 Full
+         │composed │  │persist  │  │multi-   │
+         │workflows│  │state    │  │agent    │
+         └─────────┘  └─────────┘  └─────────┘
+                                        │
+         ┌──────────────────────────────┘
+         ▼
+    ┌──────────┐
+    │Telemetry │  Optional at all levels
+    │observe   │
+    └──────────┘
+
+    ─── JSON-RPC 2.0 ───────────── stdio / WebSocket / HTTP ───
+```
 
 CKP is complementary to MCP (Model Context Protocol). Where MCP standardizes how LLM hosts discover and invoke tools, CKP standardizes how autonomous agents are assembled, secured, and orchestrated as first-class runtime entities.
 
