@@ -1,0 +1,20 @@
+{
+  "name": "@clawkernel/sdk",
+  "version": "0.2.0",
+  "description": "SDK for building CKP-conformant agents",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "typescript": "^5.7.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "Apache-2.0"
+}

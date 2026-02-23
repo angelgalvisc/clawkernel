@@ -1,0 +1,76 @@
+claw: "0.2.0"
+kind: Claw
+metadata:
+  name: test-l3-agent
+
+spec:
+  identity:
+    inline:
+      personality: "L3 test agent with memory, swarm, and tools."
+      autonomy: autonomous
+
+  providers:
+    - inline:
+        protocol: openai-compatible
+        endpoint: http://localhost:11434/v1
+        model: test-model
+        auth:
+          type: none
+
+  channels:
+    - inline:
+        type: cli
+        transport: stdio
+        auth:
+          secret_ref: CLI_TOKEN
+
+  tools:
+    - inline:
+        name: echo
+        description: "Echo input back"
+        input_schema:
+          type: object
+          properties:
+            text:
+              type: string
+
+  skills:
+    - inline:
+        name: echo-skill
+        description: "Echo workflow"
+        tools_required:
+          - echo
+        instruction: "Use echo tool to echo back user input."
+
+  memory:
+    inline:
+      stores:
+        - name: test-store
+          type: key-value
+          backend: sqlite
+          scope: global
+
+  sandbox:
+    inline:
+      level: process
+
+  policies:
+    - inline:
+        rules:
+          - id: allow-all
+            action: allow
+            scope: all
+
+  swarm:
+    inline:
+      topology: peer-to-peer
+      agents:
+        - identity_ref: peer-1
+          role: peer
+      coordination:
+        message_passing: direct
+        backend: in-process
+        concurrency:
+          max_parallel: 2
+      aggregation:
+        strategy: merge

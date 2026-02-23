@@ -97,6 +97,7 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 | JSON Schema | 11 schemas (9 primitives + manifest + definitions) |
 | TypeScript types | `schema.ts` — canonical source of truth |
 | Reference implementation | [`reference/ckp-bridge/`](reference/ckp-bridge/) — L1 CONFORMANT |
+| SDK | [`sdk/`](sdk/) — `@clawkernel/sdk` — L1+L2+L3 (0 runtime deps) |
 | Conformance harness | [`ckp-test`](https://github.com/angelgalvisc/ckp-test) — AJV + 31 vectors |
 | Compatibility profiles | [`profiles/`](profiles/) — NanoClaw (L1 PARTIAL) |
 
@@ -138,14 +139,45 @@ L1: CONFORMANT (0 skips, 0 fails, 0 errors)
 
 Use it as a starting point for building your own CKP-conformant agent.
 
+### SDK — Build agents in 5 lines
+
+The [`sdk/`](sdk/) directory provides `@clawkernel/sdk` — a zero-dependency TypeScript SDK for building CKP-conformant agents at any level:
+
+```typescript
+import { createAgent } from "@clawkernel/sdk";
+
+const agent = createAgent({
+  name: "my-agent",
+  version: "1.0.0",
+  // Add tools, memory, swarm handlers for L2/L3
+});
+
+agent.listen();
+```
+
+The SDK handles JSON-RPC 2.0 routing, lifecycle state machine, heartbeat, and the full L2 tool execution pipeline (quota → policy → sandbox → approval → execute with timeout).
+
+```bash
+cd sdk && npm install && npx tsc
+
+# L1 agent: 13/13 PASS
+node dist/examples/l1-agent.js
+
+# L3 agent: 30 PASS + 1 SKIP → L3 PARTIAL
+node dist/examples/l3-agent.js
+```
+
+See [`sdk/examples/`](sdk/examples/) for L1, L2, and L3 example agents with their manifests.
+
 ---
 
 ## Compatibility
 
 | Agent | Level | Pass | Skip | Fail | Result |
 |-------|-------|------|------|------|--------|
-| [ckp-bridge](reference/ckp-bridge/) | L1 | 13 | 0 | 0 | **CONFORMANT** |
-| [NanoClaw](https://github.com/qwibitai/nanoclaw) | L1 | 6 | 7 | 0 | **PARTIAL** |
+| [@clawkernel/sdk](sdk/) | L3 | 30 | 1 | 0 | **L3 PARTIAL** |
+| [ckp-bridge](reference/ckp-bridge/) | L1 | 13 | 0 | 0 | **L1 CONFORMANT** |
+| [NanoClaw](https://github.com/qwibitai/nanoclaw) | L1 | 6 | 7 | 0 | **L1 PARTIAL** |
 
 See [`profiles/`](profiles/) for detailed compatibility assessments.
 

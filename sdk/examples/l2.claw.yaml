@@ -1,0 +1,46 @@
+claw: "0.2.0"
+kind: Claw
+metadata:
+  name: test-l2-agent
+
+spec:
+  identity:
+    inline:
+      personality: "L2 test agent with tools and sandbox."
+      autonomy: supervised
+
+  providers:
+    - inline:
+        protocol: openai-compatible
+        endpoint: http://localhost:11434/v1
+        model: test-model
+        auth:
+          type: none
+
+  channels:
+    - inline:
+        type: cli
+        transport: stdio
+        auth:
+          secret_ref: CLI_TOKEN
+
+  tools:
+    - inline:
+        name: echo
+        description: "Echo input back"
+        input_schema:
+          type: object
+          properties:
+            text:
+              type: string
+
+  sandbox:
+    inline:
+      level: process
+
+  policies:
+    - inline:
+        rules:
+          - id: allow-all
+            action: allow
+            scope: all
