@@ -142,6 +142,13 @@
             { "type": "string", "minLength": 1 },
             { "type": "object" }
           ]
+        },
+        "telemetry": {
+          "description": "OPTIONAL. Telemetry configuration. Valid at all conformance levels.",
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "object" }
+          ]
         }
       },
       "required": ["identity", "providers"],

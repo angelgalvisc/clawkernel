@@ -35,6 +35,7 @@ export type Kind =
   | "Sandbox"
   | "Policy"
   | "Swarm"
+  | "Telemetry"
   | "Claw";
 
 /** Common metadata envelope present in every primitive and manifest. */
@@ -111,6 +112,12 @@ export interface RetryConfig {
   initial_delay_ms?: number;
 }
 
+/** Modalities supported by a provider. */
+export type ProviderCapability = "text" | "image" | "audio" | "video" | "realtime";
+
+/** Transport protocol for provider communication. */
+export type ProviderTransport = "http" | "websocket" | "webrtc" | "grpc";
+
 export interface ProviderSpec {
   /** REQUIRED. Protocol for communicating with the LLM endpoint. */
   protocol: ProviderProtocol;
@@ -125,6 +132,10 @@ export interface ProviderSpec {
   fallback?: ProviderFallback[];
   limits?: ProviderLimits;
   retry?: RetryConfig;
+  /** Modalities supported by this provider. Default: ['text']. */
+  capabilities?: ProviderCapability[];
+  /** Transport protocol. Default: 'http'. Use 'websocket'/'webrtc' for streaming multimedia. */
+  transport?: ProviderTransport;
 }
 
 export type Provider = PrimitiveEnvelope<"Provider", ProviderSpec>;
@@ -136,7 +147,9 @@ export type Provider = PrimitiveEnvelope<"Provider", ProviderSpec>;
 export type ChannelType =
   | "telegram" | "discord" | "whatsapp" | "slack" | "email"
   | "webhook" | "cli" | "voice" | "web" | "lark" | "matrix"
-  | "line" | "wechat" | "qq" | "dingtalk" | "custom";
+  | "line" | "wechat" | "qq" | "dingtalk"
+  | "cron" | "queue" | "imap" | "db-trigger"
+  | "custom";
 
 export type TransportType = "polling" | "webhook" | "websocket" | "stdio";
 export type AccessControlMode = "open" | "allowlist" | "pairing" | "role-based";
@@ -179,6 +192,20 @@ export interface ChannelFeatures {
   inline_images?: boolean;
 }
 
+/** Trigger configuration for event-driven channel types (cron, queue, imap, db-trigger). */
+export interface ChannelTrigger {
+  /** Cron expression. REQUIRED for type 'cron'. */
+  schedule?: string;
+  /** Queue/topic name. REQUIRED for type 'queue'. */
+  queue_name?: string;
+  /** IMAP mailbox name. REQUIRED for type 'imap'. */
+  mailbox?: string;
+  /** Database table to watch. REQUIRED for type 'db-trigger'. */
+  table?: string;
+  /** Database events to react to. Applicable for type 'db-trigger'. */
+  events?: ("INSERT" | "UPDATE" | "DELETE")[];
+}
+
 export interface ChannelSpec {
   /** REQUIRED. Channel type. */
   type: ChannelType;
@@ -189,6 +216,8 @@ export interface ChannelSpec {
   access_control?: AccessControl;
   processing?: ChannelProcessing;
   features?: ChannelFeatures;
+  /** Trigger configuration for event-driven channels (cron, queue, imap, db-trigger). */
+  trigger?: ChannelTrigger;
 }
 
 export type Channel = PrimitiveEnvelope<"Channel", ChannelSpec>;
@@ -222,6 +251,10 @@ export interface ToolSpec {
   annotations?: ToolAnnotations;
   timeout_ms?: number;
   retry?: { max_attempts?: number; backoff?: BackoffStrategy };
+  /** If true, this tool wraps a Skill workflow. Gates apply to each sub-tool. */
+  composite?: boolean;
+  /** Reference to the Skill this composite tool wraps. REQUIRED when composite is true. */
+  skill_ref?: string;
 }
 
 export type Tool = PrimitiveEnvelope<"Tool", ToolSpec>;
@@ -263,7 +296,7 @@ export type Skill = PrimitiveEnvelope<"Skill", SkillSpec>;
 // 5.6 Memory
 // ---------------------------------------------------------------------------
 
-export type MemoryStoreType = "conversation" | "semantic" | "key-value" | "workspace";
+export type MemoryStoreType = "conversation" | "semantic" | "key-value" | "workspace" | "checkpoint";
 export type MemoryBackend = "sqlite" | "postgresql" | "filesystem" | "sqlite-vec" | "pgvector" | "qdrant" | "custom";
 export type CompactionStrategy = "summarize" | "truncate" | "sliding-window";
 export type SearchStrategy = "vector-only" | "fts-only" | "hybrid";
@@ -293,6 +326,14 @@ export interface SearchConfig {
   top_k?: number;
 }
 
+/** Checkpoint configuration for type 'checkpoint' stores. */
+export interface CheckpointConfig {
+  /** Maximum number of checkpoint snapshots retained per task. */
+  max_snapshots?: number;
+  /** Time-to-live for checkpoint entries before automatic cleanup. */
+  ttl?: DurationString;
+}
+
 export interface MemoryStore {
   name: string;
   type: MemoryStoreType;
@@ -306,6 +347,8 @@ export interface MemoryStore {
   path?: string;
   isolation?: WorkspaceIsolation;
   max_size_mb?: number;
+  /** Checkpoint configuration. Applicable when type is 'checkpoint'. */
+  checkpoint?: CheckpointConfig;
 }
 
 export interface MemorySpec {
@@ -540,6 +583,63 @@ export interface SwarmSpec {
 export type Swarm = PrimitiveEnvelope<"Swarm", SwarmSpec>;
 
 // ---------------------------------------------------------------------------
+// 5.10 Telemetry (OPTIONAL at all conformance levels)
+// ---------------------------------------------------------------------------
+
+export type TelemetryExporterType = "otlp" | "file" | "sqlite" | "webhook" | "console";
+
+export interface TelemetryBatch {
+  max_size?: number;
+  flush_interval_ms?: number;
+}
+
+export interface TelemetryExporter {
+  type: TelemetryExporterType;
+  endpoint?: string;
+  path?: string;
+  auth?: { secret_ref?: SecretRef };
+  batch?: TelemetryBatch;
+}
+
+export interface TelemetryEvents {
+  tool_calls?: boolean;
+  memory_ops?: boolean;
+  swarm_ops?: boolean;
+  lifecycle?: boolean;
+  errors?: boolean;
+}
+
+export interface TelemetryMetrics {
+  token_usage?: boolean;
+  cost_usd?: boolean;
+  latency_histogram?: boolean;
+}
+
+export interface TelemetrySampling {
+  rate?: number;
+}
+
+export interface TelemetryRedaction {
+  strip_arguments?: boolean;
+  strip_results?: boolean;
+}
+
+export interface TelemetrySpec {
+  /** REQUIRED. At least one telemetry exporter. */
+  exporters: TelemetryExporter[];
+  /** Which event categories to emit. */
+  events?: TelemetryEvents;
+  /** Which metrics to collect. */
+  metrics?: TelemetryMetrics;
+  /** Sampling configuration. */
+  sampling?: TelemetrySampling;
+  /** Data redaction settings. The runtime MUST NEVER emit raw prompts or CoT. */
+  redaction?: TelemetryRedaction;
+}
+
+export type Telemetry = PrimitiveEnvelope<"Telemetry", TelemetrySpec>;
+
+// ---------------------------------------------------------------------------
 // 6. Claw Manifest
 // ---------------------------------------------------------------------------
 
@@ -565,6 +665,8 @@ export interface ClawManifestSpec {
   sandbox?: PrimitiveRef | { inline: SandboxSpec };
   policies?: (PrimitiveRef | { inline: PolicySpec & { name?: string } })[];
   swarm?: PrimitiveRef | { inline: SwarmSpec };
+  /** OPTIONAL. Telemetry configuration. Valid at all conformance levels. */
+  telemetry?: PrimitiveRef | { inline: TelemetrySpec };
 }
 
 export type ClawManifest = PrimitiveEnvelope<"Claw", ClawManifestSpec>;
@@ -790,5 +892,5 @@ export interface JsonRpcError {
 // Union types
 // ---------------------------------------------------------------------------
 
-export type CkpPrimitive = Identity | Provider | Channel | Tool | Skill | Memory | Sandbox | Policy | Swarm;
+export type CkpPrimitive = Identity | Provider | Channel | Tool | Skill | Memory | Sandbox | Policy | Swarm | Telemetry;
 export type CkpDocument = CkpPrimitive | ClawManifest;

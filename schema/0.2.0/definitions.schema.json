@@ -47,7 +47,7 @@
     },
     "kind": {
       "type": "string",
-      "enum": ["Identity", "Provider", "Channel", "Tool", "Skill", "Memory", "Sandbox", "Policy", "Swarm", "Claw"]
+      "enum": ["Identity", "Provider", "Channel", "Tool", "Skill", "Memory", "Sandbox", "Policy", "Swarm", "Telemetry", "Claw"]
     }
   }
 }

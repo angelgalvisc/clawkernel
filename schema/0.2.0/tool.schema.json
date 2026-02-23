@@ -65,6 +65,16 @@
             "backoff": { "type": "string", "enum": ["exponential", "linear", "constant"] }
           },
           "additionalProperties": false
+        },
+        "composite": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, this tool wraps a Skill workflow and executes it as a single atomic tool. The runtime MUST apply gates (policy, sandbox, quota) to each sub-tool invocation within the composite."
+        },
+        "skill_ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Reference to the Skill this composite tool wraps. REQUIRED when composite is true."
         }
       },
       "if": {

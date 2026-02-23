@@ -20,7 +20,7 @@
               "name": { "type": "string", "minLength": 1 },
               "type": {
                 "type": "string",
-                "enum": ["conversation", "semantic", "key-value", "workspace"]
+                "enum": ["conversation", "semantic", "key-value", "workspace", "checkpoint"]
               },
               "backend": {
                 "type": "string",
@@ -80,7 +80,16 @@
                 "type": "string",
                 "enum": ["shared", "per-identity", "per-channel"]
               },
-              "max_size_mb": { "type": "integer", "minimum": 1 }
+              "max_size_mb": { "type": "integer", "minimum": 1 },
+              "checkpoint": {
+                "type": "object",
+                "properties": {
+                  "max_snapshots": { "type": "integer", "minimum": 1, "description": "Maximum number of checkpoint snapshots retained per task." },
+                  "ttl": { "$ref": "definitions.schema.json#/$defs/durationString", "description": "Time-to-live for checkpoint entries before automatic cleanup." }
+                },
+                "additionalProperties": false,
+                "description": "Checkpoint configuration. Applicable when store type is 'checkpoint'. Entries use task_id, step_index, state_blob, and resumable fields."
+              }
             },
             "required": ["name", "type"],
             "additionalProperties": false

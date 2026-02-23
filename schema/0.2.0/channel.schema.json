@@ -16,7 +16,9 @@
           "enum": [
             "telegram", "discord", "whatsapp", "slack", "email",
             "webhook", "cli", "voice", "web", "lark", "matrix",
-            "line", "wechat", "qq", "dingtalk", "custom"
+            "line", "wechat", "qq", "dingtalk",
+            "cron", "queue", "imap", "db-trigger",
+            "custom"
           ],
           "description": "REQUIRED. Channel type."
         },
@@ -114,6 +116,23 @@
             "inline_images": { "type": "boolean" }
           },
           "additionalProperties": false
+        },
+        "trigger": {
+          "type": "object",
+          "properties": {
+            "schedule": { "type": "string", "minLength": 1, "description": "Cron expression (e.g., '0 */6 * * *'). REQUIRED for type 'cron'." },
+            "queue_name": { "type": "string", "minLength": 1, "description": "Queue/topic name. REQUIRED for type 'queue'." },
+            "mailbox": { "type": "string", "minLength": 1, "description": "IMAP mailbox name (e.g., 'INBOX'). REQUIRED for type 'imap'." },
+            "table": { "type": "string", "minLength": 1, "description": "Database table to watch. REQUIRED for type 'db-trigger'." },
+            "events": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["INSERT", "UPDATE", "DELETE"] },
+              "minItems": 1,
+              "description": "Database events to react to. Applicable for type 'db-trigger'."
+            }
+          },
+          "additionalProperties": false,
+          "description": "Trigger configuration for event-driven channel types (cron, queue, imap, db-trigger)."
         }
       },
       "required": ["type", "transport", "auth"],

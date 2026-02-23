@@ -88,6 +88,21 @@
             "initial_delay_ms": { "type": "integer", "minimum": 0 }
           },
           "additionalProperties": false
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["text", "image", "audio", "video", "realtime"]
+          },
+          "uniqueItems": true,
+          "description": "Modalities supported by this provider. Default: ['text']. Used for cross-primitive validation (e.g., a Tool producing image output requires a provider with image capability)."
+        },
+        "transport": {
+          "type": "string",
+          "enum": ["http", "websocket", "webrtc", "grpc"],
+          "default": "http",
+          "description": "Transport protocol for communicating with the provider. Default: 'http'. Use 'websocket' or 'webrtc' for streaming multimedia or realtime voice-to-voice."
         }
       },
       "required": ["protocol", "endpoint", "model", "auth"],

@@ -29,19 +29,20 @@ Three conformance levels (L1 Minimal, L2 Standard, L3 Full) allow implementation
 
 ---
 
-## The Nine Primitives
+## Primitives
 
 | # | Primitive | Purpose |
 |---|-----------|---------|
 | 1 | **Identity** | Who the agent is — personality, context files, autonomy level |
 | 2 | **Provider** | LLM inference endpoint — Claude, GPT, Ollama, local models |
-| 3 | **Channel** | Communication surface — Telegram, Slack, CLI, webhook, voice |
-| 4 | **Tool** | Executable function with sandbox and policy bindings |
+| 3 | **Channel** | Ingress surface — Telegram, Slack, CLI, webhook, cron, queue, IMAP, db-trigger |
+| 4 | **Tool** | Executable function with sandbox and policy bindings (supports `composite` flag) |
 | 5 | **Skill** | Composed workflow built from multiple tools |
-| 6 | **Memory** | Persistent state — conversation, semantic, key-value, workspace |
+| 6 | **Memory** | Persistent state — conversation, semantic, key-value, workspace, checkpoint |
 | 7 | **Sandbox** | Isolated execution environment with resource limits |
 | 8 | **Policy** | Behavioral rules governing what an agent can and cannot do |
 | 9 | **Swarm** | Multi-agent coordination across topologies |
+| — | **Telemetry** | Structured observability — latency, cost, traces (optional at all levels) |
 
 ---
 
@@ -88,13 +89,13 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 | Item | Status |
 |------|--------|
 | Specification | `v0.2.0` |
-| Primitives defined | 9 / 9 |
+| Primitives defined | 9 core + 1 optional (Telemetry) |
 | JSON-RPC methods | 15 specified |
 | ABNF grammar | Complete |
 | Test vectors | 31 (13 L1 + 10 L2 + 8 L3) |
 | Error codes | 11 core |
 | Coherence gate | 10 rules, PASS |
-| JSON Schema | 11 schemas (9 primitives + manifest + definitions) |
+| JSON Schema | 12 schemas (9 core + Telemetry + manifest + definitions) |
 | TypeScript types | `schema.ts` — canonical source of truth |
 | Reference implementation | [`reference/ckp-bridge/`](reference/ckp-bridge/) — L1 CONFORMANT |
 | SDK | [`sdk/`](sdk/) — `@clawkernel/sdk` — L1+L2+L3 (0 runtime deps) |

@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/telemetry.schema.json",
+  "title": "CKP Telemetry Primitive",
+  "description": "Defines structured observability for agent behavior: latency, cost, tool traces, and error rates. Section 5.10. The Telemetry primitive is OPTIONAL at all conformance levels. It MUST NOT capture Chain-of-Thought (CoT) or raw prompt content for data security.",
+  "type": "object",
+  "properties": {
+    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
+    "kind": { "const": "Telemetry" },
+    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "exporters": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["otlp", "file", "sqlite", "webhook", "console"],
+                "description": "REQUIRED. Exporter type. 'otlp' for OpenTelemetry-compatible backends (Datadog, Jaeger, etc.)."
+              },
+              "endpoint": {
+                "type": "string",
+                "description": "Endpoint URL for remote exporters (otlp, webhook)."
+              },
+              "path": {
+                "type": "string",
+                "description": "File path for file/sqlite exporters."
+              },
+              "auth": {
+                "type": "object",
+                "properties": {
+                  "secret_ref": { "$ref": "definitions.schema.json#/$defs/secretRef" }
+                },
+                "additionalProperties": false
+              },
+              "batch": {
+                "type": "object",
+                "properties": {
+                  "max_size": { "type": "integer", "minimum": 1, "description": "Maximum events per batch." },
+                  "flush_interval_ms": { "type": "integer", "minimum": 100, "description": "Flush interval in milliseconds." }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": ["type"],
+            "additionalProperties": false
+          },
+          "description": "REQUIRED. At least one telemetry exporter."
+        },
+        "events": {
+          "type": "object",
+          "properties": {
+            "tool_calls": { "type": "boolean", "default": true, "description": "Emit events for tool invocations (name, duration_ms, status, error code)." },
+            "memory_ops": { "type": "boolean", "default": false, "description": "Emit events for memory store/query/compact operations." },
+            "swarm_ops": { "type": "boolean", "default": false, "description": "Emit events for swarm delegate/discover/report operations." },
+            "lifecycle": { "type": "boolean", "default": true, "description": "Emit events for lifecycle transitions (INIT → READY → STOPPED)." },
+            "errors": { "type": "boolean", "default": true, "description": "Emit events for all error responses." }
+          },
+          "additionalProperties": false,
+          "description": "Which event categories to emit. All default to the specified value."
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "token_usage": { "type": "boolean", "default": true, "description": "Track input/output token counts per provider call." },
+            "cost_usd": { "type": "boolean", "default": false, "description": "Track estimated cost per operation in USD." },
+            "latency_histogram": { "type": "boolean", "default": true, "description": "Emit latency histograms for tool calls and provider requests." }
+          },
+          "additionalProperties": false,
+          "description": "Which metrics to collect."
+        },
+        "sampling": {
+          "type": "object",
+          "properties": {
+            "rate": { "type": "number", "minimum": 0, "maximum": 1, "default": 1.0, "description": "Sampling rate (0.0 = off, 1.0 = all events). Default: 1.0." }
+          },
+          "additionalProperties": false
+        },
+        "redaction": {
+          "type": "object",
+          "properties": {
+            "strip_arguments": { "type": "boolean", "default": false, "description": "If true, tool call arguments are redacted from telemetry events." },
+            "strip_results": { "type": "boolean", "default": false, "description": "If true, tool call results are redacted from telemetry events." }
+          },
+          "additionalProperties": false,
+          "description": "Data redaction settings. The runtime MUST NEVER emit raw prompts or Chain-of-Thought regardless of these settings."
+        }
+      },
+      "required": ["exporters"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["claw", "kind", "metadata", "spec"],
+  "additionalProperties": false
+}
