@@ -18,6 +18,8 @@
 [![Spec tokens](https://img.shields.io/badge/spec_suite-~30k_tokens-orange)](spec/)
 [![npm](https://img.shields.io/npm/v/@clawkernel/sdk)](https://www.npmjs.com/package/@clawkernel/sdk)
 
+🌐 **Documentation:** [clawkernel.com](https://www.clawkernel.com/) · Built by [Datastrat](https://datastrat.co)
+
 > **TL;DR** — CKP is to agent orchestration what MCP is to tool discovery. One YAML manifest describes your agent's identity, providers, tools, security, memory, and multi-agent coordination. One SDK implements the wire protocol. One test harness proves conformance.
 >
 > ```bash

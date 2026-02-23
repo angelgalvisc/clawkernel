@@ -42,5 +42,6 @@
     "dist/*.js.map",
     "README.md"
   ],
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "homepage": "https://www.clawkernel.com/"
 }
