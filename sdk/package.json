@@ -1,20 +1,44 @@
 {
   "name": "@clawkernel/sdk",
   "version": "0.2.0",
-  "description": "SDK for building CKP-conformant agents",
+  "description": "Zero-dependency TypeScript SDK for building CKP-conformant agents (L1/L2/L3)",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
+    "build:dev": "tsc",
     "clean": "rm -rf dist"
   },
+  "author": "Angel Galvis Caballero <angel@datastrat.co>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angelgalvisc/clawkernel.git",
+    "directory": "sdk"
+  },
+  "keywords": [
+    "ckp",
+    "clawkernel",
+    "agent",
+    "ai-agent",
+    "json-rpc",
+    "protocol",
+    "sdk",
+    "typescript"
+  ],
   "devDependencies": {
     "@types/node": "^25.3.0",
     "typescript": "^5.7.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "license": "Apache-2.0"
 }

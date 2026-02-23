@@ -18,14 +18,14 @@ export class MemoryExecutor {
   }
 
   async handleStore(id: string | number | null, params: Record<string, unknown>): Promise<void> {
-    const store = params.store as string | undefined;
-    const entries = params.entries as MemoryEntry[] | undefined;
+    const store = typeof params.store === "string" ? params.store : undefined;
+    const entries = Array.isArray(params.entries) ? params.entries as MemoryEntry[] : undefined;
 
     if (!store) {
       invalidParams(this.transport, id, "Missing store name");
       return;
     }
-    if (!entries || !Array.isArray(entries)) {
+    if (!entries) {
       invalidParams(this.transport, id, "Missing or invalid entries");
       return;
     }
@@ -39,8 +39,10 @@ export class MemoryExecutor {
   }
 
   async handleQuery(id: string | number | null, params: Record<string, unknown>): Promise<void> {
-    const store = params.store as string | undefined;
-    const query = params.query as MemoryQuery | undefined;
+    const store = typeof params.store === "string" ? params.store : undefined;
+    const query = (params.query !== null && typeof params.query === "object" && !Array.isArray(params.query))
+      ? params.query as MemoryQuery
+      : undefined;
 
     if (!store) {
       invalidParams(this.transport, id, "Missing store name");
@@ -60,7 +62,7 @@ export class MemoryExecutor {
   }
 
   async handleCompact(id: string | number | null, params: Record<string, unknown>): Promise<void> {
-    const store = params.store as string | undefined;
+    const store = typeof params.store === "string" ? params.store : undefined;
 
     if (!store) {
       invalidParams(this.transport, id, "Missing store name");

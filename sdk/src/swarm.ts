@@ -18,21 +18,25 @@ export class SwarmExecutor {
   }
 
   async handleDelegate(id: string | number | null, params: Record<string, unknown>): Promise<void> {
-    const taskId = params.task_id as string | undefined;
-    const task = params.task as SwarmTask | undefined;
-    const context = params.context as SwarmContext | undefined;
+    const taskId = typeof params.task_id === "string" ? params.task_id : undefined;
+    const rawTask = (params.task !== null && typeof params.task === "object" && !Array.isArray(params.task))
+      ? params.task as SwarmTask
+      : undefined;
+    const context = (params.context !== null && typeof params.context === "object" && !Array.isArray(params.context))
+      ? params.context as SwarmContext
+      : undefined;
 
     if (!taskId) {
       invalidParams(this.transport, id, "Missing task_id");
       return;
     }
-    if (!task?.description) {
+    if (!rawTask?.description) {
       invalidParams(this.transport, id, "Missing task.description");
       return;
     }
 
     try {
-      const result = await this.handler.delegate(taskId, task, context ?? { request_id: "", swarm: "" });
+      const result = await this.handler.delegate(taskId, rawTask, context ?? { request_id: taskId, swarm: "default" });
       sendOk(this.transport, id, result);
     } catch (err) {
       sendError(this.transport, id, -32603, `Swarm delegate error: ${err instanceof Error ? err.message : String(err)}`);
@@ -40,7 +44,7 @@ export class SwarmExecutor {
   }
 
   async handleDiscover(id: string | number | null, params: Record<string, unknown>): Promise<void> {
-    const swarmName = params.swarm as string | undefined;
+    const swarmName = typeof params.swarm === "string" ? params.swarm : undefined;
 
     try {
       const result = await this.handler.discover(swarmName);
@@ -51,9 +55,11 @@ export class SwarmExecutor {
   }
 
   async handleReport(id: string | number | null, params: Record<string, unknown>): Promise<void> {
-    const taskId = params.task_id as string | undefined;
-    const status = params.status as string | undefined;
-    const result = (params.result as Record<string, unknown>) ?? {};
+    const taskId = typeof params.task_id === "string" ? params.task_id : undefined;
+    const status = typeof params.status === "string" ? params.status : undefined;
+    const result = (params.result !== null && typeof params.result === "object" && !Array.isArray(params.result))
+      ? params.result as Record<string, unknown>
+      : {};
 
     if (!taskId) {
       invalidParams(this.transport, id, "Missing task_id");
@@ -73,12 +79,14 @@ export class SwarmExecutor {
   }
 
   handleBroadcast(params: Record<string, unknown>): void {
-    const swarmName = params.swarm as string | undefined;
-    const message = (params.message as Record<string, unknown>) ?? {};
+    const swarmName = typeof params.swarm === "string" ? params.swarm : "";
+    const message = (params.message !== null && typeof params.message === "object" && !Array.isArray(params.message))
+      ? params.message as Record<string, unknown>
+      : {};
 
     // Notification — no response. Fire and forget.
     try {
-      this.handler.broadcast(swarmName ?? "", message);
+      this.handler.broadcast(swarmName, message);
     } catch {
       // Notifications don't send error responses
     }

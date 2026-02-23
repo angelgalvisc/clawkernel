@@ -1,13 +1,12 @@
 /**
  * @clawkernel/sdk — Tool Executor
  *
- * Dispatches claw.tool.call with pipeline: quota → policy → sandbox → approval → execute.
+ * Dispatches claw.tool.call with pipeline: quota → policy → sandbox → exists → approval → execute.
  */
 
 import type { Transport } from "./transport.js";
 import type { AgentOptions } from "./types.js";
-import { sendOk, invalidParams, policyDenied, sandboxDenied, quotaExceeded, toolTimeout, approvalTimeout, approvalDenied, sendError } from "./errors.js";
-import { CKP_ERROR_CODES } from "./types.js";
+import { sendOk, invalidParams, policyDenied, sandboxDenied, quotaExceeded, toolTimeout, approvalTimeout, approvalDenied, ToolTimeoutError } from "./errors.js";
 import { ApprovalQueue } from "./approval.js";
 
 export class ToolExecutor {
@@ -21,16 +20,21 @@ export class ToolExecutor {
   }
 
   async handleToolCall(id: string | number | null, params: Record<string, unknown>): Promise<void> {
-    const name = params.name as string | undefined;
-    const args = (params.arguments as Record<string, unknown>) ?? {};
-    const context = (params.context as Record<string, unknown>) ?? {};
+    // ── Input validation (type guards, no unsafe casts) ─────────────────
+    const name = typeof params.name === "string" ? params.name : undefined;
+    const args = (params.arguments !== null && typeof params.arguments === "object" && !Array.isArray(params.arguments))
+      ? params.arguments as Record<string, unknown>
+      : {};
+    const context = (params.context !== null && typeof params.context === "object" && !Array.isArray(params.context))
+      ? params.context as Record<string, unknown>
+      : {};
 
     if (!name) {
       invalidParams(this.transport, id, "Missing tool name");
       return;
     }
 
-    // Quota check (runs before tool existence — quota applies to all calls)
+    // ── Quota gate (before tool existence — quota applies to all calls) ─
     if (this.options.quota) {
       const result = this.options.quota.check(name);
       if (!result.allowed) {
@@ -39,7 +43,7 @@ export class ToolExecutor {
       }
     }
 
-    // Policy check (runs before tool existence — policy blocks denied tools)
+    // ── Policy gate (before tool existence — policy blocks denied tools) ─
     if (this.options.policy) {
       const result = this.options.policy.evaluate(name, context);
       if (!result.allowed) {
@@ -48,7 +52,7 @@ export class ToolExecutor {
       }
     }
 
-    // Sandbox check (runs before tool existence — sandbox blocks denied calls)
+    // ── Sandbox gate (before tool existence — sandbox blocks denied calls)
     if (this.options.sandbox) {
       const result = this.options.sandbox.check(name, args);
       if (!result.allowed) {
@@ -57,16 +61,20 @@ export class ToolExecutor {
       }
     }
 
-    // Check if tool exists (after gates — unknown tool = -32602)
+    // ── Tool existence (after gates — unknown tool = -32602) ────────────
     const tool = this.options.tools?.[name];
     if (!tool) {
       invalidParams(this.transport, id, `Unknown tool: ${name}`);
       return;
     }
 
-    // Approval gate
+    // ── Approval gate ───────────────────────────────────────────────────
     if (this.options.approval?.required(name)) {
-      const requestId = context.request_id as string;
+      const requestId = typeof context.request_id === "string" ? context.request_id : undefined;
+      if (!requestId) {
+        invalidParams(this.transport, id, "Missing context.request_id for approval-required tool");
+        return;
+      }
       try {
         await this.approvalQueue.waitForApproval(requestId, this.options.approval.timeout_ms);
       } catch (reason) {
@@ -79,19 +87,19 @@ export class ToolExecutor {
       }
     }
 
-    // Execute with timeout
+    // ── Execute with timeout ────────────────────────────────────────────
     const timeoutMs = tool.timeout_ms ?? 30000;
     try {
       const result = await Promise.race([
         tool.execute(args),
         new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("TOOL_TIMEOUT")), timeoutMs),
+          setTimeout(() => reject(new ToolTimeoutError(name, timeoutMs)), timeoutMs),
         ),
       ]);
 
       sendOk(this.transport, id, result);
     } catch (err) {
-      if (err instanceof Error && err.message === "TOOL_TIMEOUT") {
+      if (err instanceof ToolTimeoutError) {
         toolTimeout(this.transport, id, name);
       } else {
         sendOk(this.transport, id, {
@@ -103,14 +111,14 @@ export class ToolExecutor {
   }
 
   handleApprove(id: string | number | null, params: Record<string, unknown>): void {
-    const requestId = params.request_id as string;
-    this.approvalQueue.approve(requestId ?? "");
+    const requestId = typeof params.request_id === "string" ? params.request_id : "";
+    this.approvalQueue.approve(requestId);
     sendOk(this.transport, id, { acknowledged: true });
   }
 
   handleDeny(id: string | number | null, params: Record<string, unknown>): void {
-    const requestId = params.request_id as string;
-    this.approvalQueue.deny(requestId ?? "");
+    const requestId = typeof params.request_id === "string" ? params.request_id : "";
+    this.approvalQueue.deny(requestId);
     sendOk(this.transport, id, { acknowledged: true });
   }
 }

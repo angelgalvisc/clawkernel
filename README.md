@@ -159,7 +159,13 @@ agent.listen();
 The SDK handles JSON-RPC 2.0 routing, lifecycle state machine, heartbeat, and the full L2 tool execution pipeline (quota → policy → sandbox → approval → execute with timeout).
 
 ```bash
-cd sdk && npm install && npx tsc
+cd sdk && npm install
+
+# Build library (dist/index.js)
+npm run build
+
+# Build library + examples (for testing)
+npm run build:dev
 
 # L1 agent: 13/13 PASS
 node dist/examples/l1-agent.js
@@ -178,7 +184,7 @@ See [`sdk/examples/`](sdk/examples/) for L1, L2, and L3 example agents with thei
 |-------|-------|------|------|------|--------|
 | [@clawkernel/sdk](sdk/) | L3 | 30 | 1 | 0 | **L3 PARTIAL** |
 | [ckp-bridge](reference/ckp-bridge/) | L1 | 13 | 0 | 0 | **L1 CONFORMANT** |
-| [NanoClaw](https://github.com/qwibitai/nanoclaw) | L1 | 6 | 7 | 0 | **L1 PARTIAL** |
+| [NanoClaw](https://github.com/qwibitai/nanoclaw) | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
 
 See [`profiles/`](profiles/) for detailed compatibility assessments.
 

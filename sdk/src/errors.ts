@@ -7,6 +7,16 @@
 import type { Transport } from "./transport.js";
 import { CKP_ERROR_CODES } from "./types.js";
 
+// ── Custom Error Classes ──────────────────────────────────────────────────
+
+/** Thrown when a tool execution exceeds its timeout_ms. */
+export class ToolTimeoutError extends Error {
+  constructor(toolName: string, timeoutMs: number) {
+    super(`Tool "${toolName}" timed out after ${timeoutMs}ms`);
+    this.name = "ToolTimeoutError";
+  }
+}
+
 // ── Generic Builders ───────────────────────────────────────────────────────
 
 export function sendOk(transport: Transport, id: string | number | null, result: unknown): void {
