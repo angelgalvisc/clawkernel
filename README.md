@@ -1,10 +1,16 @@
-```
-$ claw --kernel█
-```
+<p align="center">
+  <img src="assets/clawkernel-mascot.png" alt="ClawKernel Mascot" width="180" />
+</p>
 
-# ClawKernel
+<h1 align="center">ClawKernel</h1>
 
-**Claw Kernel Protocol (CKP)** — Open standard for stateful agent runtimes
+<p align="center">
+  <code>$ claw --kernel█</code>
+</p>
+
+<p align="center">
+  <strong>Claw Kernel Protocol (CKP)</strong> — Open standard for stateful agent runtimes
+</p>
 
 [![Version](https://img.shields.io/badge/spec-v0.2.0--draft-blue)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
