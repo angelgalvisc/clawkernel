@@ -29,6 +29,24 @@ Three conformance levels (L1 Minimal, L2 Standard, L3 Full) allow implementation
 
 ---
 
+## Why CKP?
+
+The AI agent ecosystem is growing fast — OpenClaw, NanoClaw, IronClaw, PicoClaw, ZeroClaw, Nanobot — but every framework solves the same problems differently and none of them interoperate. Skills don't transfer. Security models vary wildly. Multi-agent coordination barely exists. Observability is an afterthought.
+
+CKP exists to fix this. One manifest format. One wire protocol. Portable across any conformant runtime.
+
+| Problem | How CKP solves it |
+|---------|-------------------|
+| **Skills don't transfer across frameworks.** A Gmail integration built for OpenClaw won't work in Nanobot. A web-scraping workflow from ZeroClaw can't run on NanoClaw. Every framework has its own skill format. | The **Skill** primitive defines a universal format: description, tool dependencies, natural-language instructions, permissions, and I/O schemas — all in one portable YAML block. Write a Gmail skill once, run it on any CKP-conformant runtime. |
+| **Multi-agent collaboration has no protocol.** You want a research agent gathering data, a writer drafting content, and an editor polishing it — but there's no standard way to coordinate them. | The **Swarm** primitive provides five coordination topologies (leader-worker, peer-to-peer, pipeline, broadcast, hierarchical), four message-passing backends, aggregation strategies, and a wire protocol for task delegation, peer discovery, and result reporting. |
+| **When your agent misbehaves at 3 AM, you can't trace why.** Session logs exist, but there's no structured observability — no tracing across tool calls, no token usage dashboards, no cost tracking. | The **Telemetry** primitive exports structured events (tool calls, memory ops, lifecycle transitions, errors) to OpenTelemetry-compatible backends like Datadog or Jaeger, with sampling control and automatic redaction of sensitive data. |
+| **Security is a patchwork.** OpenClaw uses application-level allowlists. NanoClaw uses OS containers. IronClaw built five security layers from scratch in Rust. There's no shared security language. | **Policy** provides a declarative rule engine (allow/deny/require-approval/audit) with prompt injection detection, secret scanning, and rate limiting. **Sandbox** enforces per-tool isolation. Both are required at Level 2 — security isn't optional. |
+| **No standard way to verify agent behavior.** How do you prove your agent correctly handles policy denials, tool timeouts, or sandbox violations? Each framework tests differently, or not at all. | CKP ships with **31 conformance test vectors** across three levels and a **coherence auditor** that validates spec consistency. Claim Level 2? Run the harness and prove it. |
+| **Voice and multimodal are bolted on.** Most frameworks are text-first. PicoClaw added Whisper transcription for Telegram voice. OpenClaw has macOS voice wake. But there's no standard for routing voice to the right model. | **Provider** declares capabilities (`text`, `image`, `audio`, `video`, `realtime`) and transport (`http`, `websocket`, `webrtc`). **Channel** supports `voice` as a first-class type. Runtimes can route voice messages to multimodal providers automatically — no custom plumbing per framework. |
+| **Running offline means reinventing the stack.** PicoClaw targets $10 hardware. ZeroClaw embeds everything in SQLite. But each solves local-first differently with no shared contract. | **Provider** supports local endpoints (Ollama, vLLM) with zero auth. **Memory** runs on SQLite. **Sandbox** works at process level. A valid L1 agent needs only Identity + Provider — no cloud, no Docker, no external dependencies. |
+
+---
+
 ## Primitives
 
 | # | Primitive | Purpose |
