@@ -37,7 +37,7 @@ spec:
 ```
 
 **Expected:** Accept. Valid Level 1 manifest.
-**Reference:** Section 6, Manifest Validation Rules.
+**Reference:** Section 6, Manifest Validation Rules; Section 5.1, Identity Validation Rules.
 
 ---
 
@@ -61,7 +61,7 @@ spec:
 ```
 
 **Expected:** Reject. `spec.identity` is REQUIRED.
-**Reference:** Section 6, Manifest Validation Rules.
+**Reference:** Section 6, Manifest Validation Rules; Section 5.1, Identity Validation Rules.
 
 ---
 
@@ -81,7 +81,7 @@ spec:
 ```
 
 **Expected:** Reject. `spec.providers` is REQUIRED and MUST contain at least one entry.
-**Reference:** Section 6, Manifest Validation Rules.
+**Reference:** Section 6, Manifest Validation Rules; Section 5.1, Identity Validation Rules.
 
 ---
 
@@ -689,7 +689,7 @@ spec:
 ```
 
 **Expected (report):** Response result with `{ "acknowledged": true }`. `status` is one of `completed`, `failed`, `partial`.
-**Reference:** Section 9.3.3, `claw.swarm.delegate`, `claw.swarm.report`.
+**Reference:** Section 9.3.3, `claw.swarm.delegate`, `claw.swarm.report`; Section 9.0, Actor Model.
 
 ---
 
@@ -727,7 +727,7 @@ spec:
 ```
 
 **Expected (query):** Response with `entries` array containing at least one entry whose `content` relates to the stored text.
-**Reference:** Section 9.3.4, `claw.memory.store`, `claw.memory.query`.
+**Reference:** Section 9.3.4, `claw.memory.store`, `claw.memory.query`; Section 5.6, Memory Validation Rules.
 
 ---
 
@@ -821,7 +821,7 @@ spec:
 ```
 
 **Expected:** Success response with `{ "peers": [{ "identity": "data-analyst", "uri": "claw://local/identity/data-analyst", "status": "ready" | "busy" | "unavailable" }] }`.
-**Reference:** Section 9.3.3, `claw.swarm.discover`.
+**Reference:** Section 9.3.3, `claw.swarm.discover`; Section 7, URI Scheme.
 
 ---
 

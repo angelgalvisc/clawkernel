@@ -5,16 +5,16 @@
 <h1 align="center">ClawKernel</h1>
 
 <p align="center">
-  <code>$ claw --kernel█</code>
+  <code>$ claw --kernel</code>
 </p>
 
 <p align="center">
   <strong>Claw Kernel Protocol (CKP)</strong> — Open standard for stateful agent runtimes
 </p>
 
-[![Version](https://img.shields.io/badge/spec-v0.2.0--draft-blue)]()
+[![Version](https://img.shields.io/badge/spec-v0.2.0--draft-blue)](spec/clawkernel-spec.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
-[![Coherence Gate](https://img.shields.io/badge/coherence-PASS-brightgreen)]()
+[![Coherence Gate](https://img.shields.io/badge/coherence-PASS-brightgreen)](reports/coherence-report.md)
 [![Spec tokens](https://img.shields.io/badge/spec_suite-~30k_tokens-orange)](spec/)
 
 ---

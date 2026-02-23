@@ -1,8 +1,8 @@
 {
-  "date": "2026-02-23 00:36:41",
+  "date": "2026-02-23 00:49:31",
   "result": "PASS",
-  "summary": { "critical": 0, "minor": 0, "info": 1, "total": 1 },
+  "summary": { "critical": 0, "minor": 0, "info": 0, "total": 0 },
   "findings": [
-    { "id": 1, "severity": "info", "rule": "R08", "file": "clawkernel-test-vectors.md", "line": 0, "description": "4 spec sections with MUST rules have no test vector referencing them" }
+
   ]
 }
