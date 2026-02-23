@@ -1,6 +1,6 @@
 {
   "name": "@clawkernel/sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Zero-dependency TypeScript SDK for building CKP-conformant agents (L1/L2/L3)",
   "type": "module",
   "main": "dist/index.js",
