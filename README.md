@@ -97,6 +97,57 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 | JSON Schema | 11 schemas (9 primitives + manifest + definitions) |
 | TypeScript types | `schema.ts` — canonical source of truth |
 | Reference implementation | [`reference/ckp-bridge/`](reference/ckp-bridge/) — L1 CONFORMANT |
+| Conformance harness | [`ckp-test`](https://github.com/angelgalvisc/ckp-test) — AJV + 31 vectors |
+| Compatibility profiles | [`profiles/`](profiles/) — NanoClaw (L1 PARTIAL) |
+
+---
+
+## Getting Started
+
+### Validate a manifest
+
+```bash
+# Install the conformance harness
+git clone https://github.com/angelgalvisc/ckp-test.git
+cd ckp-test && npm install && npx tsc
+
+# Validate any claw.yaml
+node dist/cli.js validate path/to/claw.yaml
+```
+
+### Test an agent for conformance
+
+```bash
+# Run L1 vectors against a stdio agent
+node dist/cli.js run \
+  --target "node path/to/your/agent.js" \
+  --manifest path/to/claw.yaml \
+  --level 1
+
+# Expected output: 13/13 PASS → L1 CONFORMANT
+```
+
+### Reference bridge
+
+The [`reference/ckp-bridge/`](reference/ckp-bridge/) directory contains a minimal L1 implementation (~215 lines of TypeScript) that passes all 13 L1 vectors:
+
+```
+✓ TV-L1-01 … TV-L1-13: 13/13 PASS
+L1: CONFORMANT (0 skips, 0 fails, 0 errors)
+```
+
+Use it as a starting point for building your own CKP-conformant agent.
+
+---
+
+## Compatibility
+
+| Agent | Level | Pass | Skip | Fail | Result |
+|-------|-------|------|------|------|--------|
+| [ckp-bridge](reference/ckp-bridge/) | L1 | 13 | 0 | 0 | **CONFORMANT** |
+| [NanoClaw](https://github.com/qwibitai/nanoclaw) | L1 | 6 | 7 | 0 | **PARTIAL** |
+
+See [`profiles/`](profiles/) for detailed compatibility assessments.
 
 ---
 
