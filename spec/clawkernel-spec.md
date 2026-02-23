@@ -1215,7 +1215,7 @@ When a URI uses `registry` as the authority, the runtime resolves it against con
 # In runtime configuration (not part of the protocol)
 registries:
   - name: "default"
-    url: "https://registry.clawkernel.dev/v1"
+    url: "https://registry.clawkernel.dev/v1"   # placeholder — no public registry exists yet
   - name: "company"
     url: "https://claw-registry.internal.example.com/v1"
 ```
