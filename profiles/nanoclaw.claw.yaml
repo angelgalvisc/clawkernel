@@ -1,0 +1,201 @@
+# NanoClaw CKP Manifest — Compatibility Profile
+# This describes NanoClaw's architecture in CKP terms.
+# It is NOT a live manifest (NanoClaw doesn't read claw.yaml natively).
+
+claw: "0.2.0"
+kind: Claw
+metadata:
+  name: "nanoclaw"
+  version: "1.0.0"
+  description: "Personal Claude assistant running securely in containers"
+  labels:
+    origin: "qwibitai/nanoclaw"
+    profile-type: "compatibility-assessment"
+spec:
+  identity:
+    inline:
+      personality: |
+        Personal Claude assistant. Responds to trigger word.
+        Each group has isolated context via CLAUDE.md.
+        Main channel has admin privileges.
+      context_files:
+        memory: "CLAUDE.md"
+        global: "global/CLAUDE.md"
+      autonomy: "supervised"
+
+  providers:
+    - inline:
+        protocol: "anthropic-native"
+        endpoint: "https://api.anthropic.com/v1"
+        model: "claude-opus-4-5-20250514"
+        auth:
+          type: "bearer"
+          secret_ref: "ANTHROPIC_API_KEY"
+        streaming: true
+
+  channels:
+    - inline:
+        type: "whatsapp"
+        transport: "websocket"
+        auth:
+          secret_ref: "WHATSAPP_AUTH_STATE"
+        access_control:
+          mode: "pairing"
+          pairing:
+            code_expiry_minutes: 5
+            max_pending: 1
+        processing:
+          typing_indicator: true
+        features:
+          files: true
+          reactions: true
+          inline_images: true
+
+  tools:
+    - inline:
+        name: "bash"
+        description: "Execute shell commands inside the container sandbox"
+        input_schema:
+          type: "object"
+          properties:
+            command: { type: "string" }
+          required: ["command"]
+        sandbox_ref: "container-sandbox"
+        timeout_ms: 300000
+    - inline:
+        name: "web-search"
+        description: "Search the web via Claude Agent SDK"
+        input_schema:
+          type: "object"
+          properties:
+            query: { type: "string" }
+          required: ["query"]
+    - inline:
+        name: "web-fetch"
+        description: "Fetch content from a URL"
+        input_schema:
+          type: "object"
+          properties:
+            url: { type: "string", format: "uri" }
+          required: ["url"]
+    - inline:
+        name: "agent-browser"
+        description: "Chromium-based browser automation tool"
+        input_schema:
+          type: "object"
+          properties:
+            action: { type: "string", enum: ["open", "snapshot", "click", "type"] }
+            target: { type: "string" }
+          required: ["action"]
+        sandbox_ref: "container-sandbox"
+    - inline:
+        name: "send-message"
+        description: "Send a message back to the WhatsApp chat via IPC"
+        mcp_source:
+          uri: "stdio:///workspace/ipc/send"
+
+  skills:
+    - inline:
+        name: "setup"
+        description: "Initial NanoClaw installation and authentication"
+        tools_required: ["bash"]
+        instruction: "Guide user through dependency installation, WhatsApp auth, and container setup."
+    - inline:
+        name: "customize"
+        description: "Modify NanoClaw behavior (trigger word, memory, etc.)"
+        tools_required: ["bash"]
+        instruction: "Change settings by modifying source code. Codebase is small enough to safely edit."
+    - inline:
+        name: "add-gmail"
+        description: "Add Gmail integration as a tool or channel"
+        tools_required: ["bash"]
+        instruction: "Apply the add-gmail skill via skills-engine to add Gmail OAuth + send/read tools."
+        permissions:
+          network: true
+          filesystem: "write-workspace"
+
+  memory:
+    inline:
+      stores:
+        - name: "messages"
+          type: "conversation"
+          backend: "sqlite"
+          retention:
+            max_entries: 50000
+        - name: "group-context"
+          type: "workspace"
+          path: "groups/{identity_name}/"
+          isolation: "per-channel"
+          max_size_mb: 500
+        - name: "global-memory"
+          type: "key-value"
+          backend: "filesystem"
+          scope: "global"
+
+  sandbox:
+    inline:
+      level: "container"
+      runtime: "docker"
+      capabilities:
+        network:
+          mode: "allow-all"
+        filesystem:
+          mode: "scoped"
+          mount_paths:
+            - path: "/workspace/group"
+              permissions: "rw"
+            - path: "/workspace/global"
+              permissions: "ro"
+            - path: "/workspace/project"
+              permissions: "ro"
+          denied_paths:
+            - "~/.ssh"
+            - "~/.gnupg"
+            - "~/.aws"
+            - ".env"
+        secrets:
+          injection: "host-boundary"
+          leak_detection:
+            enabled: false
+        shell:
+          mode: "full"
+      resource_limits:
+        timeout_ms: 1800000
+
+  policies:
+    - inline:
+        name: "group-isolation"
+        rules:
+          - id: "main-admin"
+            action: "allow"
+            scope: "all"
+            conditions:
+              path_within: "/workspace/project"
+          - id: "non-main-scoped"
+            action: "allow"
+            scope: "category"
+            match:
+              category: "filesystem"
+            conditions:
+              path_within: "/workspace/group"
+          - id: "default-allow"
+            action: "allow"
+            scope: "all"
+            reason: "NanoClaw trusts the container boundary"
+
+  swarm:
+    inline:
+      topology: "leader-worker"
+      agents:
+        - identity_ref: "nanoclaw"
+          role: "leader"
+          count: 1
+      coordination:
+        message_passing: "direct"
+        backend: "in-process"
+        concurrency:
+          max_parallel: 1
+          sequential_within_agent: true
+      aggregation:
+        strategy: "leader-decides"
+        timeout_ms: 1800000
