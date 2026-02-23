@@ -31,42 +31,19 @@
 The Claw Kernel Protocol defines ten primitives for describing, composing, and interoperating autonomous AI agents. It provides a declarative manifest format (`claw.yaml`) with ABNF grammar, a JSON-RPC 2.0 wire format, and a `claw://` URI scheme for addressing agent components.
 
 ```
-                         claw.yaml
-                            │
-              ┌─────────────┼─────────────┐
-              ▼             ▼             ▼
-         ┌─────────┐  ┌─────────┐  ┌─────────┐
-         │Identity │  │Provider │  │Channel  │   L1 Core
-         │         │  │Claude,  │  │Telegram,│
-         │who am I │  │GPT,     │  │Slack,   │
-         │         │  │Ollama   │  │CLI, ... │
-         └─────────┘  └─────────┘  └────┬────┘
-                                        │
-              ┌─────────────┬───────────┤
-              ▼             ▼           ▼
-         ┌─────────┐  ┌─────────┐  ┌─────────┐
-         │  Tool   │  │ Policy  │  │ Sandbox │   L2 Standard
-         │execute  │  │allow/   │  │isolate  │
-         │functions│  │deny/    │  │per-tool │
-         │         │  │approve  │  │         │
-         └─────────┘  └─────────┘  └─────────┘
-              │
-              ├─────────────┬─────────────┐
-              ▼             ▼             ▼
-         ┌─────────┐  ┌─────────┐  ┌─────────┐
-         │  Skill  │  │ Memory  │  │  Swarm  │   L3 Full
-         │composed │  │persist  │  │multi-   │
-         │workflows│  │state    │  │agent    │
-         └─────────┘  └─────────┘  └─────────┘
-                                        │
-         ┌──────────────────────────────┘
-         ▼
-    ┌──────────┐
-    │Telemetry │  Optional at all levels
-    │observe   │
-    └──────────┘
+  claw.yaml
+  =========
 
-    ─── JSON-RPC 2.0 ───────────── stdio / WebSocket / HTTP ───
+  L1 Core        Identity · Provider · Channel
+                                |
+  L2 Standard    Tool · Policy · Sandbox
+                   |
+  L3 Full        Skill · Memory · Swarm
+
+  Optional       Telemetry
+
+  ─────────────────────────────────────────
+  Wire:  JSON-RPC 2.0 over stdio / WS / HTTP
 ```
 
 CKP is complementary to MCP (Model Context Protocol). Where MCP standardizes how LLM hosts discover and invoke tools, CKP standardizes how autonomous agents are assembled, secured, and orchestrated as first-class runtime entities.
