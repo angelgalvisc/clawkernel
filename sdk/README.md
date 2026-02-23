@@ -2,7 +2,7 @@
 
 Zero-dependency TypeScript SDK for building [CKP](https://github.com/angelgalvisc/clawkernel)-conformant agents.
 
-[![Version](https://img.shields.io/badge/version-0.2.0-blue)](package.json)
+[![Version](https://img.shields.io/badge/version-0.2.1-blue)](package.json)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](../LICENSE)
 [![Dependencies](https://img.shields.io/badge/runtime_deps-0-brightgreen)]()
 

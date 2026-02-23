@@ -22,7 +22,7 @@ CKP is **complementary to MCP** (Model Context Protocol). Where MCP standardizes
 2. [Design Principles](#2-design-principles)
 3. [Relationship to Existing Protocols](#3-relationship-to-existing-protocols)
 4. [Architecture Overview](#4-architecture-overview)
-5. [The Nine Primitives](#5-the-nine-primitives)
+5. [The Ten Primitives](#5-the-ten-primitives)
    - 5.1 [Identity](#51-identity)
    - 5.2 [Provider](#52-provider)
    - 5.3 [Channel](#53-channel)
@@ -217,13 +217,13 @@ Claw Manifest (claw.yaml)
 
 ---
 
-## 5. The Nine Primitives
+## 5. The Ten Primitives
 
 Every primitive is a YAML or JSON document with a common envelope:
 
 ```yaml
 claw: "0.2.0"                    # Protocol version
-kind: Identity | Provider | Channel | Tool | Skill | Memory | Sandbox | Policy | Swarm
+kind: Identity | Provider | Channel | Tool | Skill | Memory | Sandbox | Policy | Swarm | Telemetry
 metadata:
   name: "string"                  # Unique within the manifest (kebab-case)
   version: "semver"               # Semantic version of this primitive instance
@@ -233,7 +233,7 @@ spec:
   # Kind-specific fields
 ```
 
-Every primitive document MUST include the `claw`, `kind`, and `metadata.name` fields. The `claw` field MUST be a valid protocol version string (semver). The `kind` field MUST be one of the ten valid values: `Identity`, `Provider`, `Channel`, `Tool`, `Skill`, `Memory`, `Sandbox`, `Policy`, `Swarm`, or `Claw`. The `metadata.name` field MUST be unique within the manifest for primitives of the same kind. Runtimes MUST NOT interpret `annotations` for operational decisions; `labels` MAY be used for filtering and policy matching.
+Every primitive document MUST include the `claw`, `kind`, and `metadata.name` fields. The `claw` field MUST be a valid protocol version string (semver). The `kind` field MUST be one of the eleven valid values: `Identity`, `Provider`, `Channel`, `Tool`, `Skill`, `Memory`, `Sandbox`, `Policy`, `Swarm`, `Telemetry`, or `Claw`. The `metadata.name` field MUST be unique within the manifest for primitives of the same kind. Runtimes MUST NOT interpret `annotations` for operational decisions; `labels` MAY be used for filtering and policy matching.
 
 ### 5.1 Identity
 
@@ -2590,7 +2590,7 @@ The TypeScript schema is the **canonical source of truth** for all type definiti
 | Resource | Path |
 |----------|------|
 | TypeScript schema (source of truth) | [`schema/0.2.0/schema.ts`](https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/schema.ts) |
-| JSON Schemas (per-primitive, 11 files) | [`schema/0.2.0/*.schema.json`](https://github.com/angelgalvisc/clawkernel/tree/main/schema/0.2.0) |
+| JSON Schemas (per-primitive, 12 files) | [`schema/0.2.0/*.schema.json`](https://github.com/angelgalvisc/clawkernel/tree/main/schema/0.2.0) |
 | Conformance test harness | [`@clawkernel/ckp-test`](https://github.com/angelgalvisc/ckp-test) |
 | Example manifests | [`profiles/`](https://github.com/angelgalvisc/clawkernel/tree/main/profiles) |
 
