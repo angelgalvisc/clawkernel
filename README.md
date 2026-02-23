@@ -190,9 +190,9 @@ L1: CONFORMANT (0 skips, 0 fails, 0 errors)
 
 Use it as a starting point for building your own CKP-conformant agent.
 
-### SDK — Build agents in 5 lines
+### SDK — From zero to conformant in 5 lines
 
-The [`sdk/`](sdk/) directory provides `@clawkernel/sdk` — a zero-dependency TypeScript SDK for building CKP-conformant agents at any level:
+The [`sdk/`](sdk/) directory provides `@clawkernel/sdk` — build a CKP-conformant agent at any level with zero runtime dependencies:
 
 ```typescript
 import { createAgent } from "@clawkernel/sdk";
@@ -200,13 +200,13 @@ import { createAgent } from "@clawkernel/sdk";
 const agent = createAgent({
   name: "my-agent",
   version: "1.0.0",
-  // Add tools, memory, swarm handlers for L2/L3
+  // Add tools, memory, swarm, telemetry for L2/L3
 });
 
-agent.listen();
+agent.listen(); // stdio JSON-RPC — ready for ckp-test
 ```
 
-The SDK handles JSON-RPC 2.0 routing, lifecycle state machine, heartbeat, and the full L2 tool execution pipeline (quota → policy → sandbox → approval → execute with timeout).
+This gives you the full protocol stack out of the box: JSON-RPC 2.0 routing, lifecycle state machine, heartbeat, and the L2 tool execution pipeline (quota → policy → sandbox → approval → execute with timeout). You write handlers — the SDK handles the wire.
 
 ```bash
 cd sdk && npm install
