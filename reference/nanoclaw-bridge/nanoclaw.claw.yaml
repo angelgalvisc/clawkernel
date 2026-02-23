@@ -1,0 +1,152 @@
+# NanoClaw CKP Bridge Manifest — LIVE (consumed by ckp-test harness)
+# Maps NanoClaw's real architecture to CKP v0.2.0 primitives.
+
+claw: "0.2.0"
+kind: Claw
+metadata:
+  name: nanoclaw-bridge
+  version: "1.1.0"
+
+spec:
+  identity:
+    inline:
+      personality: |
+        Personal Claude assistant running in isolated containers.
+        Each WhatsApp group gets its own sandboxed environment.
+        Main group has admin privileges; others are scoped.
+      autonomy: supervised
+
+  providers:
+    - inline:
+        protocol: anthropic-native
+        endpoint: https://api.anthropic.com/v1
+        model: claude-sonnet-4-20250514
+        auth:
+          type: bearer
+          secret_ref: ANTHROPIC_API_KEY
+        streaming: true
+
+  channels:
+    - inline:
+        type: whatsapp
+        transport: websocket
+        auth:
+          secret_ref: WHATSAPP_AUTH_STATE
+        access_control:
+          mode: pairing
+
+  tools:
+    - inline:
+        name: echo
+        description: "Echo input back (test tool)"
+        input_schema:
+          type: object
+          properties:
+            text:
+              type: string
+    - inline:
+        name: bash
+        description: "Execute shell commands inside the container sandbox"
+        input_schema:
+          type: object
+          properties:
+            command:
+              type: string
+          required:
+            - command
+        sandbox_ref: container-sandbox
+        timeout_ms: 300000
+    - inline:
+        name: web-search
+        description: "Search the web via Claude Agent SDK"
+        input_schema:
+          type: object
+          properties:
+            query:
+              type: string
+          required:
+            - query
+    - inline:
+        name: send-message
+        description: "Send a message back to the WhatsApp chat via IPC"
+        input_schema:
+          type: object
+          properties:
+            jid:
+              type: string
+            text:
+              type: string
+          required:
+            - jid
+            - text
+
+  sandbox:
+    inline:
+      level: container
+      runtime: docker
+      capabilities:
+        network:
+          mode: allow-all
+        filesystem:
+          mode: scoped
+          mount_paths:
+            - path: /workspace/group
+              permissions: rw
+            - path: /workspace/global
+              permissions: ro
+            - path: /workspace/project
+              permissions: ro
+          denied_paths:
+            - "~/.ssh"
+            - "~/.gnupg"
+            - "~/.aws"
+            - ".env"
+        shell:
+          mode: full
+
+  policies:
+    - inline:
+        name: nanoclaw-isolation
+        rules:
+          - id: main-admin
+            action: allow
+            scope: all
+            conditions:
+              path_within: /workspace/project
+          - id: non-main-scoped
+            action: allow
+            scope: category
+            match:
+              category: filesystem
+            conditions:
+              path_within: /workspace/group
+          - id: block-destructive
+            action: deny
+            scope: tool
+            match:
+              tool: destructive-tool
+          - id: block-metadata-leak
+            action: deny
+            scope: tool
+            match:
+              arguments:
+                url: "169.254.*"
+          - id: default-allow
+            action: allow
+            scope: all
+
+  swarm:
+    inline:
+      topology: leader-worker
+      agents:
+        - identity_ref: nanoclaw-bridge
+          role: leader
+          count: 1
+      coordination:
+        message_passing: direct
+        backend: in-process
+        concurrency:
+          max_parallel: 5
+      aggregation:
+        strategy: leader-decides
+        timeout_ms: 1800000
