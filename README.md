@@ -96,7 +96,7 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 | Coherence gate | 10 rules, PASS |
 | JSON Schema | 11 schemas (9 primitives + manifest + definitions) |
 | TypeScript types | `schema.ts` — canonical source of truth |
-| Reference implementation | Planned |
+| Reference implementation | [`reference/ckp-bridge/`](reference/ckp-bridge/) — L1 CONFORMANT |
 
 ---
 

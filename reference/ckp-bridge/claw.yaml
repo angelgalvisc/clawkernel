@@ -1,0 +1,19 @@
+claw: "0.2.0"
+kind: Claw
+metadata:
+  name: "ckp-bridge"
+  version: "0.2.0"
+  description: "CKP L1 reference bridge for conformance testing"
+spec:
+  identity:
+    inline:
+      personality: "CKP L1 reference bridge. Implements lifecycle methods over stdio JSON-RPC."
+      autonomy: "supervised"
+  providers:
+    - inline:
+        protocol: "anthropic-native"
+        endpoint: "https://api.anthropic.com/v1"
+        model: "claude-sonnet-4-20250514"
+        auth:
+          type: "bearer"
+          secret_ref: "API_KEY"

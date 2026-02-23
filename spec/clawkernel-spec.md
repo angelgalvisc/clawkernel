@@ -2495,13 +2495,14 @@ The TypeScript schema is the **canonical source of truth** for all type definiti
 
 > The TypeScript schema and JSON Schema files for version 0.2.0 are published in the `schema/0.2.0/` directory of this repository.
 
-| Resource | URL |
-|----------|-----|
-| TypeScript schema (source of truth) | `https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/schema.ts` |
-| JSON Schema (auto-generated) | `https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/schema.json` |
-| YAML validation schemas | `https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/yaml/` |
-| Conformance test vectors | `https://github.com/angelgalvisc/clawkernel/blob/main/tests/0.2.0/` |
-| Example manifests | `https://github.com/angelgalvisc/clawkernel/blob/main/examples/` |
+> **Publication policy:** Resources listed in this table MUST exist in the repository at the time of release. Placeholder or planned resources MUST NOT be listed.
+
+| Resource | Path |
+|----------|------|
+| TypeScript schema (source of truth) | [`schema/0.2.0/schema.ts`](https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/schema.ts) |
+| JSON Schemas (per-primitive, 11 files) | [`schema/0.2.0/*.schema.json`](https://github.com/angelgalvisc/clawkernel/tree/main/schema/0.2.0) |
+| Conformance test harness | [`@clawkernel/ckp-test`](https://github.com/angelgalvisc/ckp-test) |
+| Example manifests | [`profiles/`](https://github.com/angelgalvisc/clawkernel/tree/main/profiles) |
 
 ---
 
