@@ -30,6 +30,9 @@ export type {
   SwarmTask,
   SwarmContext,
   SwarmPeer,
+  TelemetryHandler,
+  TelemetryEvent,
+  TelemetryEventType,
 } from "./types.js";
 export { CKP_ERROR_CODES } from "./types.js";
 

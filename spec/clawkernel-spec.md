@@ -1051,6 +1051,93 @@ Broadcast:                  Hierarchical:
 
 ---
 
+### 5.10 Telemetry
+
+**URI:** `claw://local/telemetry/{name}` (alias: `claw://telemetry/{name}`)
+
+The Telemetry primitive defines how agent behavior is observed, measured, and exported for analysis. It specifies exporters, event categories, metrics collection, sampling rates, and data redaction rules. Telemetry is **OPTIONAL at all conformance levels** and MUST NOT affect core agent functionality — an agent without Telemetry configured MUST behave identically to one with it.
+
+#### Schema
+
+```yaml
+claw: "0.2.0"
+kind: Telemetry
+metadata:
+  name: "observability"
+  version: "1.0.0"
+spec:
+  # REQUIRED: At least one exporter destination.
+  exporters:
+    # OpenTelemetry-compatible backend (Datadog, Jaeger, Grafana, etc.)
+    - type: "otlp"                   # "otlp" | "file" | "sqlite" | "webhook" | "console"
+      endpoint: "https://otel-collector.internal:4318/v1/traces"
+      auth:
+        secret_ref: "OTEL_API_KEY"
+      batch:
+        max_size: 1000               # Events per batch (default: implementation-defined)
+        flush_interval_ms: 5000      # Flush interval in ms (default: implementation-defined)
+
+    # Local file exporter for offline environments
+    - type: "file"
+      path: "/var/log/agent/telemetry.jsonl"
+
+  # OPTIONAL: Which event categories to emit (defaults shown).
+  events:
+    tool_calls: true                 # Tool invocations (name, duration_ms, status, error code)
+    memory_ops: false                # Memory store/query/compact operations
+    swarm_ops: false                 # Swarm delegate/discover/report operations
+    lifecycle: true                  # Lifecycle transitions (INIT → READY → STOPPED)
+    errors: true                     # All error responses
+
+  # OPTIONAL: Which metrics to collect (defaults shown).
+  metrics:
+    token_usage: true                # Input/output token counts per provider call
+    cost_usd: false                  # Estimated cost per operation in USD
+    latency_histogram: true          # Latency histograms for tool calls and provider requests
+
+  # OPTIONAL: Sampling configuration.
+  sampling:
+    rate: 1.0                        # 0.0 = off, 1.0 = all events (default: 1.0)
+
+  # OPTIONAL: Data redaction settings.
+  redaction:
+    strip_arguments: false           # If true, tool call arguments are redacted from events
+    strip_results: false             # If true, tool call results are redacted from events
+```
+
+#### Exporter Types
+
+| Type | Backend | Required Fields | Use Case |
+|------|---------|----------------|----------|
+| `otlp` | OpenTelemetry Collector | `endpoint` | Production — Datadog, Jaeger, Grafana Tempo |
+| `file` | JSONL log file | `path` | Offline environments, local debugging |
+| `sqlite` | SQLite database | `path` | Embedded devices, queryable local storage |
+| `webhook` | HTTP POST endpoint | `endpoint` | Custom integrations, alerting systems |
+| `console` | stdout/stderr | — | Development, CI pipelines |
+
+#### Event Categories
+
+| Category | Description | Default | Emitted When |
+|----------|-------------|---------|-------------|
+| `tool_calls` | Tool invocation details | `true` | Every `claw.tool.call` (name, duration, status, error code) |
+| `memory_ops` | Memory operation details | `false` | Every `claw.memory.store`, `query`, `compact` |
+| `swarm_ops` | Swarm coordination details | `false` | Every `claw.swarm.delegate`, `discover`, `report` |
+| `lifecycle` | State machine transitions | `true` | Every lifecycle state change (INIT → READY, etc.) |
+| `errors` | Error response details | `true` | Every JSON-RPC error response |
+
+#### Validation Rules
+
+- The `exporters` array MUST contain at least one entry.
+- For exporter `type: "otlp"` or `type: "webhook"`, the `endpoint` field is REQUIRED. If omitted, the runtime MUST reject the manifest.
+- For exporter `type: "file"` or `type: "sqlite"`, the `path` field is REQUIRED. If omitted, the runtime MUST reject the manifest.
+- The `sampling.rate` field MUST be a number in the range `0.0` to `1.0` inclusive. Values outside this range MUST be rejected.
+- The runtime MUST NEVER emit raw prompts, Chain-of-Thought (CoT) content, or provider response bodies in telemetry events, regardless of `redaction` settings. This is a security invariant.
+- When `redaction.strip_arguments` is `true`, tool call arguments MUST be replaced with a placeholder (e.g., `"[REDACTED]"`) in emitted events.
+
+> **Design rationale:** The Telemetry primitive satisfies Design Principle P7 (Auditable) by providing declarative, structured observability without requiring code changes in the agent. It supports five exporter types covering production (OTLP), offline (file/sqlite), integration (webhook), and development (console) scenarios. Telemetry is intentionally OPTIONAL at all conformance levels — observability should enhance, never gate, agent deployment. No JSON-RPC methods are defined for Telemetry because it is emit-only: the agent produces events unidirectionally to configured exporters.
+
+---
+
 ## 6. Claw Manifest
 
 The **Claw Manifest** (`claw.yaml`) is the root document that composes all primitives into a complete agent definition.
@@ -1100,6 +1187,8 @@ spec:
     - "./policies/spending.yaml"
 
   swarm: "./swarm.yaml"           # Optional — only for multi-agent configurations
+
+  telemetry: "./telemetry.yaml"  # Optional — observability (valid at all levels)
 ```
 
 ### Minimal Valid Manifest
@@ -1153,6 +1242,7 @@ Primitives MAY be declared inline within the manifest using the `inline:` key in
 | Sandbox | `level` |
 | Policy | `rules` (at least one entry) |
 | Swarm | `topology`, `agents`, `coordination`, `aggregation` |
+| Telemetry | `exporters` (at least one entry) |
 
 > **Normative:** `metadata.name` SHOULD be provided in inline primitives. If omitted, the runtime MAY generate a name. `metadata.version` defaults to the parent Claw manifest `metadata.version` when omitted.
 

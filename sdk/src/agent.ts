@@ -7,7 +7,7 @@
 
 import { createStdioTransport, type Transport } from "./transport.js";
 import { sendOk, sendError, parseError, invalidRequest, methodNotFound, invalidParams, versionMismatch } from "./errors.js";
-import { type AgentOptions, type LifecycleState, type ConformanceLevel, CKP_ERROR_CODES } from "./types.js";
+import { type AgentOptions, type LifecycleState, type ConformanceLevel, type TelemetryHandler, CKP_ERROR_CODES } from "./types.js";
 import { ToolExecutor } from "./tools.js";
 import { MemoryExecutor } from "./memory.js";
 import { SwarmExecutor } from "./swarm.js";
@@ -43,6 +43,7 @@ export class Agent {
   private toolExecutor: ToolExecutor | null = null;
   private memoryExecutor: MemoryExecutor | null = null;
   private swarmExecutor: SwarmExecutor | null = null;
+  private telemetry: TelemetryHandler | null = null;
 
   constructor(options: AgentOptions) {
     this.options = options;
@@ -77,6 +78,27 @@ export class Agent {
       this.methodHandlers.set("claw.swarm.discover", (id, params) => this.swarmExecutor!.handleDiscover(id, params));
       this.methodHandlers.set("claw.swarm.report", (id, params) => this.swarmExecutor!.handleReport(id, params));
       this.methodHandlers.set("claw.swarm.broadcast", (_id, params) => this.swarmExecutor!.handleBroadcast(params));
+    }
+
+    // Telemetry — optional at all levels, emit-only (no JSON-RPC methods)
+    if (options.telemetry) {
+      this.telemetry = options.telemetry;
+    }
+  }
+
+  // ── Telemetry ─────────────────────────────────────────────────────────
+
+  /** Fire-and-forget telemetry emit. Never throws, never blocks. */
+  private emitTelemetry(event_type: "tool_call" | "memory_op" | "swarm_op" | "lifecycle" | "error", details: Record<string, unknown>): void {
+    if (!this.telemetry) return;
+    try {
+      this.telemetry.emit({
+        timestamp: new Date().toISOString(),
+        event_type,
+        details,
+      });
+    } catch {
+      // Telemetry MUST NOT affect core agent functionality — swallow errors silently
     }
   }
 
@@ -134,6 +156,7 @@ export class Agent {
       // Only send error for requests (with id), not notifications
       if (id !== null) {
         methodNotFound(this.transport, id, method);
+        this.emitTelemetry("error", { code: CKP_ERROR_CODES.METHOD_NOT_FOUND, method });
       }
       return;
     }
@@ -144,6 +167,7 @@ export class Agent {
       result.catch((err: unknown) => {
         if (id !== null) {
           sendError(this.transport, id, -32603, `Internal error: ${err instanceof Error ? err.message : String(err)}`);
+          this.emitTelemetry("error", { code: -32603, method, error: err instanceof Error ? err.message : String(err) });
         }
       });
     }
@@ -169,6 +193,7 @@ export class Agent {
 
     this.state = "STARTING";
     this.initTime = Date.now();
+    this.emitTelemetry("lifecycle", { transition: "INIT → STARTING" });
 
     // Determine conformance level based on configured handlers
     let conformanceLevel: ConformanceLevel = "level-1";
@@ -176,6 +201,7 @@ export class Agent {
     if (this.memoryExecutor && this.swarmExecutor) conformanceLevel = "level-3";
 
     this.state = "READY";
+    this.emitTelemetry("lifecycle", { transition: "STARTING → READY", conformanceLevel });
 
     // Start heartbeat (with minimum bound to prevent CPU saturation)
     const rawInterval = this.options.heartbeatInterval ?? 30000;
@@ -215,6 +241,7 @@ export class Agent {
 
   private handleShutdown(id: string | number | null): void {
     this.state = "STOPPING";
+    this.emitTelemetry("lifecycle", { transition: "READY → STOPPING" });
 
     if (this.heartbeatTimer) {
       clearInterval(this.heartbeatTimer);
@@ -222,6 +249,7 @@ export class Agent {
     }
 
     this.state = "STOPPED";
+    this.emitTelemetry("lifecycle", { transition: "STOPPING → STOPPED", uptime_ms: this.initTime ? Date.now() - this.initTime : 0 });
 
     sendOk(this.transport, id, { drained: true });
     // Do NOT exit process — per CKP spec, shutdown is graceful

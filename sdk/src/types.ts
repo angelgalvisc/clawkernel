@@ -125,6 +125,26 @@ export interface SwarmHandler {
   broadcast: (swarmName: string, message: Record<string, unknown>) => void;
 }
 
+// ── Telemetry Types (optional at all levels) ──────────────────────────────
+
+export type TelemetryEventType = "tool_call" | "memory_op" | "swarm_op" | "lifecycle" | "error";
+
+export interface TelemetryEvent {
+  /** ISO 8601 UTC timestamp. */
+  timestamp: string;
+  /** Event category. */
+  event_type: TelemetryEventType;
+  /** Trace correlation ID. */
+  request_id?: string;
+  /** Event-specific details (tool name, duration_ms, status, error code, etc.). */
+  details: Record<string, unknown>;
+}
+
+export interface TelemetryHandler {
+  /** Emit a telemetry event to configured exporters. */
+  emit: (event: TelemetryEvent) => void;
+}
+
 // ── Agent Options ──────────────────────────────────────────────────────────
 
 export interface AgentOptions {
@@ -141,4 +161,6 @@ export interface AgentOptions {
   // L3
   memory?: MemoryHandler;
   swarm?: SwarmHandler;
+  // Optional at all levels
+  telemetry?: TelemetryHandler;
 }

@@ -21,7 +21,7 @@
 
 ## What is CKP?
 
-The Claw Kernel Protocol defines nine primitives for describing, composing, and interoperating autonomous AI agents. It provides a declarative manifest format (`claw.yaml`) with ABNF grammar, a JSON-RPC 2.0 wire format, and a `claw://` URI scheme for addressing agent components.
+The Claw Kernel Protocol defines ten primitives for describing, composing, and interoperating autonomous AI agents. It provides a declarative manifest format (`claw.yaml`) with ABNF grammar, a JSON-RPC 2.0 wire format, and a `claw://` URI scheme for addressing agent components.
 
 CKP is complementary to MCP (Model Context Protocol). Where MCP standardizes how LLM hosts discover and invoke tools, CKP standardizes how autonomous agents are assembled, secured, and orchestrated as first-class runtime entities.
 
@@ -60,7 +60,7 @@ CKP exists to fix this. One manifest format. One wire protocol. Portable across 
 | 7 | **Sandbox** | Isolated execution environment with resource limits |
 | 8 | **Policy** | Behavioral rules governing what an agent can and cannot do |
 | 9 | **Swarm** | Multi-agent coordination across topologies |
-| — | **Telemetry** | Structured observability — latency, cost, traces (optional at all levels) |
+| 10 | **Telemetry** | Structured observability — latency, cost, traces (optional at all levels) |
 
 ---
 
@@ -70,7 +70,7 @@ CKP exists to fix this. One manifest format. One wire protocol. Portable across 
 |-------|------|---------------------|--------|
 | **L1** | Core | Identity, Provider | Embedded devices, simple chatbots |
 | **L2** | Standard | + Channel, Tool, Sandbox, Policy | Personal assistants, team bots |
-| **L3** | Full | All nine primitives | Enterprise swarms, multi-agent systems |
+| **L3** | Full | All nine core primitives (+Telemetry optional) | Enterprise swarms, multi-agent systems |
 
 ---
 
@@ -82,7 +82,7 @@ CKP exists to fix this. One manifest format. One wire protocol. Portable across 
 
 3. **[Test Vectors](spec/clawkernel-test-vectors.md)** — Informative. 31 conformance test vectors organized by level (L1 / L2 / L3).
 
-4. **[JSON Schema + TypeScript](schema/0.2.0/)** — Canonical type definitions for all 9 primitives, the manifest, and JSON-RPC methods.
+4. **[JSON Schema + TypeScript](schema/0.2.0/)** — Canonical type definitions for all 10 primitives, the manifest, and JSON-RPC methods.
 
 ---
 
@@ -107,13 +107,13 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 | Item | Status |
 |------|--------|
 | Specification | `v0.2.0` |
-| Primitives defined | 9 core + 1 optional (Telemetry) |
+| Primitives defined | 10 (9 core + Telemetry, optional at all levels) |
 | JSON-RPC methods | 15 specified |
 | ABNF grammar | Complete |
 | Test vectors | 31 (13 L1 + 10 L2 + 8 L3) |
 | Error codes | 11 core |
 | Coherence gate | 10 rules, PASS |
-| JSON Schema | 12 schemas (9 core + Telemetry + manifest + definitions) |
+| JSON Schema | 12 schemas (10 primitives + manifest + definitions) |
 | TypeScript types | `schema.ts` — canonical source of truth |
 | Reference implementation | [`reference/ckp-bridge/`](reference/ckp-bridge/) — L1 CONFORMANT |
 | SDK | [`sdk/`](sdk/) — `@clawkernel/sdk` — L1+L2+L3 (0 runtime deps) |
