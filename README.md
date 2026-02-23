@@ -16,6 +16,13 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![Coherence Gate](https://img.shields.io/badge/coherence-PASS-brightgreen)](reports/coherence-report.md)
 [![Spec tokens](https://img.shields.io/badge/spec_suite-~30k_tokens-orange)](spec/)
+[![npm](https://img.shields.io/npm/v/@clawkernel/sdk)](https://www.npmjs.com/package/@clawkernel/sdk)
+
+> **TL;DR** — CKP is to agent orchestration what MCP is to tool discovery. One YAML manifest describes your agent's identity, providers, tools, security, memory, and multi-agent coordination. One SDK implements the wire protocol. One test harness proves conformance.
+>
+> ```bash
+> npm install @clawkernel/sdk
+> ```
 
 ---
 
@@ -193,7 +200,7 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 
 ---
 
-## Getting Started
+## Quickstart
 
 ### Validate a manifest
 
