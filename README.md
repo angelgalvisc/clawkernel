@@ -9,6 +9,7 @@ $ claw --kernel█
 [![Version](https://img.shields.io/badge/spec-v0.2.0--draft-blue)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![Coherence Gate](https://img.shields.io/badge/coherence-PASS-brightgreen)]()
+[![Spec tokens](https://img.shields.io/badge/spec_suite-~30k_tokens-orange)](spec/)
 
 ---
 
