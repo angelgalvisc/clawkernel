@@ -19,7 +19,7 @@
   "author": "Angel Galvis Caballero <angel@datastrat.co>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/angelgalvisc/clawkernel.git",
+    "url": "git+https://github.com/angelgalvisc/clawkernel.git",
     "directory": "sdk"
   },
   "keywords": [
@@ -37,7 +37,9 @@
     "typescript": "^5.7.0"
   },
   "files": [
-    "dist",
+    "dist/*.js",
+    "dist/*.d.ts",
+    "dist/*.js.map",
     "README.md"
   ],
   "license": "Apache-2.0"

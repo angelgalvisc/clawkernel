@@ -143,12 +143,17 @@ export class Agent {
     }
     const params = (msg.params as Record<string, unknown>) ?? {};
 
-    // State auto-promotion: if a READY-only method arrives before initialization,
-    // auto-promote to READY state. The test harness may send methods without
-    // explicit claw.initialize (e.g., --level 3 runs only L3 vectors).
-    if (READY_ONLY_METHODS.has(method) && this.state === "INIT") {
-      this.state = "READY";
-      this.initTime = Date.now();
+    // Strict lifecycle enforcement: claw.initialize MUST be first.
+    if (this.state === "INIT" && method !== "claw.initialize") {
+      if (id !== null) {
+        invalidRequest(this.transport, id);
+        this.emitTelemetry("error", {
+          code: CKP_ERROR_CODES.INVALID_REQUEST,
+          method,
+          reason: "claw.initialize required first",
+        });
+      }
+      return;
     }
 
     const handler = this.methodHandlers.get(method);
