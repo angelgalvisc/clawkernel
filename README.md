@@ -125,9 +125,11 @@ PicoClaw targets $10 hardware. ZeroClaw embeds everything in SQLite. Each solves
 
 2. **[Runtime Profile](spec/clawkernel-runtime-profile.md)** — Informative. Recommended practices for implementers: defaults, retry semantics, transport extensions, secret resolution.
 
-3. **[Test Vectors](spec/clawkernel-test-vectors.md)** — Informative. 31 conformance test vectors organized by level (L1 / L2 / L3).
+3. **[CKP-A2A Compatibility Profile](spec/compatibility/ckp-a2a-profile.md)** — Interoperability profile. Field-level mapping for discovery (`Identity`/`Skill` -> `AgentCard`/`AgentSkill`) and task lifecycle bridging (`claw.task.*`), additive to CKP and non-regressive for MCP compatibility.
 
-4. **[JSON Schema + TypeScript](schema/0.2.0/)** — Canonical type definitions for all 10 primitives, the manifest, and JSON-RPC methods.
+4. **[Test Vectors](spec/clawkernel-test-vectors.md)** — Informative. 31 conformance test vectors organized by level (L1 / L2 / L3).
+
+5. **[JSON Schema + TypeScript](schema/0.2.0/)** — Canonical type definitions for all 10 primitives, the manifest, and JSON-RPC methods.
 
 ---
 
@@ -163,7 +165,7 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 | Reference implementation | [`reference/ckp-bridge/`](reference/ckp-bridge/) — L1 CONFORMANT |
 | SDK | [`sdk/`](sdk/) — `@clawkernel/sdk` — L1+L2+L3 (0 runtime deps) |
 | Conformance harness | [`ckp-test`](https://github.com/angelgalvisc/ckp-test) — AJV + 31 vectors |
-| Compatibility profiles | [`profiles/`](profiles/) — NanoClaw (L1 PARTIAL) |
+| Compatibility profiles | [`profiles/`](profiles/) + [`spec/compatibility/`](spec/compatibility/) — NanoClaw assessment + CKP-A2A interoperability profile |
 
 ---
 
@@ -250,6 +252,8 @@ See [`sdk/examples/`](sdk/examples/) for L1, L2, and L3 example agents with thei
 | [NanoClaw](https://github.com/qwibitai/nanoclaw) | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
 
 See [`profiles/`](profiles/) for detailed compatibility assessments.
+
+For protocol interoperability planning, see [`spec/compatibility/ckp-a2a-profile.md`](spec/compatibility/ckp-a2a-profile.md).
 
 ---
 
