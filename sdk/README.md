@@ -224,6 +224,22 @@ import { sendOk, sendError, policyDenied, ToolTimeoutError } from "@clawkernel/s
 
 Exported constant object with all error code values.
 
+## A2A Adapter (Experimental)
+
+The SDK now includes an optional CKP-A2A adapter layer for boundary mapping (discovery, task states, and payload conversion) without changing CKP primitive names.
+
+```typescript
+import { projectAgentCard, mapA2AMessageToCkpTaskMessage } from "@clawkernel/sdk";
+
+const card = projectAgentCard({
+  name: "analytics-agent",
+  version: "1.0.0",
+  personality: "Helps with analytics workflows",
+});
+```
+
+This is additive and aligned with `spec/compatibility/ckp-a2a-profile.md`.
+
 ## Hardening
 
 The SDK validates all incoming JSON-RPC messages:

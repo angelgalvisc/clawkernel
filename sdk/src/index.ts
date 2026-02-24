@@ -36,6 +36,35 @@ export type {
 } from "./types.js";
 export { CKP_ERROR_CODES } from "./types.js";
 
+// ── A2A Adapter (experimental) ────────────────────────────────────────────
+export {
+  projectAgentCard,
+  projectSkillToA2A,
+  mapA2ATaskStateToCkp,
+  mapCkpTaskStateToA2A,
+  isSupportedA2ATaskState,
+  mapA2APartToCkpContent,
+  mapCkpContentToA2APart,
+  mapA2AMessageToCkpTaskMessage,
+  mapCkpTaskMessageToA2AMessage,
+} from "./a2a.js";
+export type {
+  CkpSkillProjection,
+  CkpAgentProjectionInput,
+  A2ASupportedInterface,
+  A2AAgentSkill,
+  A2AAgentCard,
+  A2ATaskState,
+  CkpTaskState,
+  A2ATextPart,
+  A2ADataPart,
+  A2AUrlPart,
+  A2ARawPart,
+  A2APart,
+  A2AMessage,
+  CkpTaskMessage,
+} from "./a2a.js";
+
 // ── Error Helpers (for custom handlers & advanced usage) ──────────────────
 export {
   sendOk,
