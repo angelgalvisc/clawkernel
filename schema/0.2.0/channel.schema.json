@@ -5,34 +5,64 @@
   "description": "Abstracts communication surfaces — how humans or systems reach the agent. Section 5.3.",
   "type": "object",
   "properties": {
-    "claw": { "$ref": "definitions.schema.json#/$defs/protocolVersion" },
-    "kind": { "const": "Channel" },
-    "metadata": { "$ref": "definitions.schema.json#/$defs/metadata" },
+    "claw": {
+      "$ref": "definitions.schema.json#/$defs/protocolVersion"
+    },
+    "kind": {
+      "const": "Channel"
+    },
+    "metadata": {
+      "$ref": "definitions.schema.json#/$defs/metadata"
+    },
     "spec": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
           "enum": [
-            "telegram", "discord", "whatsapp", "slack", "email",
-            "webhook", "cli", "voice", "web", "lark", "matrix",
-            "line", "wechat", "qq", "dingtalk",
-            "cron", "queue", "imap", "db-trigger",
+            "telegram",
+            "discord",
+            "whatsapp",
+            "slack",
+            "email",
+            "webhook",
+            "cli",
+            "voice",
+            "web",
+            "lark",
+            "matrix",
+            "line",
+            "wechat",
+            "qq",
+            "dingtalk",
+            "cron",
+            "queue",
+            "imap",
+            "db-trigger",
             "custom"
           ],
           "description": "REQUIRED. Channel type."
         },
         "transport": {
           "type": "string",
-          "enum": ["polling", "webhook", "websocket", "stdio"],
+          "enum": [
+            "polling",
+            "webhook",
+            "websocket",
+            "stdio"
+          ],
           "description": "REQUIRED. Transport mechanism for this channel."
         },
         "auth": {
           "type": "object",
           "properties": {
-            "secret_ref": { "$ref": "definitions.schema.json#/$defs/secretRef" }
+            "secret_ref": {
+              "$ref": "definitions.schema.json#/$defs/secretRef"
+            }
           },
-          "required": ["secret_ref"],
+          "required": [
+            "secret_ref"
+          ],
           "additionalProperties": false,
           "description": "REQUIRED. Authentication for the channel platform."
         },
@@ -41,20 +71,36 @@
           "properties": {
             "mode": {
               "type": "string",
-              "enum": ["open", "allowlist", "pairing", "role-based"]
+              "enum": [
+                "open",
+                "allowlist",
+                "pairing",
+                "role-based"
+              ]
             },
             "allowed_ids": {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string"
+              },
               "description": "REQUIRED for 'allowlist' mode."
             },
             "pairing": {
               "type": "object",
               "properties": {
-                "code_expiry_minutes": { "type": "integer", "minimum": 1 },
-                "max_pending": { "type": "integer", "minimum": 1 }
+                "code_expiry_minutes": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "max_pending": {
+                  "type": "integer",
+                  "minimum": 1
+                }
               },
-              "required": ["code_expiry_minutes", "max_pending"],
+              "required": [
+                "code_expiry_minutes",
+                "max_pending"
+              ],
               "additionalProperties": false,
               "description": "REQUIRED for 'pairing' mode."
             },
@@ -63,28 +109,75 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "id": { "type": "string" },
-                  "role": { "type": "string", "enum": ["admin", "user", "viewer"] }
+                  "id": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "admin",
+                      "user",
+                      "viewer"
+                    ]
+                  }
                 },
-                "required": ["id", "role"],
+                "required": [
+                  "id",
+                  "role"
+                ],
                 "additionalProperties": false
               },
               "description": "REQUIRED for 'role-based' mode."
             }
           },
-          "required": ["mode"],
+          "required": [
+            "mode"
+          ],
           "allOf": [
             {
-              "if": { "properties": { "mode": { "const": "allowlist" } } },
-              "then": { "required": ["mode", "allowed_ids"] }
+              "if": {
+                "properties": {
+                  "mode": {
+                    "const": "allowlist"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "mode",
+                  "allowed_ids"
+                ]
+              }
             },
             {
-              "if": { "properties": { "mode": { "const": "pairing" } } },
-              "then": { "required": ["mode", "pairing"] }
+              "if": {
+                "properties": {
+                  "mode": {
+                    "const": "pairing"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "mode",
+                  "pairing"
+                ]
+              }
             },
             {
-              "if": { "properties": { "mode": { "const": "role-based" } } },
-              "then": { "required": ["mode", "roles"] }
+              "if": {
+                "properties": {
+                  "mode": {
+                    "const": "role-based"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "mode",
+                  "roles"
+                ]
+              }
             }
           ],
           "additionalProperties": false
@@ -92,53 +185,124 @@
         "processing": {
           "type": "object",
           "properties": {
-            "max_message_length": { "type": "integer", "minimum": 1 },
+            "max_message_length": {
+              "type": "integer",
+              "minimum": 1
+            },
             "rate_limit": {
               "type": "object",
               "properties": {
-                "messages_per_minute": { "type": "integer", "minimum": 1 },
-                "burst": { "type": "integer", "minimum": 1 }
+                "messages_per_minute": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "burst": {
+                  "type": "integer",
+                  "minimum": 1
+                }
               },
               "additionalProperties": false
             },
-            "typing_indicator": { "type": "boolean" },
-            "read_receipts": { "type": "boolean" }
+            "typing_indicator": {
+              "type": "boolean"
+            },
+            "read_receipts": {
+              "type": "boolean"
+            }
           },
           "additionalProperties": false
         },
         "features": {
           "type": "object",
           "properties": {
-            "voice": { "type": "boolean" },
-            "files": { "type": "boolean" },
-            "reactions": { "type": "boolean" },
-            "threads": { "type": "boolean" },
-            "inline_images": { "type": "boolean" }
+            "voice": {
+              "type": "boolean"
+            },
+            "files": {
+              "type": "boolean"
+            },
+            "reactions": {
+              "type": "boolean"
+            },
+            "threads": {
+              "type": "boolean"
+            },
+            "inline_images": {
+              "type": "boolean"
+            }
           },
           "additionalProperties": false
         },
         "trigger": {
           "type": "object",
           "properties": {
-            "schedule": { "type": "string", "minLength": 1, "description": "Cron expression (e.g., '0 */6 * * *'). REQUIRED for type 'cron'." },
-            "queue_name": { "type": "string", "minLength": 1, "description": "Queue/topic name. REQUIRED for type 'queue'." },
-            "mailbox": { "type": "string", "minLength": 1, "description": "IMAP mailbox name (e.g., 'INBOX'). REQUIRED for type 'imap'." },
-            "table": { "type": "string", "minLength": 1, "description": "Database table to watch. REQUIRED for type 'db-trigger'." },
+            "schedule": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Cron expression (e.g., '0 */6 * * *'). REQUIRED for type 'cron'."
+            },
+            "queue_name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Queue/topic name. REQUIRED for type 'queue'."
+            },
+            "mailbox": {
+              "type": "string",
+              "minLength": 1,
+              "description": "IMAP mailbox name (e.g., 'INBOX'). REQUIRED for type 'imap'."
+            },
+            "table": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Database table to watch. REQUIRED for type 'db-trigger'."
+            },
             "events": {
               "type": "array",
-              "items": { "type": "string", "enum": ["INSERT", "UPDATE", "DELETE"] },
+              "items": {
+                "type": "string",
+                "enum": [
+                  "INSERT",
+                  "UPDATE",
+                  "DELETE"
+                ]
+              },
               "minItems": 1,
               "description": "Database events to react to. Applicable for type 'db-trigger'."
+            },
+            "max_parallel": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "description": "Optional per-channel trigger concurrency limit. Default: 1."
+            },
+            "overlap_policy": {
+              "type": "string",
+              "enum": [
+                "skip",
+                "queue",
+                "allow"
+              ],
+              "default": "skip",
+              "description": "Optional behavior when new events arrive while at max_parallel."
             }
           },
           "additionalProperties": false,
-          "description": "Trigger configuration for event-driven channel types (cron, queue, imap, db-trigger)."
+          "description": "Trigger configuration for event-driven channel types (cron, queue, imap, db-trigger), including optional concurrency controls."
         }
       },
-      "required": ["type", "transport", "auth"],
+      "required": [
+        "type",
+        "transport",
+        "auth"
+      ],
       "additionalProperties": false
     }
   },
-  "required": ["claw", "kind", "metadata", "spec"],
+  "required": [
+    "claw",
+    "kind",
+    "metadata",
+    "spec"
+  ],
   "additionalProperties": false
 }

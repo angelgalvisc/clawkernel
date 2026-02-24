@@ -386,7 +386,8 @@ spec:
   type: "slack"                   # "telegram" | "discord" | "whatsapp" | "slack"
                                   # | "email" | "webhook" | "cli" | "voice" | "web"
                                   # | "lark" | "matrix" | "line" | "wechat" | "qq"
-                                  # | "dingtalk" | "custom"
+                                  # | "dingtalk" | "cron" | "queue" | "imap"
+                                  # | "db-trigger" | "custom"
 
   # REQUIRED: Transport mechanism for this channel.
   transport: "websocket"          # "polling" | "webhook" | "websocket" | "stdio"
@@ -433,6 +434,17 @@ spec:
     reactions: true
     threads: true
     inline_images: true
+
+  # OPTIONAL: Trigger settings for event-driven channels.
+  # Applies to type: "cron" | "queue" | "imap" | "db-trigger"
+  trigger:
+    schedule: "0 */6 * * *"       # REQUIRED for type "cron"
+    queue_name: "agent.events"    # REQUIRED for type "queue"
+    mailbox: "INBOX"              # REQUIRED for type "imap"
+    table: "orders"               # REQUIRED for type "db-trigger"
+    events: ["INSERT", "UPDATE"] # OPTIONAL for type "db-trigger"
+    max_parallel: 2               # OPTIONAL; default 1
+    overlap_policy: "queue"       # OPTIONAL; "skip" | "queue" | "allow" (default "skip")
 ```
 
 #### Access Control Modes
@@ -454,7 +466,23 @@ spec:
 | `user` | Standard access: interact with agent, invoke skills, trigger tools (subject to Policy) |
 | `viewer` | Read-only: can see agent responses but cannot trigger tools or skills |
 
-> **Design rationale:** The Channel primitive covers 16 platform types and three access control modes, unifying the diverse messaging adapter patterns across the Claw ecosystem.
+#### Event-Driven Trigger Semantics
+
+The `trigger` block defines how event-driven channels schedule or enqueue work.
+
+| Field | Required | Description |
+|------|----------|-------------|
+| `schedule` | REQUIRED for `type: cron` | Cron expression for periodic execution. |
+| `queue_name` | REQUIRED for `type: queue` | Queue/topic name to consume from. |
+| `mailbox` | REQUIRED for `type: imap` | Mailbox name to watch. |
+| `table` | REQUIRED for `type: db-trigger` | Database table to watch. |
+| `events` | OPTIONAL for `type: db-trigger` | Event filters: `INSERT`, `UPDATE`, `DELETE`. |
+| `max_parallel` | OPTIONAL | Max concurrent runs for this channel trigger. Default `1`. |
+| `overlap_policy` | OPTIONAL | Behavior when new events arrive and concurrency is saturated: `skip`, `queue`, or `allow`. Default `skip`. |
+
+> **Normative:** For Channel types `cron`, `queue`, `imap`, and `db-trigger`, runtimes SHOULD provide a `trigger` block. If `trigger.max_parallel` is omitted, runtimes MUST default it to `1`. If `trigger.overlap_policy` is omitted, runtimes MUST default it to `skip`. Runtimes MUST NOT exceed `max_parallel` concurrent trigger executions for a single Channel.
+
+> **Design rationale:** The Channel primitive covers synchronous messaging channels and event-driven channels under one model, so scheduled and reactive execution does not require a separate primitive.
 
 ---
 

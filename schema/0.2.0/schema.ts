@@ -204,6 +204,10 @@ export interface ChannelTrigger {
   table?: string;
   /** Database events to react to. Applicable for type 'db-trigger'. */
   events?: ("INSERT" | "UPDATE" | "DELETE")[];
+  /** Optional per-channel trigger concurrency limit. Default: 1. */
+  max_parallel?: number;
+  /** Optional overlap policy when saturated. Default: 'skip'. */
+  overlap_policy?: "skip" | "queue" | "allow";
 }
 
 export interface ChannelSpec {
