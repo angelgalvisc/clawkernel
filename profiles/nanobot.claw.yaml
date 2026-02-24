@@ -1,0 +1,127 @@
+# NanoBot CKP Manifest — Compatibility Profile
+# This describes NanoBot architecture in CKP terms.
+# It is NOT a native runtime manifest consumed by NanoBot.
+
+claw: "0.2.0"
+kind: Claw
+metadata:
+  name: "nanobot"
+  version: "1.0.0"
+  description: "Multi-channel Python agent with MCP tool ingestion"
+  labels:
+    origin: "HKUDS/nanobot"
+    profile-type: "compatibility-assessment"
+spec:
+  identity:
+    inline:
+      personality: |
+        Multi-channel assistant with MCP tool federation.
+        Supports cron scheduling, heartbeat wakeups, and background subagents.
+      context_files:
+        memory: "~/.nanobot/workspace/HEARTBEAT.md"
+      autonomy: "supervised"
+
+  providers:
+    - inline:
+        protocol: "openai-compatible"
+        endpoint: "http://localhost:11434/v1"
+        model: "qwen2.5"
+        auth:
+          type: "none"
+        streaming: true
+
+  channels:
+    - inline:
+        type: "cli"
+        transport: "stdio"
+        auth:
+          secret_ref: "NANOBOT_LOCAL_TOKEN"
+        access_control:
+          mode: "allowlist"
+          allowed_ids: ["local-owner"]
+
+  tools:
+    - inline:
+        name: "spawn"
+        description: "Spawn background subagent tasks"
+        input_schema:
+          type: "object"
+          properties:
+            task:
+              type: "string"
+          required: ["task"]
+    - inline:
+        name: "cron"
+        description: "Schedule reminders and recurring tasks"
+        input_schema:
+          type: "object"
+          properties:
+            action:
+              type: "string"
+          required: ["action"]
+    - inline:
+        name: "mcp-tool"
+        description: "Proxy discovered MCP tools"
+        mcp_source:
+          uri: "stdio:///mcp/bridge"
+
+  skills:
+    - inline:
+        name: "task-automation"
+        description: "Recurring and autonomous task execution workflow"
+        tools_required: ["cron", "spawn"]
+        instruction: "Use cron for scheduling and spawn for long-running asynchronous work."
+
+  memory:
+    inline:
+      stores:
+        - name: "conversation"
+          type: "conversation"
+          backend: "sqlite"
+          retention:
+            max_entries: 50000
+        - name: "semantic"
+          type: "semantic"
+          backend: "sqlite-vec"
+          embedding:
+            provider_ref: "default-embedding"
+            dimensions: 1024
+
+  sandbox:
+    inline:
+      level: "process"
+      capabilities:
+        network:
+          mode: "allow-all"
+        filesystem:
+          mode: "scoped"
+          mount_paths:
+            - path: "~/.nanobot/workspace"
+              permissions: "rw"
+      resource_limits:
+        timeout_ms: 300000
+
+  policies:
+    - inline:
+        name: "default-bot-policy"
+        rules:
+          - id: "allow-core"
+            action: "allow"
+            scope: "all"
+
+  swarm:
+    inline:
+      topology: "peer-to-peer"
+      agents:
+        - identity_ref: "nanobot"
+          role: "peer"
+          count: 1
+      coordination:
+        message_passing: "direct"
+        backend: "in-process"
+        concurrency:
+          max_parallel: 4
+          sequential_within_agent: false
+      aggregation:
+        strategy: "merge"
+        timeout_ms: 300000

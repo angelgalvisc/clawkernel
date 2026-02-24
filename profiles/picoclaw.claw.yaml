@@ -1,0 +1,131 @@
+# PicoClaw CKP Manifest — Compatibility Profile
+# This describes PicoClaw architecture in CKP terms.
+# It is NOT a native runtime manifest consumed by PicoClaw.
+
+claw: "0.2.0"
+kind: Claw
+metadata:
+  name: "picoclaw"
+  version: "1.0.0"
+  description: "Ultra-lightweight local AI agent by Sipeed"
+  labels:
+    origin: "sipeed/picoclaw"
+    profile-type: "compatibility-assessment"
+spec:
+  identity:
+    inline:
+      personality: |
+        Lightweight local-first assistant with gateway-based channels.
+        Supports background subagents, heartbeat tasks, and cron scheduling.
+      context_files:
+        memory: "memory/MEMORY.md"
+      autonomy: "supervised"
+
+  providers:
+    - inline:
+        protocol: "openai-compatible"
+        endpoint: "http://localhost:11434/v1"
+        model: "qwen2.5"
+        auth:
+          type: "none"
+        streaming: true
+
+  channels:
+    - inline:
+        type: "cli"
+        transport: "stdio"
+        auth:
+          secret_ref: "PICOCLAW_LOCAL_TOKEN"
+        access_control:
+          mode: "allowlist"
+          allowed_ids: ["local-owner"]
+
+  tools:
+    - inline:
+        name: "shell"
+        description: "Execute local shell commands in workspace scope"
+        input_schema:
+          type: "object"
+          properties:
+            command:
+              type: "string"
+          required: ["command"]
+        timeout_ms: 120000
+        sandbox_ref: "local-process"
+    - inline:
+        name: "spawn"
+        description: "Spawn async subagent for long-running work"
+        input_schema:
+          type: "object"
+          properties:
+            task:
+              type: "string"
+          required: ["task"]
+    - inline:
+        name: "cron"
+        description: "Schedule reminders and periodic jobs"
+        input_schema:
+          type: "object"
+          properties:
+            action:
+              type: "string"
+          required: ["action"]
+
+  skills:
+    - inline:
+        name: "system-ops"
+        description: "Operational workflow for local automation"
+        tools_required: ["shell", "cron"]
+        instruction: "Use cron for recurring tasks and shell for deterministic local ops."
+
+  memory:
+    inline:
+      stores:
+        - name: "conversation"
+          type: "conversation"
+          backend: "sqlite"
+          retention:
+            max_entries: 50000
+        - name: "workspace-memory"
+          type: "workspace"
+          path: "workspace/"
+          isolation: "shared"
+
+  sandbox:
+    inline:
+      level: "process"
+      capabilities:
+        network:
+          mode: "allow-all"
+        filesystem:
+          mode: "scoped"
+          mount_paths:
+            - path: "workspace"
+              permissions: "rw"
+      resource_limits:
+        timeout_ms: 300000
+
+  policies:
+    - inline:
+        name: "default-local-policy"
+        rules:
+          - id: "allow-core"
+            action: "allow"
+            scope: "all"
+
+  swarm:
+    inline:
+      topology: "leader-worker"
+      agents:
+        - identity_ref: "picoclaw"
+          role: "leader"
+          count: 1
+      coordination:
+        message_passing: "direct"
+        backend: "in-process"
+        concurrency:
+          max_parallel: 4
+          sequential_within_agent: true
+      aggregation:
+        strategy: "leader-decides"
+        timeout_ms: 300000

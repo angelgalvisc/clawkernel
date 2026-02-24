@@ -249,7 +249,9 @@ See [`sdk/examples/`](sdk/examples/) for L1, L2, and L3 example agents with thei
 |-------|-------|------|------|------|--------|
 | [@clawkernel/sdk](sdk/) | L3 | 30 | 1 | 0 | **L3 PARTIAL** |
 | [ckp-bridge](reference/ckp-bridge/) | L1 | 13 | 0 | 0 | **L1 CONFORMANT** |
-| [NanoClaw](https://github.com/qwibitai/nanoclaw) | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
+| [NanoClaw (manifest profile)](profiles/nanoclaw.md) | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
+| [PicoClaw (manifest profile)](profiles/picoclaw.md) | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
+| [NanoBot (manifest profile)](profiles/nanobot.md) | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
 
 See [`profiles/`](profiles/) for detailed compatibility assessments.
 
