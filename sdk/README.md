@@ -176,6 +176,7 @@ Factory function. Returns a configured `Agent` instance.
 | `approval` | `ApprovalConfig` | No | L2 | Approval gate |
 | `memory` | `MemoryHandler` | No | L3 | Memory handler |
 | `swarm` | `SwarmHandler` | No | L3 | Swarm handler |
+| `tasks` | `TaskHandler` | No | Interop | A2A task bridge (`claw.task.*`) |
 
 ### `ToolDefinition`
 
@@ -239,6 +240,8 @@ const card = projectAgentCard({
 ```
 
 This is additive and aligned with `spec/compatibility/ckp-a2a-profile.md`.
+
+
 
 ## Hardening
 

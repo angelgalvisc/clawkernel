@@ -11,6 +11,7 @@ import { type AgentOptions, type LifecycleState, type ConformanceLevel, type Tel
 import { ToolExecutor } from "./tools.js";
 import { MemoryExecutor } from "./memory.js";
 import { SwarmExecutor } from "./swarm.js";
+import { TaskExecutor } from "./task.js";
 
 const PROTOCOL_VERSION = "0.2.0";
 const MIN_HEARTBEAT_MS = 1000;
@@ -29,6 +30,11 @@ const READY_ONLY_METHODS = new Set([
   "claw.swarm.broadcast",
   "claw.status",
   "claw.shutdown",
+  "claw.task.create",
+  "claw.task.get",
+  "claw.task.list",
+  "claw.task.cancel",
+  "claw.task.subscribe",
 ]);
 
 export type MethodHandler = (id: string | number | null, params: Record<string, unknown>) => void | Promise<void>;
@@ -43,6 +49,7 @@ export class Agent {
   private toolExecutor: ToolExecutor | null = null;
   private memoryExecutor: MemoryExecutor | null = null;
   private swarmExecutor: SwarmExecutor | null = null;
+  private taskExecutor: TaskExecutor | null = null;
   private telemetry: TelemetryHandler | null = null;
 
   constructor(options: AgentOptions) {
@@ -80,6 +87,16 @@ export class Agent {
       this.methodHandlers.set("claw.swarm.broadcast", (_id, params) => this.swarmExecutor!.handleBroadcast(params));
     }
 
+    // Register A2A task handlers if configured
+    if (options.tasks) {
+      this.taskExecutor = new TaskExecutor(this.transport, options.tasks);
+      this.methodHandlers.set("claw.task.create", (id, params) => this.taskExecutor!.handleCreate(id, params));
+      this.methodHandlers.set("claw.task.get", (id, params) => this.taskExecutor!.handleGet(id, params));
+      this.methodHandlers.set("claw.task.list", (id, params) => this.taskExecutor!.handleList(id, params));
+      this.methodHandlers.set("claw.task.cancel", (id, params) => this.taskExecutor!.handleCancel(id, params));
+      this.methodHandlers.set("claw.task.subscribe", (id, params) => this.taskExecutor!.handleSubscribe(id, params));
+    }
+
     // Telemetry — optional at all levels, emit-only (no JSON-RPC methods)
     if (options.telemetry) {
       this.telemetry = options.telemetry;
@@ -89,7 +106,7 @@ export class Agent {
   // ── Telemetry ─────────────────────────────────────────────────────────
 
   /** Fire-and-forget telemetry emit. Never throws, never blocks. */
-  private emitTelemetry(event_type: "tool_call" | "memory_op" | "swarm_op" | "lifecycle" | "error", details: Record<string, unknown>): void {
+  private emitTelemetry(event_type: "tool_call" | "memory_op" | "swarm_op" | "task_op" | "lifecycle" | "error", details: Record<string, unknown>): void {
     if (!this.telemetry) return;
     try {
       this.telemetry.emit({
@@ -151,6 +168,20 @@ export class Agent {
           code: CKP_ERROR_CODES.INVALID_REQUEST,
           method,
           reason: "claw.initialize required first",
+        });
+      }
+      return;
+    }
+
+    // Ready-only methods must not execute outside READY state.
+    if (this.state !== "READY" && READY_ONLY_METHODS.has(method)) {
+      if (id !== null) {
+        invalidRequest(this.transport, id);
+        this.emitTelemetry("error", {
+          code: CKP_ERROR_CODES.INVALID_REQUEST,
+          method,
+          reason: "method requires READY state",
+          state: this.state,
         });
       }
       return;

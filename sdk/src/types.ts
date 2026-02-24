@@ -125,9 +125,71 @@ export interface SwarmHandler {
   broadcast: (swarmName: string, message: Record<string, unknown>) => void;
 }
 
+// ── A2A Interop: Task Types (experimental) ────────────────────────────────
+
+export type TaskState =
+  | "submitted"
+  | "working"
+  | "input_required"
+  | "auth_required"
+  | "completed"
+  | "failed"
+  | "canceled"
+  | "rejected";
+
+export interface TaskMessage {
+  role: string;
+  content: ContentBlock[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface TaskArtifact {
+  id?: string;
+  name?: string;
+  mime_type?: string;
+  data?: unknown;
+  uri?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface TaskRecord {
+  task_id: string;
+  state: TaskState;
+  messages?: TaskMessage[];
+  artifacts?: TaskArtifact[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface TaskCreateParams {
+  task_id?: string;
+  message?: TaskMessage;
+  messages?: TaskMessage[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface TaskListFilter {
+  state?: TaskState;
+  cursor?: string;
+  limit?: number;
+}
+
+export interface TaskSubscribeResult {
+  task_id: string;
+  subscribed: boolean;
+  state?: TaskState;
+}
+
+export interface TaskHandler {
+  create: (params: TaskCreateParams) => Promise<TaskRecord>;
+  get: (taskId: string) => Promise<TaskRecord | null>;
+  list: (filter?: TaskListFilter) => Promise<TaskRecord[]>;
+  cancel: (taskId: string, reason?: string) => Promise<TaskRecord | null>;
+  subscribe: (taskId: string) => Promise<TaskSubscribeResult>;
+}
+
 // ── Telemetry Types (optional at all levels) ──────────────────────────────
 
-export type TelemetryEventType = "tool_call" | "memory_op" | "swarm_op" | "lifecycle" | "error";
+export type TelemetryEventType = "tool_call" | "memory_op" | "swarm_op" | "task_op" | "lifecycle" | "error";
 
 export interface TelemetryEvent {
   /** ISO 8601 UTC timestamp. */
@@ -161,6 +223,8 @@ export interface AgentOptions {
   // L3
   memory?: MemoryHandler;
   swarm?: SwarmHandler;
+  // A2A interop (experimental)
+  tasks?: TaskHandler;
   // Optional at all levels
   telemetry?: TelemetryHandler;
 }
