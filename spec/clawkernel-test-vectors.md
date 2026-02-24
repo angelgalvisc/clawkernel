@@ -668,7 +668,7 @@ spec:
         strategy: "merge"
 ```
 
-**Expected:** Accept. Valid Level 3 manifest with all 9 primitives.
+**Expected:** Accept. Valid Level 3 manifest with all 9 core primitives (Telemetry optional).
 **Reference:** Section 11, Conformance Levels.
 
 ---

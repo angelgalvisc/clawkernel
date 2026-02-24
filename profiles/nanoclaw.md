@@ -134,7 +134,7 @@ For L2, additionally:
   "TV-L2-07": "No approval workflow",
   "TV-L2-09": "Sandbox constraints are mount-based, not per-request",
   "TV-L2-10": "No provider quota enforcement",
-  "TV-L3-01": "Not all 9 primitives formally declared",
+  "TV-L3-01": "Not all 9 core primitives formally declared",
   "TV-L3-03": "No peer discovery",
   "TV-L3-06": "No memory compaction",
   "TV-L3-07": "No swarm broadcast"

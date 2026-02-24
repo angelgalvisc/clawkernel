@@ -270,7 +270,7 @@ The following content provides background context on the Claw ecosystem and is n
 |-----------|-----|-------------|
 | **Primary focus** | Tool/resource discovery for LLM hosts | Complete autonomous agent definition |
 | **Architecture** | Client-Host-Server (tool-centric) | Agent-centric (identity-first) |
-| **Primitives** | 6 (Tools, Resources, Prompts, Sampling, Roots, Elicitation) | 9 (Identity, Provider, Channel, Tool, Skill, Memory, Sandbox, Policy, Swarm) |
+| **Primitives** | 6 (Tools, Resources, Prompts, Sampling, Roots, Elicitation) | 10 (9 core + Telemetry: Identity, Provider, Channel, Tool, Skill, Memory, Sandbox, Policy, Swarm, Telemetry) |
 | **Agent identity** | None (server has name/version only) | First-class: personality, context files, autonomy level |
 | **Communication** | Host-mediated (server cannot initiate contact) | Multi-channel: 16+ platform types |
 | **Security** | Host enforces policies (not specified in protocol) | Declarative: Sandbox + Policy as first-class primitives |

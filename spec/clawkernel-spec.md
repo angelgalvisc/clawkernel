@@ -10,7 +10,7 @@
 
 ## Abstract
 
-The Claw Kernel Protocol (CKP) is an open specification for describing, composing, and interoperating autonomous AI agents ("Claws"). It defines nine primitive units that, together, form a complete declarative manifest for an agent's identity, capabilities, communication surfaces, security boundaries, memory systems, and multi-agent coordination.
+The Claw Kernel Protocol (CKP) is an open specification for describing, composing, and interoperating autonomous AI agents ("Claws"). It defines 10 primitive units (9 core primitives plus Telemetry) that, together, form a complete declarative manifest for an agent's identity, capabilities, communication surfaces, security boundaries, memory systems, and multi-agent coordination.
 
 CKP is **complementary to MCP** (Model Context Protocol). Where MCP standardizes how LLM hosts discover and invoke tools, resources, and prompts from external servers, CKP standardizes how autonomous agents are **assembled, secured, and orchestrated** as first-class runtime entities.
 
@@ -2242,7 +2242,7 @@ A Level 2 Claw can do everything in Level 1, plus:
 
 ### Level 3: Full (Autonomous Swarm Agent)
 
-**Required primitives:** All nine primitives
+**Required primitives:** All 9 core primitives (Telemetry optional at all levels)
 
 A Level 3 Claw can do everything in Level 2, plus:
 - Persist and retrieve memory across sessions
@@ -2629,7 +2629,7 @@ The TypeScript schema is the **canonical source of truth** for all type definiti
 | Term | Definition |
 |------|------------|
 | **Claw** | An autonomous AI agent runtime — a long-lived process that receives messages, reasons with LLMs, executes tools, and maintains persistent state. |
-| **Primitive** | One of the nine fundamental units (Identity, Provider, Channel, Tool, Skill, Memory, Sandbox, Policy, Swarm) that compose a Claw. |
+| **Primitive** | One of the 10 fundamental units (Identity, Provider, Channel, Tool, Skill, Memory, Sandbox, Policy, Swarm, Telemetry) that compose a Claw. |
 | **Manifest** | A `claw.yaml` file that declares all primitives for an agent. |
 | **Provider** | An LLM inference endpoint (cloud API or local model). |
 | **Channel** | A communication surface (Telegram, Slack, CLI, etc.) through which humans interact with a Claw. |

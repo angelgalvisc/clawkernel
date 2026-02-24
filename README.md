@@ -115,7 +115,7 @@ PicoClaw targets $10 hardware. ZeroClaw embeds everything in SQLite. Each solves
 |-------|------|---------------------|--------|
 | **L1** | Core | Identity, Provider | Embedded devices, simple chatbots |
 | **L2** | Standard | + Channel, Tool, Sandbox, Policy | Personal assistants, team bots |
-| **L3** | Full | All nine core primitives (+Telemetry optional) | Enterprise swarms, multi-agent systems |
+| **L3** | Full | All 9 core primitives (Telemetry optional at all levels) | Enterprise swarms, multi-agent systems |
 
 ---
 
