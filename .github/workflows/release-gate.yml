@@ -1,0 +1,67 @@
+name: Release Gate
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  gate:
+    name: Validate release tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install gate dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+          sudo apt-get update
+          sudo apt-get install -y jq perl
+
+      - name: Verify changelog contains tag version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          grep -q "\[$VERSION\]" CHANGELOG.md
+
+      - name: Coherence gate
+        run: bash tools/coherence-audit.sh spec reports
+
+      - name: SDK build + tests
+        run: |
+          npm ci
+          npm run build
+          npm test
+        working-directory: sdk
+
+      - name: Clone ckp-test
+        run: git clone https://github.com/angelgalvisc/ckp-test.git ../ckp-test
+
+      - name: Build ckp-test
+        run: |
+          npm ci
+          npm run build
+        working-directory: ../ckp-test
+
+      - name: Conformance smoke
+        run: |
+          node dist/cli.js run \
+            --target "node $GITHUB_WORKSPACE/sdk/dist/examples/l1-agent.js" \
+            --manifest "$GITHUB_WORKSPACE/reference/ckp-bridge/claw.yaml" \
+            --level 1
+
+          node dist/cli.js run \
+            --target "node $GITHUB_WORKSPACE/sdk/dist/examples/l3-agent.js" \
+            --manifest "$GITHUB_WORKSPACE/sdk/examples/l3.claw.yaml"
+        working-directory: ../ckp-test

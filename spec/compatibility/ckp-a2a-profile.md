@@ -12,8 +12,11 @@
 This profile targets the following protocol baselines:
 
 - **CKP:** `v0.2.0` (released)
-- **A2A:** latest released `0.3.0` (spec site currently labels latest spec as Release Candidate v1.0)
+- **A2A baseline:** `0.3.0`
+- **A2A forward-compat target:** `1.0` Release Candidate (compatibility tracked separately; not asserted as GA)
 - **MCP:** protocol revision `2025-11-25`
+
+Version references above were last reviewed on **2026-03-02**.
 
 This profile is designed to be additive and non-breaking for CKP `v0.2.x` runtimes.
 

@@ -16,7 +16,9 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![Coherence Gate](https://img.shields.io/badge/coherence-PASS-brightgreen)](reports/coherence-report.md)
 [![Spec tokens](https://img.shields.io/badge/spec_suite-~30k_tokens-orange)](spec/)
-[![npm](https://img.shields.io/npm/v/@clawkernel/sdk)](https://www.npmjs.com/package/@clawkernel/sdk)
+[![npm](https://img.shields.io/npm/v/%40clawkernel%2Fsdk)](https://www.npmjs.com/package/@clawkernel/sdk)
+[![CI](https://github.com/angelgalvisc/clawkernel/actions/workflows/ci.yml/badge.svg)](https://github.com/angelgalvisc/clawkernel/actions/workflows/ci.yml)
+[![Release Gate](https://github.com/angelgalvisc/clawkernel/actions/workflows/release-gate.yml/badge.svg)](https://github.com/angelgalvisc/clawkernel/actions/workflows/release-gate.yml)
 
 🌐 **Documentation:** [clawkernel.com](https://www.clawkernel.com/) · Built by [Datastrat](https://datastrat.co)
 
@@ -154,6 +156,7 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 | Item | Status |
 |------|--------|
 | Specification | `v0.2.0` |
+| Release channel | **Public Beta (`v0.2.x`)** |
 | Primitives defined | 10 (9 core + Telemetry, optional at all levels) |
 | JSON-RPC methods | 15 specified |
 | ABNF grammar | Complete |
@@ -259,9 +262,20 @@ For protocol interoperability planning, see [`spec/compatibility/ckp-a2a-profile
 
 ---
 
+## Governance and Release
+
+- [Versioning policy](VERSIONING.md)
+- [Release process and gates](RELEASE.md)
+- [Changelog](CHANGELOG.md)
+- [Security policy](SECURITY.md)
+
+---
+
 ## Contributing
 
-CKP is released. Feedback, issues, and proposals are welcome.
+CKP `v0.2.x` is in **Public Beta**. Feedback, issues, and proposals are welcome.
+
+Please review [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [SECURITY.md](SECURITY.md).
 
 Before submitting changes to the specification, run the coherence gate and ensure it passes:
 

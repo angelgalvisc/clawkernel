@@ -29,6 +29,8 @@ agent.listen(); // L1 CONFORMANT — stdio JSON-RPC 2.0
 
 That's it. This agent passes all 13 L1 test vectors.
 
+> Release status: **Public Beta** (`v0.2.x`).
+
 ## Conformance Levels
 
 | Level | What you configure | Test vectors |
@@ -263,6 +265,7 @@ cd ckp-test && npm install && npx tsc
 
 # Run against SDK examples
 cd ../clawkernel/sdk && npm run build:dev
+npm test   # SDK unit tests
 
 node ../../ckp-test/dist/cli.js run \
   --target "node dist/examples/l3-agent.js" \
