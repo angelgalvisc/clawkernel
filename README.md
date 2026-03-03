@@ -40,7 +40,7 @@ The Claw Kernel Protocol defines ten primitives for describing, composing, and i
 
 CKP is complementary to MCP (Model Context Protocol). Where MCP standardizes how LLM hosts discover and invoke tools, CKP standardizes how autonomous agents are assembled, secured, and orchestrated as first-class runtime entities.
 
-Three conformance levels (L1 Minimal, L2 Standard, L3 Full) allow implementations ranging from 4MB embedded binaries to enterprise swarm deployments.
+Three conformance levels (L1 Core, L2 Standard, L3 Full) allow implementations ranging from 4MB embedded binaries to enterprise swarm deployments.
 
 ---
 
