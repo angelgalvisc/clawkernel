@@ -6,8 +6,22 @@
  */
 
 import { createStdioTransport, type Transport } from "./transport.js";
-import { sendOk, sendError, parseError, invalidRequest, methodNotFound, invalidParams, versionMismatch } from "./errors.js";
-import { type AgentOptions, type LifecycleState, type ConformanceLevel, type TelemetryHandler, CKP_ERROR_CODES } from "./types.js";
+import {
+  sendOk,
+  sendError,
+  parseError,
+  invalidRequest,
+  methodNotFound,
+  invalidParams,
+  versionMismatch,
+} from "./errors.js";
+import {
+  type AgentOptions,
+  type LifecycleState,
+  type ConformanceLevel,
+  type TelemetryHandler,
+  CKP_ERROR_CODES,
+} from "./types.js";
 import { ToolExecutor } from "./tools.js";
 import { MemoryExecutor } from "./memory.js";
 import { SwarmExecutor } from "./swarm.js";
@@ -37,7 +51,10 @@ const READY_ONLY_METHODS = new Set([
   "claw.task.subscribe",
 ]);
 
-export type MethodHandler = (id: string | number | null, params: Record<string, unknown>) => void | Promise<void>;
+export type MethodHandler = (
+  id: string | number | null,
+  params: Record<string, unknown>,
+) => void | Promise<void>;
 
 export class Agent {
   private state: LifecycleState = "INIT";
@@ -54,7 +71,7 @@ export class Agent {
 
   constructor(options: AgentOptions) {
     this.options = options;
-    this.transport = createStdioTransport();
+    this.transport = options.transport ?? createStdioTransport();
 
     // Register L1 handlers
     this.methodHandlers.set("claw.initialize", (id, params) => this.handleInitialize(id, params));
@@ -65,36 +82,66 @@ export class Agent {
     // Register L2 handlers if tools configured
     if (options.tools || options.policy || options.sandbox || options.quota) {
       this.toolExecutor = new ToolExecutor(this.transport, options);
-      this.methodHandlers.set("claw.tool.call", (id, params) => this.toolExecutor!.handleToolCall(id, params));
-      this.methodHandlers.set("claw.tool.approve", (id, params) => this.toolExecutor!.handleApprove(id, params));
-      this.methodHandlers.set("claw.tool.deny", (id, params) => this.toolExecutor!.handleDeny(id, params));
+      this.methodHandlers.set("claw.tool.call", (id, params) =>
+        this.toolExecutor!.handleToolCall(id, params),
+      );
+      this.methodHandlers.set("claw.tool.approve", (id, params) =>
+        this.toolExecutor!.handleApprove(id, params),
+      );
+      this.methodHandlers.set("claw.tool.deny", (id, params) =>
+        this.toolExecutor!.handleDeny(id, params),
+      );
     }
 
     // Register L3 handlers if memory configured
     if (options.memory) {
       this.memoryExecutor = new MemoryExecutor(this.transport, options.memory);
-      this.methodHandlers.set("claw.memory.store", (id, params) => this.memoryExecutor!.handleStore(id, params));
-      this.methodHandlers.set("claw.memory.query", (id, params) => this.memoryExecutor!.handleQuery(id, params));
-      this.methodHandlers.set("claw.memory.compact", (id, params) => this.memoryExecutor!.handleCompact(id, params));
+      this.methodHandlers.set("claw.memory.store", (id, params) =>
+        this.memoryExecutor!.handleStore(id, params),
+      );
+      this.methodHandlers.set("claw.memory.query", (id, params) =>
+        this.memoryExecutor!.handleQuery(id, params),
+      );
+      this.methodHandlers.set("claw.memory.compact", (id, params) =>
+        this.memoryExecutor!.handleCompact(id, params),
+      );
     }
 
     // Register L3 handlers if swarm configured
     if (options.swarm) {
       this.swarmExecutor = new SwarmExecutor(this.transport, options.swarm);
-      this.methodHandlers.set("claw.swarm.delegate", (id, params) => this.swarmExecutor!.handleDelegate(id, params));
-      this.methodHandlers.set("claw.swarm.discover", (id, params) => this.swarmExecutor!.handleDiscover(id, params));
-      this.methodHandlers.set("claw.swarm.report", (id, params) => this.swarmExecutor!.handleReport(id, params));
-      this.methodHandlers.set("claw.swarm.broadcast", (_id, params) => this.swarmExecutor!.handleBroadcast(params));
+      this.methodHandlers.set("claw.swarm.delegate", (id, params) =>
+        this.swarmExecutor!.handleDelegate(id, params),
+      );
+      this.methodHandlers.set("claw.swarm.discover", (id, params) =>
+        this.swarmExecutor!.handleDiscover(id, params),
+      );
+      this.methodHandlers.set("claw.swarm.report", (id, params) =>
+        this.swarmExecutor!.handleReport(id, params),
+      );
+      this.methodHandlers.set("claw.swarm.broadcast", (_id, params) =>
+        this.swarmExecutor!.handleBroadcast(params),
+      );
     }
 
     // Register A2A task handlers if configured
     if (options.tasks) {
       this.taskExecutor = new TaskExecutor(this.transport, options.tasks);
-      this.methodHandlers.set("claw.task.create", (id, params) => this.taskExecutor!.handleCreate(id, params));
-      this.methodHandlers.set("claw.task.get", (id, params) => this.taskExecutor!.handleGet(id, params));
-      this.methodHandlers.set("claw.task.list", (id, params) => this.taskExecutor!.handleList(id, params));
-      this.methodHandlers.set("claw.task.cancel", (id, params) => this.taskExecutor!.handleCancel(id, params));
-      this.methodHandlers.set("claw.task.subscribe", (id, params) => this.taskExecutor!.handleSubscribe(id, params));
+      this.methodHandlers.set("claw.task.create", (id, params) =>
+        this.taskExecutor!.handleCreate(id, params),
+      );
+      this.methodHandlers.set("claw.task.get", (id, params) =>
+        this.taskExecutor!.handleGet(id, params),
+      );
+      this.methodHandlers.set("claw.task.list", (id, params) =>
+        this.taskExecutor!.handleList(id, params),
+      );
+      this.methodHandlers.set("claw.task.cancel", (id, params) =>
+        this.taskExecutor!.handleCancel(id, params),
+      );
+      this.methodHandlers.set("claw.task.subscribe", (id, params) =>
+        this.taskExecutor!.handleSubscribe(id, params),
+      );
     }
 
     // Telemetry — optional at all levels, emit-only (no JSON-RPC methods)
@@ -106,7 +153,10 @@ export class Agent {
   // ── Telemetry ─────────────────────────────────────────────────────────
 
   /** Fire-and-forget telemetry emit. Never throws, never blocks. */
-  private emitTelemetry(event_type: "tool_call" | "memory_op" | "swarm_op" | "task_op" | "lifecycle" | "error", details: Record<string, unknown>): void {
+  private emitTelemetry(
+    event_type: "tool_call" | "memory_op" | "swarm_op" | "task_op" | "lifecycle" | "error",
+    details: Record<string, unknown>,
+  ): void {
     if (!this.telemetry) return;
     try {
       this.telemetry.emit({
@@ -146,15 +196,21 @@ export class Agent {
 
     // Validate JSON-RPC 2.0 envelope
     if (msg.jsonrpc !== "2.0" || typeof msg.method !== "string") {
-      invalidRequest(this.transport, (typeof msg.id === "string" || typeof msg.id === "number") ? msg.id : null);
+      invalidRequest(
+        this.transport,
+        typeof msg.id === "string" || typeof msg.id === "number" ? msg.id : null,
+      );
       return;
     }
 
     const method = msg.method;
-    const id = (typeof msg.id === "string" || typeof msg.id === "number") ? msg.id : null;
+    const id = typeof msg.id === "string" || typeof msg.id === "number" ? msg.id : null;
 
     // Validate params type (must be object or undefined, not array/primitive)
-    if (msg.params !== undefined && (typeof msg.params !== "object" || msg.params === null || Array.isArray(msg.params))) {
+    if (
+      msg.params !== undefined &&
+      (typeof msg.params !== "object" || msg.params === null || Array.isArray(msg.params))
+    ) {
       invalidParams(this.transport, id, "params must be an object");
       return;
     }
@@ -202,8 +258,17 @@ export class Agent {
     if (result instanceof Promise) {
       result.catch((err: unknown) => {
         if (id !== null) {
-          sendError(this.transport, id, -32603, `Internal error: ${err instanceof Error ? err.message : String(err)}`);
-          this.emitTelemetry("error", { code: -32603, method, error: err instanceof Error ? err.message : String(err) });
+          sendError(
+            this.transport,
+            id,
+            -32603,
+            `Internal error: ${err instanceof Error ? err.message : String(err)}`,
+          );
+          this.emitTelemetry("error", {
+            code: -32603,
+            method,
+            error: err instanceof Error ? err.message : String(err),
+          });
         }
       });
     }
@@ -213,7 +278,8 @@ export class Agent {
 
   private handleInitialize(id: string | number | null, params: Record<string, unknown>): void {
     // Validate required params with type guard
-    const clientVersion = typeof params.protocolVersion === "string" ? params.protocolVersion : undefined;
+    const clientVersion =
+      typeof params.protocolVersion === "string" ? params.protocolVersion : undefined;
     if (!clientVersion) {
       invalidParams(this.transport, id, "Missing required param: protocolVersion");
       return;
@@ -285,7 +351,10 @@ export class Agent {
     }
 
     this.state = "STOPPED";
-    this.emitTelemetry("lifecycle", { transition: "STOPPING → STOPPED", uptime_ms: this.initTime ? Date.now() - this.initTime : 0 });
+    this.emitTelemetry("lifecycle", {
+      transition: "STOPPING → STOPPED",
+      uptime_ms: this.initTime ? Date.now() - this.initTime : 0,
+    });
 
     sendOk(this.transport, id, { drained: true });
     // Do NOT exit process — per CKP spec, shutdown is graceful

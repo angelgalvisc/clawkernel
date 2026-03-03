@@ -33,11 +33,11 @@ That's it. This agent passes all 13 L1 test vectors.
 
 ## Conformance Levels
 
-| Level | What you configure | Test vectors |
-|-------|-------------------|--------------|
-| **L1** | `name` + `version` | 13/13 |
-| **L2** | + `tools`, `policy`, `sandbox`, `quota`, `approval` | +10 |
-| **L3** | + `memory`, `swarm` | +8 |
+| Level  | What you configure                                  | Test vectors |
+| ------ | --------------------------------------------------- | ------------ |
+| **L1** | `name` + `version`                                  | 13/13        |
+| **L2** | + `tools`, `policy`, `sandbox`, `quota`, `approval` | +10          |
+| **L3** | + `memory`, `swarm`                                 | +8           |
 
 ## L2 Example — Tools + Gates
 
@@ -72,8 +72,7 @@ const agent = createAgent({
 
   sandbox: {
     check: (_toolName, args) => {
-      if (String(args.url ?? "").includes("169.254"))
-        return { allowed: false, code: -32010 };
+      if (String(args.url ?? "").includes("169.254")) return { allowed: false, code: -32010 };
       return { allowed: true };
     },
   },
@@ -113,8 +112,12 @@ import type { MemoryEntry, MemoryQuery, SwarmTask, SwarmContext } from "@clawker
 const agent = createAgent({
   name: "swarm-agent",
   version: "1.0.0",
-  tools: { /* ... */ },
-  policy: { /* ... */ },
+  tools: {
+    /* ... */
+  },
+  policy: {
+    /* ... */
+  },
   sandbox: { check: () => ({ allowed: true }) },
 
   memory: {
@@ -137,7 +140,9 @@ const agent = createAgent({
       return { acknowledged: true };
     },
     discover: async (swarmName) => {
-      return { peers: [{ identity: "peer-1", uri: "claw://local/identity/peer-1", status: "ready" }] };
+      return {
+        peers: [{ identity: "peer-1", uri: "claw://local/identity/peer-1", status: "ready" }],
+      };
     },
     report: async (taskId, status, result) => {
       return { acknowledged: true };
@@ -159,26 +164,26 @@ Factory function. Returns a configured `Agent` instance.
 
 ### `Agent`
 
-| Method | Description |
-|--------|-------------|
-| `listen()` | Start reading JSON-RPC from stdin |
-| `close()` | Stop heartbeat and close transport |
+| Method     | Description                        |
+| ---------- | ---------------------------------- |
+| `listen()` | Start reading JSON-RPC from stdin  |
+| `close()`  | Stop heartbeat and close transport |
 
 ### `AgentOptions`
 
-| Field | Type | Required | Level | Description |
-|-------|------|----------|-------|-------------|
-| `name` | `string` | Yes | L1 | Agent identity name |
-| `version` | `string` | Yes | L1 | Agent version (semver) |
-| `heartbeatInterval` | `number` | No | L1 | Heartbeat interval in ms (default: 30000, min: 1000, 0 = disabled) |
-| `tools` | `Record<string, ToolDefinition>` | No | L2 | Tool registry |
-| `policy` | `PolicyEvaluator` | No | L2 | Policy gate |
-| `sandbox` | `SandboxChecker` | No | L2 | Sandbox gate |
-| `quota` | `QuotaChecker` | No | L2 | Quota gate |
-| `approval` | `ApprovalConfig` | No | L2 | Approval gate |
-| `memory` | `MemoryHandler` | No | L3 | Memory handler |
-| `swarm` | `SwarmHandler` | No | L3 | Swarm handler |
-| `tasks` | `TaskHandler` | No | Interop | A2A task bridge (`claw.task.*`) |
+| Field               | Type                             | Required | Level   | Description                                                        |
+| ------------------- | -------------------------------- | -------- | ------- | ------------------------------------------------------------------ |
+| `name`              | `string`                         | Yes      | L1      | Agent identity name                                                |
+| `version`           | `string`                         | Yes      | L1      | Agent version (semver)                                             |
+| `heartbeatInterval` | `number`                         | No       | L1      | Heartbeat interval in ms (default: 30000, min: 1000, 0 = disabled) |
+| `tools`             | `Record<string, ToolDefinition>` | No       | L2      | Tool registry                                                      |
+| `policy`            | `PolicyEvaluator`                | No       | L2      | Policy gate                                                        |
+| `sandbox`           | `SandboxChecker`                 | No       | L2      | Sandbox gate                                                       |
+| `quota`             | `QuotaChecker`                   | No       | L2      | Quota gate                                                         |
+| `approval`          | `ApprovalConfig`                 | No       | L2      | Approval gate                                                      |
+| `memory`            | `MemoryHandler`                  | No       | L3      | Memory handler                                                     |
+| `swarm`             | `SwarmHandler`                   | No       | L3      | Swarm handler                                                      |
+| `tasks`             | `TaskHandler`                    | No       | Interop | A2A task bridge (`claw.task.*`)                                    |
 
 ### `ToolDefinition`
 
@@ -196,7 +201,7 @@ Returned by policy, sandbox, and quota evaluators:
 ```typescript
 interface GateResult {
   allowed: boolean;
-  code?: number;    // CKP error code when denied
+  code?: number; // CKP error code when denied
   message?: string; // Human-readable denial reason
 }
 ```
@@ -209,19 +214,19 @@ All 11 CKP error code helpers are exported for custom handler use:
 import { sendOk, sendError, policyDenied, ToolTimeoutError } from "@clawkernel/sdk";
 ```
 
-| Helper | Code | Description |
-|--------|------|-------------|
-| `parseError` | -32700 | Malformed JSON |
-| `invalidRequest` | -32600 | Invalid JSON-RPC envelope |
-| `methodNotFound` | -32601 | Unknown method |
-| `invalidParams` | -32602 | Missing/invalid params |
-| `versionMismatch` | -32001 | Protocol version mismatch |
-| `sandboxDenied` | -32010 | Sandbox blocked the call |
-| `policyDenied` | -32011 | Policy blocked the call |
+| Helper            | Code   | Description                   |
+| ----------------- | ------ | ----------------------------- |
+| `parseError`      | -32700 | Malformed JSON                |
+| `invalidRequest`  | -32600 | Invalid JSON-RPC envelope     |
+| `methodNotFound`  | -32601 | Unknown method                |
+| `invalidParams`   | -32602 | Missing/invalid params        |
+| `versionMismatch` | -32001 | Protocol version mismatch     |
+| `sandboxDenied`   | -32010 | Sandbox blocked the call      |
+| `policyDenied`    | -32011 | Policy blocked the call       |
 | `approvalTimeout` | -32012 | Approval not received in time |
-| `approvalDenied` | -32013 | Approval explicitly denied |
-| `toolTimeout` | -32014 | Tool execution timeout |
-| `quotaExceeded` | -32021 | Provider quota exceeded |
+| `approvalDenied`  | -32013 | Approval explicitly denied    |
+| `toolTimeout`     | -32014 | Tool execution timeout        |
+| `quotaExceeded`   | -32021 | Provider quota exceeded       |
 
 ### `CKP_ERROR_CODES`
 
@@ -242,8 +247,6 @@ const card = projectAgentCard({
 ```
 
 This is additive and aligned with `spec/compatibility/ckp-a2a-profile.md`.
-
-
 
 ## Hardening
 

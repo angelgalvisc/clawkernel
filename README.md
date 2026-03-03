@@ -208,7 +208,7 @@ L1: CONFORMANT (0 skips, 0 fails, 0 errors)
 
 Use it as a starting point for building your own CKP-conformant agent.
 
-### SDK — From zero to conformant in 5 lines
+### SDK — From zero to conformant in under 10 lines
 
 The [`sdk/`](sdk/) directory provides `@clawkernel/sdk` — build a CKP-conformant agent at any level with zero runtime dependencies:
 
@@ -248,15 +248,16 @@ See [`sdk/examples/`](sdk/examples/) for L1, L2, and L3 example agents with thei
 
 ## Compatibility
 
-| Agent | Level | Pass | Skip | Fail | Result |
-|-------|-------|------|------|------|--------|
-| [@clawkernel/sdk](sdk/) | L3 | 30 | 1 | 0 | **L3 PARTIAL** |
-| [ckp-bridge](reference/ckp-bridge/) | L1 | 13 | 0 | 0 | **L1 CONFORMANT** |
-| [NanoClaw (manifest profile)](profiles/nanoclaw.md) | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
-| [PicoClaw (manifest profile)](profiles/picoclaw.md) | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
-| [NanoBot (manifest profile)](profiles/nanobot.md) | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
+| Target | Mode | Level | Pass | Skip | Fail | Result |
+|-------|------|-------|------|------|------|--------|
+| [@clawkernel/sdk](sdk/) | Live runtime | L3 | 30 | 1 | 0 | **L3 PARTIAL** |
+| [ckp-bridge](reference/ckp-bridge/) | Live runtime | L1 | 13 | 0 | 0 | **L1 CONFORMANT** |
+| [NanoClaw](profiles/nanoclaw.md) | Live bridge | L3 | 30 | 1 | 0 | **L3 PARTIAL** |
+| [NanoClaw](profiles/nanoclaw.md) | Manifest baseline | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
+| [PicoClaw](profiles/picoclaw.md) | Manifest baseline | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
+| [NanoBot](profiles/nanobot.md) | Manifest baseline | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
 
-See [`profiles/`](profiles/) for detailed compatibility assessments.
+See [`profiles/`](profiles/) for detailed compatibility assessments, including baseline vs live evidence.
 
 For protocol interoperability planning, see [`spec/compatibility/ckp-a2a-profile.md`](spec/compatibility/ckp-a2a-profile.md).
 

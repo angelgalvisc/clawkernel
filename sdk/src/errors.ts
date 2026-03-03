@@ -45,19 +45,41 @@ export function invalidRequest(transport: Transport, id: string | number | null)
   sendError(transport, id, CKP_ERROR_CODES.INVALID_REQUEST, "Invalid request");
 }
 
-export function methodNotFound(transport: Transport, id: string | number | null, method?: string): void {
-  sendError(transport, id, CKP_ERROR_CODES.METHOD_NOT_FOUND, `Method not found${method ? `: ${method}` : ""}`);
+export function methodNotFound(
+  transport: Transport,
+  id: string | number | null,
+  method?: string,
+): void {
+  sendError(
+    transport,
+    id,
+    CKP_ERROR_CODES.METHOD_NOT_FOUND,
+    `Method not found${method ? `: ${method}` : ""}`,
+  );
 }
 
-export function invalidParams(transport: Transport, id: string | number | null, msg?: string): void {
+export function invalidParams(
+  transport: Transport,
+  id: string | number | null,
+  msg?: string,
+): void {
   sendError(transport, id, CKP_ERROR_CODES.INVALID_PARAMS, msg ?? "Invalid params");
 }
 
 export function versionMismatch(transport: Transport, id: string | number | null): void {
-  sendError(transport, id, CKP_ERROR_CODES.PROTOCOL_VERSION_NOT_SUPPORTED, "Protocol version not supported");
+  sendError(
+    transport,
+    id,
+    CKP_ERROR_CODES.PROTOCOL_VERSION_NOT_SUPPORTED,
+    "Protocol version not supported",
+  );
 }
 
-export function sandboxDenied(transport: Transport, id: string | number | null, msg?: string): void {
+export function sandboxDenied(
+  transport: Transport,
+  id: string | number | null,
+  msg?: string,
+): void {
   sendError(transport, id, CKP_ERROR_CODES.SANDBOX_DENIED, msg ?? "Sandbox denied");
 }
 
@@ -69,12 +91,25 @@ export function approvalTimeout(transport: Transport, id: string | number | null
   sendError(transport, id, CKP_ERROR_CODES.APPROVAL_TIMEOUT, "Approval timeout");
 }
 
-export function approvalDenied(transport: Transport, id: string | number | null, reason?: string): void {
+export function approvalDenied(
+  transport: Transport,
+  id: string | number | null,
+  reason?: string,
+): void {
   sendError(transport, id, CKP_ERROR_CODES.APPROVAL_DENIED, reason ?? "Approval denied");
 }
 
-export function toolTimeout(transport: Transport, id: string | number | null, toolName?: string): void {
-  sendError(transport, id, CKP_ERROR_CODES.TOOL_EXECUTION_TIMEOUT, `Tool execution timeout${toolName ? `: ${toolName}` : ""}`);
+export function toolTimeout(
+  transport: Transport,
+  id: string | number | null,
+  toolName?: string,
+): void {
+  sendError(
+    transport,
+    id,
+    CKP_ERROR_CODES.TOOL_EXECUTION_TIMEOUT,
+    `Tool execution timeout${toolName ? `: ${toolName}` : ""}`,
+  );
 }
 
 export function quotaExceeded(transport: Transport, id: string | number | null): void {

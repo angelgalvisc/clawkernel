@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- CI workflows for continuous quality (`ci.yml`) and tag-based release gate (`release-gate.yml`).
+- Governance and release docs: `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `VERSIONING.md`, `RELEASE.md`.
+- SDK unit suite expanded to 23 tests covering lifecycle, errors, tools, memory, swarm, task, A2A mapping, and transport resilience.
+- SDK lint/format quality gates (`eslint` + `prettier`) with CI enforcement.
+
+### Changed
+
+- SDK transport now handles stdout I/O failures defensively (no hard crash on write failure).
+- CI now pins `ckp-test` to a fixed commit for reproducible conformance checks.
+- SDK package now uses recursive `dist/**` publish globs and includes `LICENSE`.
+- README compatibility table now distinguishes live bridge results vs manifest baseline profiles.
+- Root Apache license appendix now includes a concrete copyright attribution.
+
 ## [0.2.2] - 2026-03-02
 
 ### Added

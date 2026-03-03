@@ -18,6 +18,8 @@ bash tools/coherence-audit.sh spec reports
 cd sdk
 npm ci
 npm run build
+npm run lint
+npm run format:check
 npm test
 ```
 

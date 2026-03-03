@@ -5,25 +5,23 @@
  */
 
 import type { Transport } from "./transport.js";
-import type {
-  TaskHandler,
-  TaskCreateParams,
-  TaskListFilter,
-  TaskState,
-} from "./types.js";
+import type { TaskHandler, TaskCreateParams, TaskListFilter, TaskState } from "./types.js";
 import { sendOk, invalidParams, sendError } from "./errors.js";
 
 function isTaskState(value: unknown): value is TaskState {
-  return typeof value === "string" && [
-    "submitted",
-    "working",
-    "input_required",
-    "auth_required",
-    "completed",
-    "failed",
-    "canceled",
-    "rejected",
-  ].includes(value);
+  return (
+    typeof value === "string" &&
+    [
+      "submitted",
+      "working",
+      "input_required",
+      "auth_required",
+      "completed",
+      "failed",
+      "canceled",
+      "rejected",
+    ].includes(value)
+  );
 }
 
 export class TaskExecutor {
@@ -37,15 +35,17 @@ export class TaskExecutor {
 
   async handleCreate(id: string | number | null, params: Record<string, unknown>): Promise<void> {
     const taskId = typeof params.task_id === "string" ? params.task_id : undefined;
-    const message = (params.message && typeof params.message === "object" && !Array.isArray(params.message))
-      ? params.message as TaskCreateParams["message"]
-      : undefined;
+    const message =
+      params.message && typeof params.message === "object" && !Array.isArray(params.message)
+        ? (params.message as TaskCreateParams["message"])
+        : undefined;
     const messages = Array.isArray(params.messages)
-      ? params.messages as TaskCreateParams["messages"]
+      ? (params.messages as TaskCreateParams["messages"])
       : undefined;
-    const metadata = (params.metadata && typeof params.metadata === "object" && !Array.isArray(params.metadata))
-      ? params.metadata as Record<string, unknown>
-      : undefined;
+    const metadata =
+      params.metadata && typeof params.metadata === "object" && !Array.isArray(params.metadata)
+        ? (params.metadata as Record<string, unknown>)
+        : undefined;
 
     if (!message && (!messages || messages.length === 0)) {
       invalidParams(this.transport, id, "Task creation requires message or messages");
@@ -67,7 +67,12 @@ export class TaskExecutor {
 
       sendOk(this.transport, id, result);
     } catch (err) {
-      sendError(this.transport, id, -32603, `Task create error: ${err instanceof Error ? err.message : String(err)}`);
+      sendError(
+        this.transport,
+        id,
+        -32603,
+        `Task create error: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
@@ -86,16 +91,22 @@ export class TaskExecutor {
       }
       sendOk(this.transport, id, result);
     } catch (err) {
-      sendError(this.transport, id, -32603, `Task get error: ${err instanceof Error ? err.message : String(err)}`);
+      sendError(
+        this.transport,
+        id,
+        -32603,
+        `Task get error: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
   async handleList(id: string | number | null, params: Record<string, unknown>): Promise<void> {
     const state = isTaskState(params.state) ? params.state : undefined;
     const cursor = typeof params.cursor === "string" ? params.cursor : undefined;
-    const limit = typeof params.limit === "number" && Number.isFinite(params.limit)
-      ? Math.max(1, Math.floor(params.limit))
-      : undefined;
+    const limit =
+      typeof params.limit === "number" && Number.isFinite(params.limit)
+        ? Math.max(1, Math.floor(params.limit))
+        : undefined;
 
     try {
       const filter: TaskListFilter = {
@@ -106,7 +117,12 @@ export class TaskExecutor {
       const tasks = await this.handler.list(filter);
       sendOk(this.transport, id, { tasks });
     } catch (err) {
-      sendError(this.transport, id, -32603, `Task list error: ${err instanceof Error ? err.message : String(err)}`);
+      sendError(
+        this.transport,
+        id,
+        -32603,
+        `Task list error: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
@@ -127,11 +143,19 @@ export class TaskExecutor {
       }
       sendOk(this.transport, id, result);
     } catch (err) {
-      sendError(this.transport, id, -32603, `Task cancel error: ${err instanceof Error ? err.message : String(err)}`);
+      sendError(
+        this.transport,
+        id,
+        -32603,
+        `Task cancel error: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
-  async handleSubscribe(id: string | number | null, params: Record<string, unknown>): Promise<void> {
+  async handleSubscribe(
+    id: string | number | null,
+    params: Record<string, unknown>,
+  ): Promise<void> {
     const taskId = typeof params.task_id === "string" ? params.task_id : undefined;
     if (!taskId) {
       invalidParams(this.transport, id, "Missing task_id");
@@ -142,7 +166,12 @@ export class TaskExecutor {
       const result = await this.handler.subscribe(taskId);
       sendOk(this.transport, id, result);
     } catch (err) {
-      sendError(this.transport, id, -32603, `Task subscribe error: ${err instanceof Error ? err.message : String(err)}`);
+      sendError(
+        this.transport,
+        id,
+        -32603,
+        `Task subscribe error: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 }

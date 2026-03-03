@@ -13,7 +13,10 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "build:dev": "tsc",
+    "build:dev": "tsc -p tsconfig.json && node scripts/postbuild-dev.mjs",
+    "lint": "eslint \"src/**/*.ts\" \"examples/**/*.ts\" \"test/**/*.mjs\"",
+    "format": "prettier --write \"src/**/*.ts\" \"examples/**/*.ts\" \"test/**/*.mjs\" \"*.json\" \"*.md\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"examples/**/*.ts\" \"test/**/*.mjs\" \"*.json\" \"*.md\"",
     "test": "npm run build && node --test --test-force-exit test/*.mjs",
     "clean": "rm -rf dist"
   },
@@ -35,12 +38,17 @@
   ],
   "devDependencies": {
     "@types/node": "^25.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2",
     "typescript": "^5.7.0"
   },
   "files": [
-    "dist/*.js",
-    "dist/*.d.ts",
-    "dist/*.js.map",
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "dist/**/*.js.map",
     "README.md",
     "LICENSE"
   ],

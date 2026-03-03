@@ -6,7 +6,17 @@
 
 import type { Transport } from "./transport.js";
 import type { AgentOptions } from "./types.js";
-import { sendOk, invalidParams, policyDenied, sandboxDenied, quotaExceeded, toolTimeout, approvalTimeout, approvalDenied, ToolTimeoutError } from "./errors.js";
+import {
+  sendOk,
+  invalidParams,
+  policyDenied,
+  sandboxDenied,
+  quotaExceeded,
+  toolTimeout,
+  approvalTimeout,
+  approvalDenied,
+  ToolTimeoutError,
+} from "./errors.js";
 import { ApprovalQueue } from "./approval.js";
 
 export class ToolExecutor {
@@ -22,12 +32,18 @@ export class ToolExecutor {
   async handleToolCall(id: string | number | null, params: Record<string, unknown>): Promise<void> {
     // ── Input validation (type guards, no unsafe casts) ─────────────────
     const name = typeof params.name === "string" ? params.name : undefined;
-    const args = (params.arguments !== null && typeof params.arguments === "object" && !Array.isArray(params.arguments))
-      ? params.arguments as Record<string, unknown>
-      : {};
-    const context = (params.context !== null && typeof params.context === "object" && !Array.isArray(params.context))
-      ? params.context as Record<string, unknown>
-      : {};
+    const args =
+      params.arguments !== null &&
+      typeof params.arguments === "object" &&
+      !Array.isArray(params.arguments)
+        ? (params.arguments as Record<string, unknown>)
+        : {};
+    const context =
+      params.context !== null &&
+      typeof params.context === "object" &&
+      !Array.isArray(params.context)
+        ? (params.context as Record<string, unknown>)
+        : {};
 
     if (!name) {
       invalidParams(this.transport, id, "Missing tool name");
@@ -103,7 +119,9 @@ export class ToolExecutor {
         toolTimeout(this.transport, id, name);
       } else {
         sendOk(this.transport, id, {
-          content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }],
+          content: [
+            { type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` },
+          ],
           isError: true,
         });
       }

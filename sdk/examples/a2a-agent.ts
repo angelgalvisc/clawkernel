@@ -16,9 +16,7 @@ const agent = createAgent({
     async create(params) {
       const taskId = params.task_id ?? nextTaskId();
 
-      const singleMessage = params.message
-        ? params.message
-        : params.messages?.[0];
+      const singleMessage = params.message ? params.message : params.messages?.[0];
 
       const created: TaskRecord = {
         task_id: taskId,
@@ -33,7 +31,11 @@ const agent = createAgent({
       // Example of boundary mapping utility usage:
       // If caller provided an A2A-like message in metadata, normalize it.
       const possibleA2AMessage = params.metadata?.a2a_message;
-      if (possibleA2AMessage && typeof possibleA2AMessage === "object" && !Array.isArray(possibleA2AMessage)) {
+      if (
+        possibleA2AMessage &&
+        typeof possibleA2AMessage === "object" &&
+        !Array.isArray(possibleA2AMessage)
+      ) {
         try {
           const normalized = mapA2AMessageToCkpTaskMessage(possibleA2AMessage as never);
           created.messages = [...(created.messages ?? []), normalized];

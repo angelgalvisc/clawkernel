@@ -221,7 +221,11 @@ export function mapCkpTaskMessageToA2AMessage(message: CkpTaskMessage): A2AMessa
 // ── Projection Helpers ─────────────────────────────────────────────────────
 
 function toSkillId(name: string): string {
-  return name.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function humanize(name: string): string {
@@ -266,7 +270,9 @@ export function projectAgentCard(input: CkpAgentProjectionInput): A2AAgentCard {
   return {
     name: input.name,
     version: input.version,
-    ...(summarizePersonality(input.personality) ? { description: summarizePersonality(input.personality) } : {}),
+    ...(summarizePersonality(input.personality)
+      ? { description: summarizePersonality(input.personality) }
+      : {}),
     ...(input.interfaces ? { supported_interfaces: input.interfaces } : {}),
     ...(input.capabilities ? { capabilities: input.capabilities } : {}),
     ...(input.security_schemes ? { security_schemes: input.security_schemes } : {}),

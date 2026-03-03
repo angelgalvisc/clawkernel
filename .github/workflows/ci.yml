@@ -58,6 +58,12 @@ jobs:
         run: npm run build
         working-directory: sdk
 
+      - name: Lint and format checks
+        run: |
+          npm run lint
+          npm run format:check
+        working-directory: sdk
+
       - name: Run SDK unit tests
         run: npm test
         working-directory: sdk
@@ -81,8 +87,12 @@ jobs:
           npm run build:dev
         working-directory: sdk
 
-      - name: Clone ckp-test
-        run: git clone https://github.com/angelgalvisc/ckp-test.git ../ckp-test
+      - name: Clone ckp-test (pinned)
+        env:
+          CKP_TEST_REF: 16069a1c320d143ff1f6baf2e701667d10eafc80
+        run: |
+          git clone https://github.com/angelgalvisc/ckp-test.git ../ckp-test
+          git -C ../ckp-test checkout "$CKP_TEST_REF"
 
       - name: Build ckp-test
         run: |

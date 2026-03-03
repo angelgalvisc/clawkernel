@@ -9,7 +9,10 @@ import { randomUUID } from "node:crypto";
 
 // ── In-memory store (for test vectors) ──────────────────────────────────────
 
-const memoryStore = new Map<string, { id: string; content: string | Record<string, unknown>; timestamp: string }[]>();
+const memoryStore = new Map<
+  string,
+  { id: string; content: string | Record<string, unknown>; timestamp: string }[]
+>();
 
 const agent = createAgent({
   name: "l3-test-agent",

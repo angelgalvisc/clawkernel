@@ -5,6 +5,8 @@
  * plus SDK-specific types (AgentOptions, handlers, etc.)
  */
 
+import type { Transport } from "./transport.js";
+
 // ── Lifecycle ──────────────────────────────────────────────────────────────
 
 export type LifecycleState = "INIT" | "STARTING" | "READY" | "STOPPING" | "STOPPED" | "ERROR";
@@ -119,9 +121,17 @@ export interface SwarmPeer {
 }
 
 export interface SwarmHandler {
-  delegate: (taskId: string, task: SwarmTask, context: SwarmContext) => Promise<{ acknowledged: boolean }>;
+  delegate: (
+    taskId: string,
+    task: SwarmTask,
+    context: SwarmContext,
+  ) => Promise<{ acknowledged: boolean }>;
   discover: (swarmName?: string) => Promise<{ peers: SwarmPeer[] }>;
-  report: (taskId: string, status: string, result: Record<string, unknown>) => Promise<{ acknowledged: boolean }>;
+  report: (
+    taskId: string,
+    status: string,
+    result: Record<string, unknown>,
+  ) => Promise<{ acknowledged: boolean }>;
   broadcast: (swarmName: string, message: Record<string, unknown>) => void;
 }
 
@@ -189,7 +199,13 @@ export interface TaskHandler {
 
 // ── Telemetry Types (optional at all levels) ──────────────────────────────
 
-export type TelemetryEventType = "tool_call" | "memory_op" | "swarm_op" | "task_op" | "lifecycle" | "error";
+export type TelemetryEventType =
+  | "tool_call"
+  | "memory_op"
+  | "swarm_op"
+  | "task_op"
+  | "lifecycle"
+  | "error";
 
 export interface TelemetryEvent {
   /** ISO 8601 UTC timestamp. */
@@ -214,6 +230,8 @@ export interface AgentOptions {
   version: string;
   /** Heartbeat interval in milliseconds. Default: 30000. Set to 0 to disable. */
   heartbeatInterval?: number;
+  /** Optional custom transport (advanced/testing). Defaults to stdio transport. */
+  transport?: Transport;
   // L2
   tools?: Record<string, ToolDefinition>;
   policy?: PolicyEvaluator;

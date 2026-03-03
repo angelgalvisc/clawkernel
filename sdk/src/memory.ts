@@ -19,7 +19,7 @@ export class MemoryExecutor {
 
   async handleStore(id: string | number | null, params: Record<string, unknown>): Promise<void> {
     const store = typeof params.store === "string" ? params.store : undefined;
-    const entries = Array.isArray(params.entries) ? params.entries as MemoryEntry[] : undefined;
+    const entries = Array.isArray(params.entries) ? (params.entries as MemoryEntry[]) : undefined;
 
     if (!store) {
       invalidParams(this.transport, id, "Missing store name");
@@ -34,15 +34,21 @@ export class MemoryExecutor {
       const result = await this.handler.store(store, entries);
       sendOk(this.transport, id, result);
     } catch (err) {
-      sendError(this.transport, id, -32603, `Memory store error: ${err instanceof Error ? err.message : String(err)}`);
+      sendError(
+        this.transport,
+        id,
+        -32603,
+        `Memory store error: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
   async handleQuery(id: string | number | null, params: Record<string, unknown>): Promise<void> {
     const store = typeof params.store === "string" ? params.store : undefined;
-    const query = (params.query !== null && typeof params.query === "object" && !Array.isArray(params.query))
-      ? params.query as MemoryQuery
-      : undefined;
+    const query =
+      params.query !== null && typeof params.query === "object" && !Array.isArray(params.query)
+        ? (params.query as MemoryQuery)
+        : undefined;
 
     if (!store) {
       invalidParams(this.transport, id, "Missing store name");
@@ -57,7 +63,12 @@ export class MemoryExecutor {
       const result = await this.handler.query(store, query);
       sendOk(this.transport, id, result);
     } catch (err) {
-      sendError(this.transport, id, -32603, `Memory query error: ${err instanceof Error ? err.message : String(err)}`);
+      sendError(
+        this.transport,
+        id,
+        -32603,
+        `Memory query error: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
@@ -73,7 +84,12 @@ export class MemoryExecutor {
       const result = await this.handler.compact(store);
       sendOk(this.transport, id, result);
     } catch (err) {
-      sendError(this.transport, id, -32603, `Memory compact error: ${err instanceof Error ? err.message : String(err)}`);
+      sendError(
+        this.transport,
+        id,
+        -32603,
+        `Memory compact error: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 }
