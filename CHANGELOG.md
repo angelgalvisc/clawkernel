@@ -20,6 +20,14 @@ All notable changes to this project are documented in this file.
 - Root Apache license appendix now includes a concrete copyright attribution.
 - `TV-L2-07` is now executable in `ckp-test`; full suite for SDK and NanoClaw bridge reaches `31/31` (`L3 CONFORMANT`).
 
+## [0.2.3] - 2026-03-03
+
+### Changed
+
+- SDK published to npm as `@clawkernel/sdk@0.2.3`.
+- Conformance updated to `31/31` (`L1/L2/L3 CONFORMANT`) for SDK and NanoClaw bridge.
+- Release/docs alignment updated for `0.2.3` status.
+
 ## [0.2.2] - 2026-03-02
 
 ### Added
