@@ -275,7 +275,7 @@ node ../../ckp-test/dist/cli.js run \
   --manifest examples/l3.claw.yaml \
   --level 3
 
-# Expected: 30 PASS + 1 SKIP → L3 PARTIAL
+# Expected: 31 PASS + 0 SKIP -> L3 CONFORMANT
 ```
 
 ## License

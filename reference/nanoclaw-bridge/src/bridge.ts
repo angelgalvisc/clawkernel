@@ -145,6 +145,13 @@ const tools = {
       return { content: [{ type: "text" as const, text: "done" }] };
     },
   },
+
+  // approval-tool is used by TV-L2-07 to validate timeout without approve/deny
+  "approval-tool": {
+    execute: async () => ({
+      content: [{ type: "text" as const, text: "approved" }],
+    }),
+  },
 };
 
 // ── NanoClaw Memory (L3) ────────────────────────────────────────────────────
@@ -276,10 +283,10 @@ const agent = createAgent({
     },
   },
 
-  // L2: Approval — NanoClaw doesn't have an approval gate, all tools execute immediately
+  // L2: Approval — NanoClaw executes immediately by default; bridge enables approval-tool for CKP TV-L2-07
   approval: {
-    required: () => false,
-    timeout_ms: 30000,
+    required: (toolName: string) => toolName === "approval-tool",
+    timeout_ms: 200,
   },
 
   // L2: Quota — maps NanoClaw's MAX_CONCURRENT_CONTAINERS concept

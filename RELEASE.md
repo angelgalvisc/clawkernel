@@ -44,16 +44,13 @@ node dist/cli.js run \
 ## Public Beta Criteria (`v0.2.x`)
 
 - L1: `CONFORMANT`
-- L3 vectors: `CONFORMANT`
-- Full suite may remain `PARTIAL` only for explicitly documented scenario-based skips.
-
-Current documented skip:
-
-- `TV-L2-07` (Approval Timeout): scenario orchestration not yet executable in harness.
+- L2: `CONFORMANT`
+- L3: `CONFORMANT`
+- Full suite: `CONFORMANT` (31/31 pass, no skips).
 
 ## GA / `v1.0` Criteria
 
-- No scenario-based skips in core conformance suite.
+- Core conformance suite remains 31/31 pass (no skips).
 - CI release gate passing on tags.
 - Security and disclosure policy active.
 - Changelog and migration notes published.

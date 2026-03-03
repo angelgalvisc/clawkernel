@@ -89,7 +89,7 @@ jobs:
 
       - name: Clone ckp-test (pinned)
         env:
-          CKP_TEST_REF: 16069a1c320d143ff1f6baf2e701667d10eafc80
+          CKP_TEST_REF: eb73dd2f0e8b073210d4d38f02a50bb83c8805ae
         run: |
           git clone https://github.com/angelgalvisc/ckp-test.git ../ckp-test
           git -C ../ckp-test checkout "$CKP_TEST_REF"

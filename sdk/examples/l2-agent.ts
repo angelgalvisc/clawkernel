@@ -1,6 +1,6 @@
 /**
  * L2 CKP Agent — tools, policy, sandbox, quota, approval.
- * Passes 13 L1 + 9 L2 vectors (TV-L2-07 = scenario skip).
+ * Passes 13 L1 + 10 L2 vectors.
  */
 
 import { createAgent } from "../src/index.js";
@@ -22,6 +22,11 @@ const agent = createAgent({
         return { content: [{ type: "text", text: "done" }] };
       },
     },
+    "approval-tool": {
+      execute: async () => ({
+        content: [{ type: "text", text: "approved" }],
+      }),
+    },
   },
 
   policy: {
@@ -39,8 +44,8 @@ const agent = createAgent({
   },
 
   approval: {
-    required: () => false,
-    timeout_ms: 30000,
+    required: (toolName) => toolName === "approval-tool",
+    timeout_ms: 200,
   },
 
   quota: {

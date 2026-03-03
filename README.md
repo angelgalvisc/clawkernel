@@ -238,7 +238,7 @@ npm run build:dev
 # L1 agent: 13/13 PASS
 node dist/examples/l1-agent.js
 
-# L3 agent: 30 PASS + 1 SKIP → L3 PARTIAL
+# L3 agent: 31 PASS + 0 SKIP -> L3 CONFORMANT
 node dist/examples/l3-agent.js
 ```
 
@@ -250,9 +250,9 @@ See [`sdk/examples/`](sdk/examples/) for L1, L2, and L3 example agents with thei
 
 | Target | Mode | Level | Pass | Skip | Fail | Result |
 |-------|------|-------|------|------|------|--------|
-| [@clawkernel/sdk](sdk/) | Live runtime | L3 | 30 | 1 | 0 | **L3 PARTIAL** |
+| [@clawkernel/sdk](sdk/) | Live runtime | L3 | 31 | 0 | 0 | **L3 CONFORMANT** |
 | [ckp-bridge](reference/ckp-bridge/) | Live runtime | L1 | 13 | 0 | 0 | **L1 CONFORMANT** |
-| [NanoClaw](profiles/nanoclaw.md) | Live bridge | L3 | 30 | 1 | 0 | **L3 PARTIAL** |
+| [NanoClaw Bridge](reference/nanoclaw-bridge/conformance-report.md) | Live runtime | L3 | 31 | 0 | 0 | **L3 CONFORMANT** |
 | [NanoClaw](profiles/nanoclaw.md) | Manifest baseline | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
 | [PicoClaw](profiles/picoclaw.md) | Manifest baseline | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
 | [NanoBot](profiles/nanobot.md) | Manifest baseline | L1 | 4 | 9 | 0 | **L1 PARTIAL** |
