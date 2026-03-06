@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-03-05
+
 ### Added
 
 - CI workflows for continuous quality (`ci.yml`) and tag-based release gate (`release-gate.yml`).
