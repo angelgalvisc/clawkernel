@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-03-05
+
+### Fixed
+
+- Release-gate workflow now builds SDK examples before conformance smoke (fixes EPIPE on `dist/examples/` targets).
+
 ## [0.2.4] - 2026-03-05
 
 ### Added

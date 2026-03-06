@@ -47,6 +47,10 @@ jobs:
           npm test
         working-directory: sdk
 
+      - name: Build SDK examples (for conformance targets)
+        run: npm run build:dev
+        working-directory: sdk
+
       - name: Clone ckp-test (pinned)
         env:
           CKP_TEST_REF: eb73dd2f0e8b073210d4d38f02a50bb83c8805ae
