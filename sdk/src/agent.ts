@@ -354,17 +354,24 @@ export class Agent {
     this.state = "READY";
     this.emitTelemetry("lifecycle", { transition: "STARTING → READY", conformanceLevel });
 
-    // Compute capabilities based on what the agent actually supports (spec §9.3.1)
+    // Compute capabilities based on the requested groups and what the agent implements.
+    const requestedCapabilities = params.capabilities as Record<string, unknown>;
+    const requestedGroups =
+      Object.keys(requestedCapabilities).length === 0
+        ? new Set(["tools", "memory", "swarm"])
+        : new Set(Object.keys(requestedCapabilities));
+
     const capabilities: Record<string, unknown> = {};
-    if (this.toolExecutor) capabilities.tools = {};
-    if (this.memoryExecutor) capabilities.memory = {};
-    if (this.swarmExecutor) capabilities.swarm = {};
+    if (this.toolExecutor && requestedGroups.has("tools")) capabilities.tools = {};
+    if (this.memoryExecutor && requestedGroups.has("memory")) capabilities.memory = {};
+    if (this.swarmExecutor && requestedGroups.has("swarm")) capabilities.swarm = {};
 
     // Start heartbeat (with minimum bound to prevent CPU saturation)
     const rawInterval = this.options.heartbeatInterval ?? 30000;
     const interval = rawInterval > 0 ? Math.max(rawInterval, MIN_HEARTBEAT_MS) : 0;
     if (interval > 0) {
       this.heartbeatTimer = setInterval(() => {
+        if (this.state !== "READY") return;
         this.transport.send({
           jsonrpc: "2.0",
           method: "claw.heartbeat",
@@ -407,13 +414,13 @@ export class Agent {
       this.heartbeatTimer = null;
     }
 
+    sendOk(this.transport, id, { drained: true });
+
     this.state = "STOPPED";
     this.emitTelemetry("lifecycle", {
       transition: "STOPPING → STOPPED",
       uptime_ms: this.initTime ? Date.now() - this.initTime : 0,
     });
-
-    sendOk(this.transport, id, { drained: true });
     // Do NOT exit process — per CKP spec, shutdown is graceful
   }
 }

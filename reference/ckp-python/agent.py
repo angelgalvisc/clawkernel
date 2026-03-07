@@ -6,7 +6,8 @@ Independent implementation of the CKP v0.2.0 wire protocol (L1+L2+L3) using
 only the Python 3.9+ standard library.  Shares no code with the TypeScript SDK.
 
 Transport : stdin/stdout, line-delimited JSON-RPC 2.0.
-Conformance: 31/31 vectors (13 L1 + 10 L2 + 8 L3), 0 skips, 0 fails.
+Conformance: 31/31 vectors (13 L1 + 10 L2 + 8 L3), 0 skips, 0 fails,
+against the reconciled CKP harness matrix.
 
 Methods implemented:
   L1  claw.initialize · claw.initialized · claw.status · claw.shutdown · claw.heartbeat
@@ -255,6 +256,8 @@ class Agent:
 
     def _start_heartbeat(self) -> None:
         """Schedule recurring heartbeat notifications."""
+        if self._heartbeat_timer is not None:
+            return
 
         def beat() -> None:
             if self._state == "READY":
@@ -333,16 +336,21 @@ class Agent:
     # ── L1 Handlers ──────────────────────────────────────────────────────
 
     def _handle_initialize(self, msg_id: MsgId, params: Params) -> None:
+        self._stop_heartbeat()
+
+        client_info = params.get("clientInfo")
         if (
             not isinstance(params.get("protocolVersion"), str)
-            or "clientInfo" not in params
-            or "manifest" not in params
-            or "capabilities" not in params
+            or not isinstance(client_info, dict)
+            or not isinstance(client_info.get("name"), str)
+            or not isinstance(client_info.get("version"), str)
+            or params.get("manifest") is None
+            or not isinstance(params.get("capabilities"), dict)
         ):
             self._err(
                 msg_id, ERR_INVALID_PARAMS,
                 "Missing required initialize params "
-                "(protocolVersion, clientInfo, manifest, capabilities)",
+                "(protocolVersion, clientInfo(name, version), manifest, capabilities)",
             )
             return
 
@@ -363,11 +371,25 @@ class Agent:
         self._init_time = time.monotonic()
         self._state = "READY"
 
+        requested_caps = params.get("capabilities", {})
+        requested_groups = (
+            {"tools", "swarm", "memory"}
+            if len(requested_caps) == 0
+            else set(requested_caps.keys())
+        )
+        capabilities: dict[str, dict[str, Any]] = {}
+        if "tools" in requested_groups:
+            capabilities["tools"] = {}
+        if "swarm" in requested_groups:
+            capabilities["swarm"] = {}
+        if "memory" in requested_groups:
+            capabilities["memory"] = {}
+
         self._ok(msg_id, {
             "protocolVersion": PROTOCOL_VERSION,
             "agentInfo": {"name": "ckp-python", "version": "0.2.0"},
             "conformanceLevel": "level-3",
-            "capabilities": {"tools": {}, "swarm": {}, "memory": {}},
+            "capabilities": capabilities,
         })
 
     def _handle_initialized(self, _msg_id: MsgId, _params: Params) -> None:

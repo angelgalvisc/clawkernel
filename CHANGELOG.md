@@ -13,6 +13,16 @@ All notable changes to this project are documented in this file.
 
 ### Fixed
 
+- SDK: Heartbeat callback now suppresses emits outside `READY`, and shutdown responds before entering `STOPPED`.
+- SDK: Approval timers now call `.unref?.()` so pending approvals do not keep the process alive.
+- Reference bridge (`ckp-bridge`): Lifecycle router now enforces `claw.initialize` first and `READY`-only gating for `claw.status`/`claw.shutdown`.
+- Reference bridge (`ckp-bridge`): `claw.initialize` now validates `clientInfo.name`, `clientInfo.version`, and `capabilities` object shape; L1 responses now return empty `capabilities`.
+- Python reference agent: Re-initialization now clears heartbeat state, and heartbeat startup is idempotent to prevent duplicate timers.
+- Python reference agent: `claw.initialize` now validates `clientInfo.name`, `clientInfo.version`, and `capabilities` object shape.
+- CI and release-gate workflows now build and execute `reference/ckp-bridge` directly instead of using the SDK L1 example as a proxy.
+- SDK README version badge now matches `0.2.5`; coherence reports are consolidated under `reports/`.
+- Spec: `claw.initialize` now explicitly defines that an empty top-level `capabilities` object is an unrestricted request, and L3 channel negatives are classified as manifest-validation vectors.
+- Harness/docs: local `ckp-test` and `clawkernel-docs` were updated to the reconciled L3 matrix; `clawkernel` CI now pins the spec-aligned harness commit `c3779fd`.
 - SDK: `claw.initialize` now validates all 4 required params per spec §9.3.1 (protocolVersion, clientInfo, manifest, capabilities) — previously only validated protocolVersion.
 - SDK: Version mismatch error (`-32001`) now includes `data.supported` array per spec §9.3.1 — previously omitted the data field entirely.
 - SDK: `claw.initialize` response now returns capabilities reflecting configured handlers (tools, memory, swarm) — previously always returned empty `{}`.

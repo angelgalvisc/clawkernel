@@ -28,6 +28,7 @@ const ERR_INVALID_REQUEST = -32600;
 const ERR_METHOD_NOT_FOUND = -32601;
 const ERR_INVALID_PARAMS = -32602;
 const ERR_VERSION_MISMATCH = -32001;
+const READY_ONLY_METHODS = new Set(["claw.status", "claw.shutdown"]);
 
 type LifecycleState = "INIT" | "STARTING" | "READY" | "STOPPING" | "STOPPED" | "ERROR";
 
@@ -73,15 +74,34 @@ function handleInitialize(id: string | number | null, params: Record<string, unk
     }
   }
 
-  // Validate required params
+  // Validate all 4 required params per spec §9.3.1.
+  if (typeof params.protocolVersion !== "string") {
+    err(id, ERR_INVALID_PARAMS, "Missing required param: protocolVersion");
+    return;
+  }
+
+  const clientInfo = params.clientInfo;
   if (
-    !params.protocolVersion ||
-    typeof params.protocolVersion !== "string" ||
-    !params.clientInfo ||
-    !params.manifest ||
-    !("capabilities" in params)
+    typeof clientInfo !== "object" ||
+    clientInfo === null ||
+    typeof (clientInfo as Record<string, unknown>).name !== "string" ||
+    typeof (clientInfo as Record<string, unknown>).version !== "string"
   ) {
-    err(id, ERR_INVALID_PARAMS, "Missing required initialize params (protocolVersion, clientInfo, manifest, capabilities)");
+    err(id, ERR_INVALID_PARAMS, "Missing required param: clientInfo (name, version)");
+    return;
+  }
+
+  if (params.manifest === undefined || params.manifest === null) {
+    err(id, ERR_INVALID_PARAMS, "Missing required param: manifest");
+    return;
+  }
+
+  if (
+    typeof params.capabilities !== "object" ||
+    params.capabilities === null ||
+    Array.isArray(params.capabilities)
+  ) {
+    err(id, ERR_INVALID_PARAMS, "Missing required param: capabilities");
     return;
   }
 
@@ -104,7 +124,7 @@ function handleInitialize(id: string | number | null, params: Record<string, unk
     protocolVersion: PROTOCOL_VERSION,
     agentInfo: { name: "ckp-bridge", version: PROTOCOL_VERSION },
     conformanceLevel: "level-1",
-    capabilities: { tools: {}, swarm: {}, memory: {} },
+    capabilities: {},
   });
 }
 
@@ -178,7 +198,26 @@ function handleLine(raw: string): void {
   // 3. Route by method
   const method = msg.method as string;
   const id = ("id" in msg ? msg.id : null) as string | number | null;
-  const params = (msg.params ?? {}) as Record<string, unknown>;
+  if (
+    msg.params !== undefined &&
+    (typeof msg.params !== "object" || msg.params === null || Array.isArray(msg.params))
+  ) {
+    err(id, ERR_INVALID_PARAMS, "params must be an object");
+    return;
+  }
+  const params = (msg.params as Record<string, unknown>) ?? {};
+
+  // Enforce initialize as the first request in a session.
+  if (state === "INIT" && method !== "claw.initialize") {
+    if (id !== null) err(id, ERR_INVALID_REQUEST, "claw.initialize required first");
+    return;
+  }
+
+  // Status and shutdown are only valid once the agent is READY.
+  if (state !== "READY" && READY_ONLY_METHODS.has(method)) {
+    if (id !== null) err(id, ERR_INVALID_REQUEST, "Method requires READY state");
+    return;
+  }
 
   switch (method) {
     case "claw.initialize":

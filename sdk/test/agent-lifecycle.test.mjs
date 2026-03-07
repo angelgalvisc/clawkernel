@@ -221,3 +221,90 @@ test("agent returns capabilities reflecting configured handlers", () => {
   assert.equal(transport.messages[0].result.conformanceLevel, "level-2");
   agent.close();
 });
+
+test("agent returns only requested capability groups when request is restricted", () => {
+  const transport = createMockTransport();
+  const agent = new Agent({
+    name: "test-agent",
+    version: "1.0.0",
+    heartbeatInterval: 0,
+    transport,
+    tools: {
+      echo: {
+        execute: async () => ({ content: [{ type: "text", text: "ok" }] }),
+      },
+    },
+    memory: {
+      store: async () => ({ stored: 1, ids: ["m1"] }),
+      query: async () => ({ entries: [] }),
+      compact: async () => ({ entries_before: 1, entries_after: 1 }),
+    },
+    swarm: {
+      delegate: async () => ({ acknowledged: true }),
+      discover: async () => ({ peers: [] }),
+      report: async () => ({ acknowledged: true }),
+      broadcast: async () => {},
+    },
+  });
+  agent.listen();
+
+  transport.emit(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "claw.initialize",
+      params: {
+        ...INIT_PARAMS,
+        capabilities: { memory: {} },
+      },
+    }),
+  );
+
+  assert.deepEqual(transport.messages[0].result.capabilities, { memory: {} });
+  assert.equal(transport.messages[0].result.conformanceLevel, "level-3");
+  agent.close();
+});
+
+test("agent returns all supported capability groups when request is unrestricted", () => {
+  const transport = createMockTransport();
+  const agent = new Agent({
+    name: "test-agent",
+    version: "1.0.0",
+    heartbeatInterval: 0,
+    transport,
+    tools: {
+      echo: {
+        execute: async () => ({ content: [{ type: "text", text: "ok" }] }),
+      },
+    },
+    memory: {
+      store: async () => ({ stored: 1, ids: ["m1"] }),
+      query: async () => ({ entries: [] }),
+      compact: async () => ({ entries_before: 1, entries_after: 1 }),
+    },
+    swarm: {
+      delegate: async () => ({ acknowledged: true }),
+      discover: async () => ({ peers: [] }),
+      report: async () => ({ acknowledged: true }),
+      broadcast: async () => {},
+    },
+  });
+  agent.listen();
+
+  transport.emit(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "claw.initialize",
+      params: INIT_PARAMS,
+    }),
+  );
+
+  assert.deepEqual(transport.messages[0].result.capabilities, {
+    tools: {},
+    memory: {},
+    swarm: {},
+  });
+  assert.equal(transport.messages[0].result.conformanceLevel, "level-3");
+  agent.close();
+});

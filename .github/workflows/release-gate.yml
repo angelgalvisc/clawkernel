@@ -53,7 +53,7 @@ jobs:
 
       - name: Clone ckp-test (pinned)
         env:
-          CKP_TEST_REF: eb73dd2f0e8b073210d4d38f02a50bb83c8805ae
+          CKP_TEST_REF: c3779fd24421ccc0572bda48a534f47685ea2b5f
         run: |
           git clone https://github.com/angelgalvisc/ckp-test.git ../ckp-test
           git -C ../ckp-test checkout "$CKP_TEST_REF"
@@ -64,10 +64,14 @@ jobs:
           npm run build
         working-directory: ../ckp-test
 
+      - name: Build ckp-bridge
+        run: npm ci && npm run build
+        working-directory: reference/ckp-bridge
+
       - name: Conformance smoke
         run: |
           node dist/cli.js run \
-            --target "node $GITHUB_WORKSPACE/sdk/dist/examples/l1-agent.js" \
+            --target "node $GITHUB_WORKSPACE/reference/ckp-bridge/dist/bridge.js" \
             --manifest "$GITHUB_WORKSPACE/reference/ckp-bridge/claw.yaml" \
             --level 1
 

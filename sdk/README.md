@@ -4,7 +4,7 @@ Zero-dependency TypeScript SDK for building [CKP](https://github.com/angelgalvis
 
 🌐 **Documentation:** [clawkernel.com](https://www.clawkernel.com/) · Built by [Datastrat](https://datastrat.co)
 
-[![Version](https://img.shields.io/badge/version-0.2.2-blue)](package.json)
+[![Version](https://img.shields.io/badge/version-0.2.5-blue)](package.json)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](../LICENSE)
 [![Dependencies](https://img.shields.io/badge/runtime_deps-0-brightgreen)]()
 

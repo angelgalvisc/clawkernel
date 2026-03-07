@@ -110,7 +110,7 @@ spec:
 }
 ```
 
-**Expected:** Success response with `protocolVersion`, `agentInfo`, `conformanceLevel: "level-1"`, and `capabilities`.
+**Expected:** Success response with `protocolVersion`, `agentInfo`, `conformanceLevel: "level-1"`, and `capabilities`. Because the request `capabilities` object is empty, the Agent returns all capability groups it supports.
 **Reference:** Section 9.3.1, `claw.initialize`.
 
 ---
@@ -710,6 +710,8 @@ spec:
 **Expected (report):** Response result with `{ "acknowledged": true }`. `status` is one of `completed`, `failed`, `partial`.
 **Reference:** Section 9.3.3, `claw.swarm.delegate`, `claw.swarm.report`; Section 9.0, Actor Model.
 
+This vector intentionally covers `claw.swarm.report`; there is no separate standalone `swarm.report` conformance vector.
+
 ---
 
 ### TV-L3-03: Memory Store + Query Round-Trip
@@ -750,7 +752,7 @@ spec:
 
 ---
 
-### TV-L3-04: Allowlist Mode with Roles Field (Invalid)
+### TV-L3-04: Allowlist Mode with Roles Field (Invalid Manifest)
 
 **Input (YAML — Channel primitive):**
 
@@ -772,12 +774,14 @@ spec:
         role: "admin"
 ```
 
-**Expected:** Reject. For `allowlist` mode, `roles` MUST NOT be present.
+**Expected:** Reject during manifest validation. For `allowlist` mode, `roles` MUST NOT be present.
 **Reference:** Section 5.3, Access Control Modes normative note.
+
+Harness note: this is a manifest-validation vector, not a live wire-protocol exchange.
 
 ---
 
-### TV-L3-05: Role-Based Mode with Allowed IDs (Invalid)
+### TV-L3-05: Role-Based Mode with Allowed IDs (Invalid Manifest)
 
 **Input (YAML — Channel primitive):**
 
@@ -799,8 +803,10 @@ spec:
     allowed_ids: ["12345"]
 ```
 
-**Expected:** Reject. For `role-based` mode, `allowed_ids` MUST NOT be present.
+**Expected:** Reject during manifest validation. For `role-based` mode, `allowed_ids` MUST NOT be present.
 **Reference:** Section 5.3, Access Control Modes normative note.
+
+Harness note: this is a manifest-validation vector, not a live wire-protocol exchange.
 
 ---
 

@@ -1524,7 +1524,7 @@ The Operator MUST send `claw.initialize` as the first message in a session. The 
 | `clientInfo.name` | REQUIRED | Operator implementation name. |
 | `clientInfo.version` | REQUIRED | Operator implementation version. |
 | `manifest` | REQUIRED | Inline Claw manifest object or a `claw://` URI referencing one. |
-| `capabilities` | REQUIRED | Object declaring which primitive groups the Operator supports. Keys are `tools`, `swarm`, `memory`. An empty object `{}` means the group is supported with default behavior. Omitting a key means the group is not supported. |
+| `capabilities` | REQUIRED | Object declaring which primitive groups the Operator supports. Keys are `tools`, `swarm`, `memory`. A present key with value `{}` means the group is supported with default behavior. If the top-level object is empty (`{}`), the Operator places no restrictions on the Agent's response. In a non-empty object, omitting a key means that group is not supported/requested. |
 
 **Response result:**
 
@@ -1554,7 +1554,9 @@ The Operator MUST send `claw.initialize` as the first message in a session. The 
 | `agentInfo.name` | REQUIRED | From the Identity primitive. |
 | `agentInfo.version` | REQUIRED | From the manifest `metadata.version`. |
 | `conformanceLevel` | REQUIRED | One of `level-1`, `level-2`, `level-3`. |
-| `capabilities` | REQUIRED | Capabilities the Agent actually supports (intersection of what was requested and what the runtime implements). |
+| `capabilities` | REQUIRED | Capabilities the Agent actually supports. If the request `capabilities` object is empty, the Agent MUST return all supported groups. Otherwise, the response MUST be the intersection of the requested groups and what the runtime implements. |
+
+> **Normative:** For `claw.initialize`, `capabilities: {}` is an unrestricted request. It does **not** mean "support nothing"; it means the Operator is not constraining the Agent's response.
 
 If the Agent does not support the requested `protocolVersion`, it MUST respond with error code `-32001` and include the versions it supports:
 

@@ -23,6 +23,7 @@ export class ApprovalQueue {
         this.pending.delete(requestId);
         reject("timeout");
       }, timeoutMs);
+      timer.unref?.();
 
       this.pending.set(requestId, { resolve, reject, timer });
     });
