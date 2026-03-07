@@ -1,0 +1,285 @@
+# NullClaw CKP Bridge Manifest — LIVE (consumed by ckp-test harness)
+# Maps NullClaw's real architecture (96K LOC Zig runtime) to CKP v0.2.0 primitives.
+
+claw: "0.2.0"
+kind: Claw
+metadata:
+  name: nullclaw-bridge
+  version: "1.0.0"
+
+spec:
+  identity:
+    inline:
+      personality: |
+        NullClaw is the fastest Zig-based AI assistant runtime.
+        96K LOC compiled to a 678KB static binary with <2ms startup.
+        30+ tools, 20 channels, 10 memory backends, 4 sandbox backends.
+        Security-first design with workspace isolation and SSRF protection.
+      autonomy: supervised
+
+  providers:
+    - inline:
+        protocol: openai-compatible
+        endpoint: https://openrouter.ai/api/v1
+        model: anthropic/claude-sonnet-4-20250514
+        auth:
+          type: bearer
+          secret_ref: OPENROUTER_API_KEY
+        streaming: true
+    - inline:
+        protocol: anthropic-native
+        endpoint: https://api.anthropic.com/v1
+        model: claude-sonnet-4-20250514
+        auth:
+          type: bearer
+          secret_ref: ANTHROPIC_API_KEY
+        streaming: true
+    - inline:
+        protocol: openai-compatible
+        endpoint: http://localhost:11434/v1
+        model: llama3.2
+        auth:
+          type: none
+
+  channels:
+    - inline:
+        type: cli
+        transport: stdio
+        auth:
+          secret_ref: CLI_TOKEN
+        access_control:
+          mode: open
+    - inline:
+        type: telegram
+        transport: polling
+        auth:
+          secret_ref: TELEGRAM_BOT_TOKEN
+        access_control:
+          mode: allowlist
+          allowed_ids:
+            - "owner"
+    - inline:
+        type: discord
+        transport: websocket
+        auth:
+          secret_ref: DISCORD_BOT_TOKEN
+        access_control:
+          mode: role-based
+          roles:
+            - id: "admin-role"
+              role: admin
+            - id: "user-role"
+              role: user
+    - inline:
+        type: web
+        transport: webhook
+        auth:
+          secret_ref: WEB_API_KEY
+        access_control:
+          mode: open
+
+  tools:
+    - inline:
+        name: echo
+        description: "Echo input back (test tool)"
+        input_schema:
+          type: object
+          properties:
+            text:
+              type: string
+    - inline:
+        name: shell
+        description: "Execute commands in NullClaw's sandboxed environment"
+        input_schema:
+          type: object
+          properties:
+            command:
+              type: string
+            cwd:
+              type: string
+          required:
+            - command
+        sandbox_ref: nullclaw-sandbox
+        timeout_ms: 60000
+    - inline:
+        name: file_read
+        description: "Read file contents from workspace"
+        input_schema:
+          type: object
+          properties:
+            path:
+              type: string
+          required:
+            - path
+        sandbox_ref: nullclaw-sandbox
+    - inline:
+        name: file_write
+        description: "Write content to a file in workspace"
+        input_schema:
+          type: object
+          properties:
+            path:
+              type: string
+            content:
+              type: string
+          required:
+            - path
+            - content
+        sandbox_ref: nullclaw-sandbox
+    - inline:
+        name: file_edit
+        description: "Edit a file with search-and-replace operations"
+        input_schema:
+          type: object
+          properties:
+            path:
+              type: string
+            search:
+              type: string
+            replace:
+              type: string
+          required:
+            - path
+        sandbox_ref: nullclaw-sandbox
+    - inline:
+        name: memory_store
+        description: "Store a memory entry with optional category"
+        input_schema:
+          type: object
+          properties:
+            key:
+              type: string
+            value:
+              type: string
+            category:
+              type: string
+          required:
+            - key
+            - value
+    - inline:
+        name: memory_recall
+        description: "Recall memory entries by semantic query"
+        input_schema:
+          type: object
+          properties:
+            query:
+              type: string
+          required:
+            - query
+    - inline:
+        name: web_search
+        description: "Search the web via configured provider"
+        input_schema:
+          type: object
+          properties:
+            query:
+              type: string
+          required:
+            - query
+    - inline:
+        name: web_fetch
+        description: "Fetch content from a URL"
+        input_schema:
+          type: object
+          properties:
+            url:
+              type: string
+          required:
+            - url
+        sandbox_ref: nullclaw-sandbox
+    - inline:
+        name: delegate
+        description: "Delegate a task to a NullClaw worker subagent"
+        input_schema:
+          type: object
+          properties:
+            task:
+              type: string
+            target:
+              type: string
+          required:
+            - task
+
+  sandbox:
+    inline:
+      level: container
+      runtime: docker
+      capabilities:
+        network:
+          mode: allow-all
+        filesystem:
+          mode: scoped
+          mount_paths:
+            - path: /workspace
+              permissions: rw
+            - path: /workspace/project
+              permissions: rw
+            - path: /workspace/shared
+              permissions: ro
+            - path: /tmp/nullclaw
+              permissions: rw
+          denied_paths:
+            - "~/.ssh"
+            - "~/.gnupg"
+            - "~/.aws"
+            - "~/.azure"
+            - "~/.gcloud"
+            - "~/.kube"
+            - "~/.docker"
+            - ".env"
+            - "credentials"
+            - "private_key"
+            - "secrets.yaml"
+            - "token.json"
+        shell:
+          mode: restricted
+
+  policies:
+    - inline:
+        name: nullclaw-security
+        rules:
+          - id: workspace-isolation
+            action: allow
+            scope: category
+            match:
+              category: filesystem
+            conditions:
+              path_within: /workspace
+          - id: block-destructive
+            action: deny
+            scope: tool
+            match:
+              tool: destructive-tool
+          - id: block-rm-rf
+            action: deny
+            scope: tool
+            match:
+              tool: rm-rf-tool
+          - id: block-ssrf
+            action: deny
+            scope: tool
+            match:
+              arguments:
+                url: "169.254.*"
+          - id: default-allow
+            action: allow
+            scope: all
+
+  swarm:
+    inline:
+      topology: leader-worker
+      agents:
+        - identity_ref: nullclaw-main
+          role: leader
+          count: 1
+        - identity_ref: nullclaw-worker
+          role: worker
+          count: 4
+      coordination:
+        message_passing: direct
+        backend: in-process
+        concurrency:
+          max_parallel: 8
+      aggregation:
+        strategy: leader-decides
+        timeout_ms: 300000

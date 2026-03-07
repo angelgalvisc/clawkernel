@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- NullClaw CKP bridge (`reference/nullclaw-bridge/`) — L3 conformant wrapper for the Zig-based NullClaw runtime (96K LOC, 678KB binary, 30+ tools, multi-sandbox, hybrid memory, leader-worker swarm).
+- CI and release-gate workflows now run full conformance suite (31/31) against nullclaw-bridge.
+
 ## [0.2.5] - 2026-03-05
 
 ### Fixed

@@ -75,3 +75,14 @@ jobs:
             --target "node $GITHUB_WORKSPACE/sdk/dist/examples/l3-agent.js" \
             --manifest "$GITHUB_WORKSPACE/sdk/examples/l3.claw.yaml"
         working-directory: ../ckp-test
+
+      - name: Build nullclaw-bridge
+        run: npm ci && npm run build
+        working-directory: reference/nullclaw-bridge
+
+      - name: Run full suite against nullclaw-bridge
+        run: |
+          node dist/cli.js run \
+            --target "node $GITHUB_WORKSPACE/reference/nullclaw-bridge/dist/bridge.js" \
+            --manifest "$GITHUB_WORKSPACE/reference/nullclaw-bridge/nullclaw.claw.yaml"
+        working-directory: ../ckp-test
