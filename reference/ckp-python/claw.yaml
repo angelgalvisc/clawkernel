@@ -1,0 +1,18 @@
+claw: "0.2.0"
+kind: Claw
+metadata:
+  name: "ckp-python"
+  version: "0.1.0"
+  description: "CKP L1 reference agent in pure Python — zero SDK dependencies"
+spec:
+  identity:
+    inline:
+      personality: "CKP L1 reference agent implemented in Python. Independent implementation proving cross-language protocol portability."
+      autonomy: "supervised"
+  providers:
+    - inline:
+        protocol: "openai-compatible"
+        endpoint: "http://localhost:11434/v1"
+        model: "test-model"
+        auth:
+          type: "none"

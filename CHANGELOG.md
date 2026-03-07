@@ -8,6 +8,7 @@ All notable changes to this project are documented in this file.
 
 - NullClaw CKP bridge (`reference/nullclaw-bridge/`) — L3 conformant wrapper for the Zig-based NullClaw runtime (96K LOC, 678KB binary, 30+ tools, multi-sandbox, hybrid memory, leader-worker swarm).
 - CI and release-gate workflows now run full conformance suite (31/31) against nullclaw-bridge.
+- Python reference agent (`reference/ckp-python/`) — independent L1 implementation in pure Python (~120 lines, stdlib only). First non-TypeScript CKP implementation, proving cross-language protocol portability.
 
 ## [0.2.5] - 2026-03-05
 
