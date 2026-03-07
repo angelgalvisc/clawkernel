@@ -1,0 +1,21 @@
+{
+  "name": "@clawkernel/bridge-common",
+  "version": "0.1.0",
+  "description": "Shared CKP bridge utilities — sandbox, memory, swarm, and conformance test tools",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@clawkernel/sdk": "file:../../sdk"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  },
+  "files": ["dist"],
+  "license": "Apache-2.0"
+}

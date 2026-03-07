@@ -9,7 +9,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@clawkernel/sdk": "file:../../sdk"
+    "@clawkernel/sdk": "file:../../sdk",
+    "@clawkernel/bridge-common": "file:../bridge-common"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

@@ -7,7 +7,7 @@
 export interface PendingCall {
   resolve: () => void;
   reject: (reason: string) => void;
-  timer: NodeJS.Timeout;
+  timer: ReturnType<typeof setTimeout>;
 }
 
 export class ApprovalQueue {

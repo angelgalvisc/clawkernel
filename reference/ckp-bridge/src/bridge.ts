@@ -65,6 +65,14 @@ function err(
 // ── Method Handlers ──────────────────────────────────────────────────────────
 
 function handleInitialize(id: string | number | null, params: Record<string, unknown>): void {
+  // Graceful re-initialization: clean up previous state to prevent timer leaks
+  if (state !== "INIT") {
+    if (heartbeatTimer) {
+      clearInterval(heartbeatTimer);
+      heartbeatTimer = null;
+    }
+  }
+
   // Validate required params
   if (
     !params.protocolVersion ||

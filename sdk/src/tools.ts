@@ -103,18 +103,21 @@ export class ToolExecutor {
       }
     }
 
-    // ── Execute with timeout ────────────────────────────────────────────
+    // ── Execute with timeout (timer is always cleared to prevent leaks) ─
     const timeoutMs = tool.timeout_ms ?? 30000;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
       const result = await Promise.race([
         tool.execute(args),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new ToolTimeoutError(name, timeoutMs)), timeoutMs),
-        ),
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(new ToolTimeoutError(name, timeoutMs)), timeoutMs);
+        }),
       ]);
 
+      clearTimeout(timer);
       sendOk(this.transport, id, result);
     } catch (err) {
+      clearTimeout(timer);
       if (err instanceof ToolTimeoutError) {
         toolTimeout(this.transport, id, name);
       } else {

@@ -59,7 +59,7 @@ export type MethodHandler = (
 export class Agent {
   private state: LifecycleState = "INIT";
   private transport: Transport;
-  private heartbeatTimer: NodeJS.Timeout | null = null;
+  private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   private initTime: number | null = null;
   private options: AgentOptions;
   private methodHandlers: Map<string, MethodHandler> = new Map();
@@ -253,30 +253,54 @@ export class Agent {
       return;
     }
 
-    // Execute handler (may be async)
-    const result = handler(id, params);
-    if (result instanceof Promise) {
-      result.catch((err: unknown) => {
-        if (id !== null) {
-          sendError(
-            this.transport,
-            id,
-            -32603,
-            `Internal error: ${err instanceof Error ? err.message : String(err)}`,
-          );
-          this.emitTelemetry("error", {
-            code: -32603,
-            method,
-            error: err instanceof Error ? err.message : String(err),
-          });
-        }
-      });
+    // Execute handler (may be sync or async — guard both paths)
+    try {
+      const result = handler(id, params);
+      if (result instanceof Promise) {
+        result.catch((err: unknown) => {
+          if (id !== null) {
+            sendError(
+              this.transport,
+              id,
+              -32603,
+              `Internal error: ${err instanceof Error ? err.message : String(err)}`,
+            );
+            this.emitTelemetry("error", {
+              code: -32603,
+              method,
+              error: err instanceof Error ? err.message : String(err),
+            });
+          }
+        });
+      }
+    } catch (err: unknown) {
+      if (id !== null) {
+        sendError(
+          this.transport,
+          id,
+          -32603,
+          `Internal error: ${err instanceof Error ? err.message : String(err)}`,
+        );
+        this.emitTelemetry("error", {
+          code: -32603,
+          method,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
     }
   }
 
   // ── L1 Handlers ────────────────────────────────────────────────────────
 
   private handleInitialize(id: string | number | null, params: Record<string, unknown>): void {
+    // Graceful re-initialization: clean up previous state to prevent timer leaks
+    if (this.state !== "INIT") {
+      if (this.heartbeatTimer) {
+        clearInterval(this.heartbeatTimer);
+        this.heartbeatTimer = null;
+      }
+    }
+
     // Validate required params with type guard
     const clientVersion =
       typeof params.protocolVersion === "string" ? params.protocolVersion : undefined;
@@ -320,6 +344,8 @@ export class Agent {
           },
         });
       }, interval);
+      // Don't keep process alive just for heartbeat
+      this.heartbeatTimer.unref();
     }
 
     sendOk(this.transport, id, {

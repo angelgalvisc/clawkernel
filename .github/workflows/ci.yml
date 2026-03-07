@@ -115,6 +115,10 @@ jobs:
             --manifest "$GITHUB_WORKSPACE/sdk/examples/l3.claw.yaml"
         working-directory: ../ckp-test
 
+      - name: Build bridge-common
+        run: npm ci && npm run build
+        working-directory: reference/bridge-common
+
       - name: Build nullclaw-bridge
         run: npm ci && npm run build
         working-directory: reference/nullclaw-bridge
