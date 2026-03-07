@@ -80,6 +80,22 @@ spec:
             - jid
             - text
 
+  skills:
+    - inline:
+        name: echo-skill
+        description: "Echo workflow"
+        tools_required:
+          - echo
+        instruction: "Use echo tool to echo back user input."
+
+  memory:
+    inline:
+      stores:
+        - name: context
+          type: conversation
+          backend: sqlite
+          scope: global
+
   sandbox:
     inline:
       level: container

@@ -301,7 +301,7 @@ export class Agent {
       }
     }
 
-    // Validate required params with type guard
+    // Validate all 4 required params per spec §9.3.1
     const clientVersion =
       typeof params.protocolVersion === "string" ? params.protocolVersion : undefined;
     if (!clientVersion) {
@@ -309,11 +309,36 @@ export class Agent {
       return;
     }
 
+    const clientInfo = params.clientInfo;
+    if (
+      typeof clientInfo !== "object" ||
+      clientInfo === null ||
+      typeof (clientInfo as Record<string, unknown>).name !== "string" ||
+      typeof (clientInfo as Record<string, unknown>).version !== "string"
+    ) {
+      invalidParams(this.transport, id, "Missing required param: clientInfo (name, version)");
+      return;
+    }
+
+    if (params.manifest === undefined || params.manifest === null) {
+      invalidParams(this.transport, id, "Missing required param: manifest");
+      return;
+    }
+
+    if (
+      typeof params.capabilities !== "object" ||
+      params.capabilities === null ||
+      Array.isArray(params.capabilities)
+    ) {
+      invalidParams(this.transport, id, "Missing required param: capabilities");
+      return;
+    }
+
     // Version negotiation: major must match
     const clientMajor = clientVersion.split(".")[0];
     const serverMajor = PROTOCOL_VERSION.split(".")[0];
     if (clientMajor !== serverMajor) {
-      versionMismatch(this.transport, id);
+      versionMismatch(this.transport, id, [PROTOCOL_VERSION]);
       return;
     }
 
@@ -328,6 +353,12 @@ export class Agent {
 
     this.state = "READY";
     this.emitTelemetry("lifecycle", { transition: "STARTING → READY", conformanceLevel });
+
+    // Compute capabilities based on what the agent actually supports (spec §9.3.1)
+    const capabilities: Record<string, unknown> = {};
+    if (this.toolExecutor) capabilities.tools = {};
+    if (this.memoryExecutor) capabilities.memory = {};
+    if (this.swarmExecutor) capabilities.swarm = {};
 
     // Start heartbeat (with minimum bound to prevent CPU saturation)
     const rawInterval = this.options.heartbeatInterval ?? 30000;
@@ -352,7 +383,7 @@ export class Agent {
       protocolVersion: PROTOCOL_VERSION,
       agentInfo: { name: this.options.name, version: this.options.version },
       conformanceLevel,
-      capabilities: {},
+      capabilities,
     });
   }
 

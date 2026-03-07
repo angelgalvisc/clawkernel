@@ -1,10 +1,10 @@
 # CKP Conformance Report
 
 **Harness:** @clawkernel/ckp-test v0.2.0
-**Date:** 2026-03-03T04:28:42.476Z
-**Target:** node /Users/agc/Documents/clawkernel/reference/nanoclaw-bridge/dist/bridge.js
+**Date:** 2026-03-07
+**Target:** node reference/nanoclaw-bridge/dist/bridge.js
 **Manifest:** VALID
-**Detected Level:** level-2
+**Detected Level:** level-3
 **Overall:** L3 CONFORMANT
 
 ## Summary

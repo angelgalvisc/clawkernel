@@ -66,12 +66,17 @@ export function invalidParams(
   sendError(transport, id, CKP_ERROR_CODES.INVALID_PARAMS, msg ?? "Invalid params");
 }
 
-export function versionMismatch(transport: Transport, id: string | number | null): void {
+export function versionMismatch(
+  transport: Transport,
+  id: string | number | null,
+  supported: string[],
+): void {
   sendError(
     transport,
     id,
     CKP_ERROR_CODES.PROTOCOL_VERSION_NOT_SUPPORTED,
     "Protocol version not supported",
+    { supported },
   );
 }
 

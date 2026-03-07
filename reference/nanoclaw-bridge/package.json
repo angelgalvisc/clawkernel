@@ -1,7 +1,7 @@
 {
   "name": "@clawkernel/nanoclaw-bridge",
   "version": "0.1.0",
-  "description": "CKP L2 bridge for NanoClaw — wraps container sandbox, mount security, and WhatsApp channel into CKP JSON-RPC",
+  "description": "CKP L3 bridge for NanoClaw — wraps container sandbox, mount security, and WhatsApp channel into CKP JSON-RPC",
   "type": "module",
   "main": "dist/bridge.js",
   "scripts": {

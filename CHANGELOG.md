@@ -13,12 +13,20 @@ All notable changes to this project are documented in this file.
 
 ### Fixed
 
+- SDK: `claw.initialize` now validates all 4 required params per spec §9.3.1 (protocolVersion, clientInfo, manifest, capabilities) — previously only validated protocolVersion.
+- SDK: Version mismatch error (`-32001`) now includes `data.supported` array per spec §9.3.1 — previously omitted the data field entirely.
+- SDK: `claw.initialize` response now returns capabilities reflecting configured handlers (tools, memory, swarm) — previously always returned empty `{}`.
 - SDK: Synchronous handler exceptions now caught (previously crashed the process).
 - SDK: Tool execution timeout timer is properly cleared on success (prevents unhandled rejection leak).
 - SDK: Heartbeat timer uses `.unref()` (prevents keeping process alive after all work is done).
 - SDK: Graceful re-initialization cleans up heartbeat timer (prevents timer leak on duplicate `claw.initialize`).
 - SDK: `NodeJS.Timeout` replaced with `ReturnType<typeof setTimeout/setInterval>` for runtime portability.
 - Reference bridge (`ckp-bridge`): Graceful re-initialization guard added.
+- NanoClaw bridge: Package description corrected from "L2" to "L3".
+- NullClaw and NanoClaw bridge manifests: Added `memory` and `skills` sections (required for L3 detection by harness).
+- Normalized `tsconfig` across all packages (consistent `lib`, `sourceMap`, `forceConsistentCasingInFileNames`, `include` patterns).
+- Normalized `@types/node` version across bridge packages to `^22.10.0`.
+- CI and release-gate workflows now run full conformance suite against nanoclaw-bridge (previously only nullclaw-bridge).
 
 ## [0.2.5] - 2026-03-05
 

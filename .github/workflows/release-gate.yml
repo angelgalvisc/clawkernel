@@ -91,6 +91,17 @@ jobs:
             --manifest "$GITHUB_WORKSPACE/reference/nullclaw-bridge/nullclaw.claw.yaml"
         working-directory: ../ckp-test
 
+      - name: Build nanoclaw-bridge
+        run: npm ci && npm run build
+        working-directory: reference/nanoclaw-bridge
+
+      - name: Run full suite against nanoclaw-bridge
+        run: |
+          node dist/cli.js run \
+            --target "node $GITHUB_WORKSPACE/reference/nanoclaw-bridge/dist/bridge.js" \
+            --manifest "$GITHUB_WORKSPACE/reference/nanoclaw-bridge/nanoclaw.claw.yaml"
+        working-directory: ../ckp-test
+
       - name: Run full suite against Python reference agent
         run: |
           node dist/cli.js run \
