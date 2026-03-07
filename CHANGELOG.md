@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-03-07
+
 ### Added
 
 - NullClaw CKP bridge (`reference/nullclaw-bridge/`) — L3 conformant wrapper for the Zig-based NullClaw runtime (96K LOC, 678KB binary, 30+ tools, multi-sandbox, hybrid memory, leader-worker swarm).
@@ -20,7 +22,7 @@ All notable changes to this project are documented in this file.
 - Python reference agent: Re-initialization now clears heartbeat state, and heartbeat startup is idempotent to prevent duplicate timers.
 - Python reference agent: `claw.initialize` now validates `clientInfo.name`, `clientInfo.version`, and `capabilities` object shape.
 - CI and release-gate workflows now build and execute `reference/ckp-bridge` directly instead of using the SDK L1 example as a proxy.
-- SDK README version badge now matches `0.2.5`; coherence reports are consolidated under `reports/`.
+- SDK README version badge now matches `0.2.6`; coherence reports are consolidated under `reports/`.
 - Spec: `claw.initialize` now explicitly defines that an empty top-level `capabilities` object is an unrestricted request, and L3 channel negatives are classified as manifest-validation vectors.
 - Harness/docs: local `ckp-test` and `clawkernel-docs` were updated to the reconciled L3 matrix; `clawkernel` CI now pins the spec-aligned harness commit `c3779fd`.
 - SDK: `claw.initialize` now validates all 4 required params per spec §9.3.1 (protocolVersion, clientInfo, manifest, capabilities) — previously only validated protocolVersion.

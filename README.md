@@ -166,7 +166,7 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 | JSON Schema | 12 schemas (10 primitives + manifest + definitions) |
 | TypeScript types | `schema.ts` — canonical source of truth |
 | Reference implementation | [`reference/ckp-bridge/`](reference/ckp-bridge/) — L1 CONFORMANT |
-| SDK | [`sdk/`](sdk/) — `@clawkernel/sdk` — L1+L2+L3 (0 runtime deps) |
+| SDK | [`sdk/`](sdk/) — `@clawkernel/sdk@0.2.6` — L1+L2+L3 (0 runtime deps) |
 | Conformance harness | [`ckp-test`](https://github.com/angelgalvisc/ckp-test) — AJV + 31 vectors |
 | Compatibility profiles | [`profiles/`](profiles/) + [`spec/compatibility/`](spec/compatibility/) — NanoClaw assessment + CKP-A2A interoperability profile |
 
