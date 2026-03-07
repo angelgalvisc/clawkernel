@@ -126,10 +126,9 @@ jobs:
             --manifest "$GITHUB_WORKSPACE/reference/nullclaw-bridge/nullclaw.claw.yaml"
         working-directory: ../ckp-test
 
-      - name: Run L1 conformance against Python reference agent
+      - name: Run full suite against Python reference agent
         run: |
           node dist/cli.js run \
             --target "python3 $GITHUB_WORKSPACE/reference/ckp-python/agent.py" \
-            --manifest "$GITHUB_WORKSPACE/reference/ckp-python/claw.yaml" \
-            --level 1
+            --manifest "$GITHUB_WORKSPACE/reference/ckp-python/claw.yaml"
         working-directory: ../ckp-test
