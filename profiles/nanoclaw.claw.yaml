@@ -2,7 +2,7 @@
 # This describes NanoClaw's architecture in CKP terms.
 # It is NOT a live manifest (NanoClaw doesn't read claw.yaml natively).
 
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "nanoclaw"

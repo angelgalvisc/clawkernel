@@ -1,0 +1,93 @@
+claw: "0.3.0"
+kind: Claw
+metadata:
+  name: test-world-model-agent
+
+spec:
+  identity:
+    inline:
+      personality: "Planning-oriented agent with bounded predictive reasoning."
+      autonomy: supervised
+
+  providers:
+    - inline:
+        protocol: openai-compatible
+        endpoint: http://localhost:11434/v1
+        model: test-model
+        auth:
+          type: none
+
+  tools:
+    - inline:
+        name: scenario-simulator
+        description: "Simulate likely outcomes before execution."
+        input_schema:
+          type: object
+          properties:
+            objective:
+              type: string
+            constraints:
+              type: object
+          required:
+            - objective
+
+  skills:
+    - inline:
+        name: plan-with-simulation
+        description: "Generate a plan after evaluating likely futures."
+        tools_required:
+          - scenario-simulator
+        instruction: "Simulate likely outcomes, choose the safest viable plan, then explain the tradeoffs."
+        world_model_ref: environment-model
+
+  memory:
+    inline:
+      stores:
+        - name: episodes
+          type: conversation
+          role: episodic
+          backend: sqlite
+          lifecycle:
+            acquisition: event-driven
+            consolidation: adaptive
+            retrieval: contextual
+        - name: checkpoints
+          type: checkpoint
+          role: working
+          backend: sqlite
+          checkpoint:
+            max_snapshots: 8
+            ttl: 24h
+
+  world_models:
+    - inline:
+        name: environment-model
+        paradigm: hybrid
+        scope: agent-wide
+        backend:
+          type: tool
+          ref: scenario-simulator
+        predicts:
+          state: true
+          observation: true
+          risk: true
+          cost: true
+        planning:
+          horizon: adaptive
+          uncertainty_mode: bounded
+          fallback: conservative
+        update:
+          mode: hybrid
+          evidence: observations+outcomes
+
+  sandbox:
+    inline:
+      level: process
+
+  policies:
+    - inline:
+        name: planning-policy
+        rules:
+          - id: allow-all
+            action: allow
+            scope: all

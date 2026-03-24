@@ -1,7 +1,7 @@
 # Claw Kernel Protocol Specification
 
-**Version:** 0.2.0
-**Date:** February 2026
+**Version:** 0.3.0
+**Date:** March 2026
 **Status:** Released
 **URI Scheme:** `claw://`
 **License:** Apache 2.0
@@ -10,7 +10,7 @@
 
 ## Abstract
 
-The Claw Kernel Protocol (CKP) is an open specification for describing, composing, and interoperating autonomous AI agents ("Claws"). It defines 10 primitive units (9 core primitives plus Telemetry) that, together, form a complete declarative manifest for an agent's identity, capabilities, communication surfaces, security boundaries, memory systems, and multi-agent coordination.
+The Claw Kernel Protocol (CKP) is an open specification for describing, composing, and interoperating autonomous AI agents ("Claws"). It defines 11 primitive units (9 core primitives plus WorldModel and Telemetry, both optional at all conformance levels) that, together, form a complete declarative manifest for an agent's identity, capabilities, communication surfaces, security boundaries, memory systems, predictive planning surfaces, and multi-agent coordination.
 
 CKP is **complementary to MCP** (Model Context Protocol). Where MCP standardizes how LLM hosts discover and invoke tools, resources, and prompts from external servers, CKP standardizes how autonomous agents are **assembled, secured, and orchestrated** as first-class runtime entities.
 
@@ -22,16 +22,18 @@ CKP is **complementary to MCP** (Model Context Protocol). Where MCP standardizes
 2. [Design Principles](#2-design-principles)
 3. [Relationship to Existing Protocols](#3-relationship-to-existing-protocols)
 4. [Architecture Overview](#4-architecture-overview)
-5. [The Ten Primitives](#5-the-ten-primitives)
+5. [The Eleven Primitives](#5-the-eleven-primitives)
    - 5.1 [Identity](#51-identity)
    - 5.2 [Provider](#52-provider)
    - 5.3 [Channel](#53-channel)
    - 5.4 [Tool](#54-tool)
    - 5.5 [Skill](#55-skill)
    - 5.6 [Memory](#56-memory)
-   - 5.7 [Sandbox](#57-sandbox)
-   - 5.8 [Policy](#58-policy)
-   - 5.9 [Swarm](#59-swarm)
+   - 5.7 [WorldModel](#57-worldmodel)
+   - 5.8 [Sandbox](#58-sandbox)
+   - 5.9 [Policy](#59-policy)
+   - 5.10 [Swarm](#510-swarm)
+   - 5.11 [Telemetry](#511-telemetry)
 6. [Claw Manifest](#6-claw-manifest)
    - 6.1 [Inline Primitives](#61-inline-primitives)
 7. [URI Scheme](#7-uri-scheme)
@@ -97,7 +99,7 @@ Define a minimal, sufficient set of primitives such that:
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14](https://datatracker.ietf.org/doc/html/bcp14) [[RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119)] [[RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174)] when, and only when, they appear in capitalized form, as shown here.
 
-CKP uses semantic versioning (`MAJOR.MINOR.PATCH`). Versions with the same major number are backward-compatible: an Agent implementing version 0.2.x MUST accept connections from clients sending any `protocolVersion` with major version `0`. Versions with different major numbers are incompatible: the Agent MUST reject the connection with error code `-32001`.
+CKP uses semantic versioning (`MAJOR.MINOR.PATCH`). Versions with the same major number are backward-compatible: an Agent implementing version 0.3.x MUST accept connections from clients sending any `protocolVersion` with major version `0`. Versions with different major numbers are incompatible: the Agent MUST reject the connection with error code `-32001`.
 
 > **Normative scope:** Sections 5–11 of this specification are normative. Sections 1–4 are informative context. Appendices are informative unless explicitly marked otherwise.
 
@@ -134,8 +136,8 @@ CKP is guided by seven principles:
 │                                                             │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │         Claw Kernel Protocol (claw://)        │   │
-│  │  Identity · Channel · Skill · Memory · Sandbox ·     │   │
-│  │  Policy · Swarm · Provider · Tool                    │   │
+│  │  Identity · Channel · Skill · Memory · WorldModel ·  │   │
+│  │  Sandbox · Policy · Swarm · Provider · Tool          │   │
 │  └──────────────┬───────────────────────────────────────┘   │
 │                 │ extends                                     │
 │  ┌──────────────▼───────────────────────────────────────┐   │
@@ -184,16 +186,16 @@ CKP is guided by seven principles:
                     ┌──────▼──────┐
                     │  Provider   │  Claude, GPT, Gemini, Ollama, local model...
                     └──────┬──────┘
-                           │ acts through
-              ┌────────────┼────────────┐
-              │            │            │
-       ┌──────▼──┐  ┌─────▼─────┐  ┌──▼──────┐
-       │  Tool   │  │   Skill   │  │  Swarm  │
-       └────┬────┘  └─────┬─────┘  └────┬────┘
-            │             │              │
-       ┌────▼────┐  ┌─────▼─────┐  ┌────▼────┐
-       │ Sandbox │  │  Memory   │  │ Policy  │
-       └─────────┘  └───────────┘  └─────────┘
+                           │ plans with / acts through
+              ┌────────────┼────────────┬────────────┐
+              │            │            │            │
+       ┌──────▼──┐  ┌─────▼─────┐  ┌──▼──────┐  ┌──▼────────┐
+       │  Tool   │  │   Skill   │  │  Swarm  │  │ WorldModel│
+       └────┬────┘  └─────┬─────┘  └────┬────┘  └────┬──────┘
+            │             │              │             │
+       ┌────▼────┐  ┌─────▼─────┐  ┌────▼────┐  ┌────▼──────┐
+       │ Sandbox │  │  Memory   │  │ Policy  │  │ Telemetry │
+       └─────────┘  └───────────┘  └─────────┘  └───────────┘
 ```
 
 ### 4.2 Primitive Dependency Graph
@@ -207,23 +209,29 @@ Claw Manifest (claw.yaml)
 │   ├── references → Sandbox
 │   └── references → Policy
 ├── Skill[] (optional)
-│   └── composes → Tool[]
+│   ├── composes → Tool[]
+│   └── references → WorldModel[]
 ├── Memory (optional)
+├── WorldModel[] (optional, referenced by Skill or runtime policy)
+│   ├── references → Memory
+│   ├── references → Tool | Provider
+│   └── references → Policy
 ├── Sandbox (optional, defaults to most restrictive)
 ├── Policy[] (optional, defaults to deny-all for unconfigured categories)
-└── Swarm (optional)
-    └── references → Identity[] (other agents)
+├── Swarm (optional)
+│   └── references → Identity[] (other agents)
+└── Telemetry (optional, emit-only)
 ```
 
 ---
 
-## 5. The Ten Primitives
+## 5. The Eleven Primitives
 
 Every primitive is a YAML or JSON document with a common envelope:
 
 ```yaml
-claw: "0.2.0"                    # Protocol version
-kind: Identity | Provider | Channel | Tool | Skill | Memory | Sandbox | Policy | Swarm | Telemetry
+claw: "0.3.0"                    # Protocol version
+kind: Identity | Provider | Channel | Tool | Skill | Memory | WorldModel | Sandbox | Policy | Swarm | Telemetry
 metadata:
   name: "string"                  # Unique within the manifest (kebab-case)
   version: "semver"               # Semantic version of this primitive instance
@@ -233,7 +241,7 @@ spec:
   # Kind-specific fields
 ```
 
-Every primitive document MUST include the `claw`, `kind`, and `metadata.name` fields. The `claw` field MUST be a valid protocol version string (semver). The `kind` field MUST be one of the eleven valid values: `Identity`, `Provider`, `Channel`, `Tool`, `Skill`, `Memory`, `Sandbox`, `Policy`, `Swarm`, `Telemetry`, or `Claw`. The `metadata.name` field MUST be unique within the manifest for primitives of the same kind. Runtimes MUST NOT interpret `annotations` for operational decisions; `labels` MAY be used for filtering and policy matching.
+Every primitive document MUST include the `claw`, `kind`, and `metadata.name` fields. The `claw` field MUST be a valid protocol version string (semver). The `kind` field MUST be one of the twelve valid values: `Identity`, `Provider`, `Channel`, `Tool`, `Skill`, `Memory`, `WorldModel`, `Sandbox`, `Policy`, `Swarm`, `Telemetry`, or `Claw`. The `metadata.name` field MUST be unique within the manifest for primitives of the same kind. Runtimes MUST NOT interpret `annotations` for operational decisions; `labels` MAY be used for filtering and policy matching.
 
 ### 5.1 Identity
 
@@ -244,7 +252,7 @@ The Identity primitive defines **who the agent is**: its personality, persistent
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Identity
 metadata:
   name: "research-assistant"
@@ -307,7 +315,7 @@ The Provider primitive abstracts LLM inference endpoints. A Claw can reference m
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Provider
 metadata:
   name: "primary-llm"
@@ -376,7 +384,7 @@ The Channel primitive abstracts communication surfaces — how humans (or other 
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Channel
 metadata:
   name: "team-slack"
@@ -495,7 +503,7 @@ The Tool primitive defines an executable function the agent can invoke. CKP Tool
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Tool
 metadata:
   name: "web-fetch"
@@ -565,7 +573,7 @@ spec:
 Any MCP tool can be referenced directly:
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Tool
 metadata:
   name: "filesystem-read"
@@ -604,7 +612,7 @@ The Skill primitive defines a **composed workflow** — a higher-order capabilit
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Skill
 metadata:
   name: "deep-research"
@@ -680,6 +688,9 @@ spec:
     filesystem: "write-workspace" # "none" | "read-only" | "write-workspace" | "full"
     approval_required: false      # Whether human approval is needed before execution
 
+  # OPTIONAL: Bind this skill to a declared WorldModel.
+  world_model_ref: "environment-model"
+
   # OPTIONAL: Estimated resource usage (informational).
   estimates:
     avg_tokens: 15000
@@ -699,6 +710,8 @@ spec:
 
 > **Design rationale:** The Skill primitive formalizes composed workflows with portable natural-language instructions. The `instruction` field travels with the skill definition, making skills reusable across runtimes. `permissions` enables security vetting before installation.
 
+If `world_model_ref` is present, it MUST resolve to a declared `WorldModel`. Runtimes MAY ignore the reference operationally if predictive planning is not implemented, but validators MUST reject dangling references.
+
 ---
 
 ### 5.6 Memory
@@ -710,7 +723,7 @@ The Memory primitive defines how the agent persists and retrieves information ac
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Memory
 metadata:
   name: "hybrid-memory"
@@ -720,18 +733,32 @@ spec:
   stores:
     # Conversation history — recent interactions.
     - name: "conversations"
-      type: "conversation"        # "conversation" | "semantic" | "key-value" | "workspace"
+      type: "conversation"        # "conversation" | "semantic" | "key-value" | "workspace" | "checkpoint"
+      role: "episodic"            # "sensory" | "working" | "episodic" | "semantic" | "procedural"
       backend: "sqlite"           # "sqlite" | "postgresql" | "filesystem" | "custom"
       retention:
-        max_age: "30d"            # Duration string
         max_entries: 10000
       compaction:
         enabled: true
         strategy: "summarize"     # "summarize" | "truncate" | "sliding-window"
+      lifecycle:
+        acquisition: "event-driven"  # "event-driven" | "continuous" | "manual"
+        consolidation: "adaptive"    # "none" | "summarize" | "merge" | "adaptive"
+        retrieval: "contextual"      # "exact" | "semantic" | "contextual" | "hybrid"
+      forgetting:
+        strategy: "adaptive"         # "none" | "decay" | "summarize" | "adaptive"
+        signals: ["recency", "reuse", "task_outcome", "contradiction"]
+      salience:
+        enabled: true
+        signals: ["novelty", "goal_relevance", "user_preference"]
+      confidence:
+        source_tracking: true
+        decay: "optional"
 
     # Semantic memory — vector embeddings for knowledge retrieval.
     - name: "knowledge"
       type: "semantic"
+      role: "semantic"
       backend: "sqlite-vec"       # "sqlite-vec" | "pgvector" | "qdrant" | "custom"
       embedding:
         provider_ref: "embedding-provider"   # References a Provider primitive
@@ -745,6 +772,7 @@ spec:
     # Key-value store — persistent facts and preferences.
     - name: "facts"
       type: "key-value"
+      role: "semantic"
       backend: "sqlite"
       scope: "per-identity"       # "global" | "per-identity" | "per-channel"
       encryption: false
@@ -752,9 +780,19 @@ spec:
     # Workspace — file-based context for the agent's working directory.
     - name: "workspace"
       type: "workspace"
+      role: "procedural"
       path: "~/.claw/workspaces/{identity_name}/"
       isolation: "per-channel"    # "shared" | "per-identity" | "per-channel"
       max_size_mb: 500
+
+    # Checkpoints — resumable task snapshots.
+    - name: "planner-checkpoints"
+      type: "checkpoint"
+      backend: "sqlite"
+      role: "working"
+      checkpoint:
+        max_snapshots: 8
+        ttl: "24h"
 ```
 
 Path values MAY contain template variables in `{variable}` syntax. The runtime MUST resolve these before filesystem access. Standard variables: `{identity_name}`, `{tenant_id}`.
@@ -767,12 +805,97 @@ Path values MAY contain template variables in `{variable}` syntax. The runtime M
 | `semantic` | Knowledge base, long-term facts | Vector similarity + full-text | IronClaw (pgvector+RRF), ZeroClaw (SQLite-vec), Moltis (hybrid) |
 | `key-value` | Persistent settings, user preferences | Exact key lookup | ZeptoClaw, Clawlet |
 | `workspace` | Files, documents, generated artifacts | Filesystem operations | TinyClaw, NanoClaw (per-group) |
+| `checkpoint` | Resumable task state, planner snapshots | Exact lookup by task / step | Runtime-managed resumability |
 
-> **Design rationale:** The Memory primitive supports four store types (conversation, semantic, key-value, workspace) with hybrid search and automatic compaction. The schema is backend-agnostic — from SQLite to PostgreSQL+pgvector.
+#### Cognitive Memory Extensions
+
+CKP 0.3.0 extends Memory with optional cognitive semantics so runtimes can distinguish *what a store represents* from *how it is physically stored*.
+
+| Field | Purpose |
+|------|---------|
+| `role` | Declares whether the store behaves as `sensory`, `working`, `episodic`, `semantic`, or `procedural` memory. |
+| `lifecycle` | Describes acquisition, consolidation, and retrieval strategy at a policy level. |
+| `forgetting` | Allows selective decay or summarization based on reuse, contradiction, or task outcome signals. |
+| `salience` | Declares which signals increase retention or retrieval priority. |
+| `confidence` | Indicates whether provenance and confidence decay are tracked for entries. |
+
+These fields are OPTIONAL and additive. A CKP 0.3.0 runtime MAY ignore them operationally, but validators MUST accept them and Telemetry SHOULD surface when they materially affect retrieval or retention behavior.
+
+> **Design rationale:** The Memory primitive supports five store types (conversation, semantic, key-value, workspace, checkpoint) with hybrid search and automatic compaction. CKP 0.3.0 adds cognitive semantics so runtimes can express episodic, semantic, and procedural roles without coupling the protocol to a specific storage engine.
 
 ---
 
-### 5.7 Sandbox
+### 5.7 WorldModel
+
+**URI:** `claw://local/world-model/{name}` (alias: `claw://world-model/{name}`)
+
+The WorldModel primitive defines an optional predictive planning surface that an agent can use to simulate consequences, estimate risk, and compare candidate actions before acting. It is distinct from Memory: Memory preserves and retrieves past state, while WorldModel generates bounded expectations about possible future states.
+
+#### Schema
+
+```yaml
+claw: "0.3.0"
+kind: WorldModel
+metadata:
+  name: "environment-model"
+  version: "1.0.0"
+spec:
+  paradigm: "hybrid"             # "implicit" | "explicit" | "simulator" | "hybrid"
+  scope: "agent-wide"            # "agent-wide" | "task-scoped"
+
+  # OPTIONAL: Bind predictive planning to a Memory primitive.
+  memory_ref: "hybrid-memory"
+
+  # REQUIRED: Backend used for prediction or simulation.
+  backend:
+    type: "tool"                 # "tool" | "provider" | "custom"
+    ref: "environment-simulator"
+
+  # OPTIONAL: What the model attempts to predict.
+  predicts:
+    state: true
+    observation: true
+    risk: true
+    cost: true
+
+  # OPTIONAL: Planning policy. Values are policy-like and intentionally adjustable.
+  planning:
+    horizon: "adaptive"          # "adaptive" | "bounded" | "fixed"
+    uncertainty_mode: "bounded"  # "none" | "bounded" | "calibrated"
+    fallback: "conservative"     # "conservative" | "retry" | "escalate"
+
+  # OPTIONAL: How the world model updates itself from experience.
+  update:
+    mode: "online"               # "online" | "batch" | "hybrid"
+    evidence: "observations"     # "observations" | "observations+outcomes"
+
+  # OPTIONAL: Policy binding for safety or budget constraints.
+  constraints:
+    policy_ref: "planning-policy"
+```
+
+#### World Model Paradigms
+
+| Paradigm | Description |
+|----------|-------------|
+| `implicit` | Predicts latent future state without reconstructing full observations. |
+| `explicit` | Predicts observations or environment snapshots directly. |
+| `simulator` | Delegates future-state generation to an external simulator or environment tool. |
+| `hybrid` | Combines latent prediction, simulators, rules, or model calls. |
+
+#### Validation Rules
+
+- The `backend` object is REQUIRED and MUST contain both `type` and `ref`.
+- If `memory_ref` is present, it MUST resolve to a declared Memory primitive.
+- If `constraints.policy_ref` is present, it MUST resolve to a declared Policy primitive.
+- `scope` defaults to `agent-wide` when omitted.
+- WorldModel is OPTIONAL at all conformance levels. Runtimes that do not implement predictive planning MAY ignore this primitive after validation.
+
+> **Design rationale:** World models are treated as durable planning surfaces, not as one-off skills. They can be shared across multiple skills, governed by policy, and grounded in memory without introducing new JSON-RPC methods in CKP 0.3.0.
+
+---
+
+### 5.8 Sandbox
 
 **URI:** `claw://local/sandbox/{name}` (alias: `claw://sandbox/{name}`)
 
@@ -781,7 +904,7 @@ The Sandbox primitive defines the **execution environment** in which tools run. 
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Sandbox
 metadata:
   name: "standard-sandbox"
@@ -863,7 +986,7 @@ Values in `blocked_patterns` are matched as regular expressions. Each pattern is
 
 ---
 
-### 5.8 Policy
+### 5.9 Policy
 
 **URI:** `claw://local/policy/{name}` (alias: `claw://policy/{name}`)
 
@@ -872,7 +995,7 @@ The Policy primitive defines **behavioral rules** — what the agent is allowed 
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Policy
 metadata:
   name: "standard-policy"
@@ -980,7 +1103,7 @@ spec:
 
 ---
 
-### 5.9 Swarm
+### 5.10 Swarm
 
 **URI:** `claw://local/swarm/{name}` (alias: `claw://swarm/{name}`)
 
@@ -989,7 +1112,7 @@ The Swarm primitive defines how multiple agents collaborate. It specifies topolo
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Swarm
 metadata:
   name: "analysis-team"
@@ -1079,7 +1202,7 @@ Broadcast:                  Hierarchical:
 
 ---
 
-### 5.10 Telemetry
+### 5.11 Telemetry
 
 **URI:** `claw://local/telemetry/{name}` (alias: `claw://telemetry/{name}`)
 
@@ -1088,7 +1211,7 @@ The Telemetry primitive defines how agent behavior is observed, measured, and ex
 #### Schema
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Telemetry
 metadata:
   name: "observability"
@@ -1113,6 +1236,8 @@ spec:
   events:
     tool_calls: true                 # Tool invocations (name, duration_ms, status, error code)
     memory_ops: false                # Memory store/query/compact operations
+    world_model_ops: false           # Predict, update, or simulation events
+    planning_ops: false              # Plan generation and revision events
     swarm_ops: false                 # Swarm delegate/discover/report operations
     lifecycle: true                  # Lifecycle transitions (INIT → READY → STOPPED)
     errors: true                     # All error responses
@@ -1122,6 +1247,9 @@ spec:
     token_usage: true                # Input/output token counts per provider call
     cost_usd: false                  # Estimated cost per operation in USD
     latency_histogram: true          # Latency histograms for tool calls and provider requests
+    prediction_error: false          # Drift between predicted and observed outcome
+    retrieval_hit_rate: false        # Ratio of useful memory retrievals
+    plan_revision_count: false       # Number of planning revisions before execution
 
   # OPTIONAL: Sampling configuration.
   sampling:
@@ -1149,6 +1277,8 @@ spec:
 |----------|-------------|---------|-------------|
 | `tool_calls` | Tool invocation details | `true` | Every `claw.tool.call` (name, duration, status, error code) |
 | `memory_ops` | Memory operation details | `false` | Every `claw.memory.store`, `query`, `compact` |
+| `world_model_ops` | Predictive model activity | `false` | World-model prediction, simulation, and update events |
+| `planning_ops` | Planning lifecycle details | `false` | Plan generation, revision, or fallback events |
 | `swarm_ops` | Swarm coordination details | `false` | Every `claw.swarm.delegate`, `discover`, `report` |
 | `lifecycle` | State machine transitions | `true` | Every lifecycle state change (INIT → READY, etc.) |
 | `errors` | Error response details | `true` | Every JSON-RPC error response |
@@ -1172,7 +1302,7 @@ The **Claw Manifest** (`claw.yaml`) is the root document that composes all primi
 
 ```yaml
 # claw.yaml — The root manifest
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "my-assistant"
@@ -1208,6 +1338,9 @@ spec:
 
   memory: "./memory.yaml"
 
+  world_models:
+    - "./world-models/environment-model.yaml"
+
   sandbox: "./sandbox.yaml"
 
   policies:
@@ -1224,7 +1357,7 @@ spec:
 The smallest possible valid Claw:
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "minimal-bot"
@@ -1249,6 +1382,8 @@ This creates a read-only assistant using a local Ollama instance with no tools, 
 - A valid Claw manifest MUST have `kind: Claw`.
 - The `spec.identity` field is REQUIRED.
 - The `spec.providers` field is REQUIRED and MUST contain at least one entry.
+- The `spec.world_models` field is OPTIONAL and MUST contain only `WorldModel` references when present.
+- Any `Skill.world_model_ref` MUST resolve to a name declared in `spec.world_models` or to an inline WorldModel with the same generated name.
 - File path references (e.g., `"./identity.yaml"`) MUST be resolved relative to the manifest file's directory.
 - Glob patterns (e.g., `"./tools/*.yaml"`) MUST be expanded by the runtime at manifest load time.
 - If a referenced file does not exist, the runtime MUST reject the manifest with a descriptive error.
@@ -1267,6 +1402,7 @@ Primitives MAY be declared inline within the manifest using the `inline:` key in
 | Tool | (`description` + `input_schema`) OR `mcp_source` |
 | Skill | `description`, `tools_required`, `instruction` |
 | Memory | `stores` (at least one entry) |
+| WorldModel | `backend` |
 | Sandbox | `level` |
 | Policy | `rules` (at least one entry) |
 | Swarm | `topology`, `agents`, `coordination`, `aggregation` |
@@ -1299,7 +1435,8 @@ claw-uri      = claw-local / claw-registry
 claw-local    = "claw://local/" kind "/" name [ "@" version ]
 claw-registry = "claw://registry/" namespace "/" name "@" version
 kind          = "identity" / "provider" / "channel" / "tool"
-              / "skill" / "memory" / "sandbox" / "policy" / "swarm"
+              / "skill" / "memory" / "world-model" / "sandbox"
+              / "policy" / "swarm" / "telemetry"
 name          = 1*63( ALPHA / DIGIT / "-" )
 namespace     = 1*63( ALPHA / DIGIT / "-" / "." )
 version       = semver
@@ -1324,6 +1461,7 @@ URIs that do not conform to this grammar MUST be rejected by the runtime.
 | `claw://local/swarm/analysis-team` | `claw://swarm/analysis-team` | Swarm configuration |
 | `claw://local/sandbox/container-sandbox` | `claw://sandbox/container-sandbox` | Sandbox definition |
 | `claw://local/policy/security-policy` | `claw://policy/security-policy` | Policy definition |
+| `claw://local/world-model/environment-model` | `claw://world-model/environment-model` | Predictive planning surface |
 
 ### Registry Resolution
 
@@ -1365,16 +1503,18 @@ A Claw agent follows a well-defined lifecycle:
 
 #### STARTING
 1. Initialize Memory stores (connect to backends, run migrations if needed)
-2. Connect to Provider endpoints (validate auth, check model availability)
-3. Start Sandbox runtimes (pull container images, initialize WASM engines)
-4. Open Channel connections (authenticate with platforms, start polling/webhooks)
-5. Load Policy rules into the evaluation engine
-6. If Swarm is configured, discover and connect to peer agents
+2. Load WorldModel backends and validate references (if configured)
+3. Connect to Provider endpoints (validate auth, check model availability)
+4. Start Sandbox runtimes (pull container images, initialize WASM engines)
+5. Open Channel connections (authenticate with platforms, start polling/webhooks)
+6. Load Policy rules into the evaluation engine
+7. If Swarm is configured, discover and connect to peer agents
 
 #### READY
 1. Agent loop begins: receive messages from Channels, reason with Provider, execute Tools/Skills within Sandbox constraints, governed by Policy
 2. Memory is read/written continuously
-3. Swarm coordination is active (if configured)
+3. WorldModel planning MAY be consulted before acting (if configured)
+4. Swarm coordination is active (if configured)
 
 #### STOPPING
 1. Drain in-flight tool executions (with configurable timeout)
@@ -1394,7 +1534,7 @@ Runtimes SHOULD emit structured events at each transition:
 
 ```json
 {
-  "claw": "0.2.0",
+  "claw": "0.3.0",
   "event": "lifecycle.transition",
   "timestamp": "2026-02-22T10:30:00Z",
   "agent": "my-assistant",
@@ -1499,7 +1639,7 @@ The Operator MUST send `claw.initialize` as the first message in a session. The 
   "id": 1,
   "method": "claw.initialize",
   "params": {
-    "protocolVersion": "0.2.0",
+    "protocolVersion": "0.3.0",
     "clientInfo": {
       "name": "my-operator",
       "version": "1.0.0"
@@ -1533,7 +1673,7 @@ The Operator MUST send `claw.initialize` as the first message in a session. The 
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "protocolVersion": "0.2.0",
+    "protocolVersion": "0.3.0",
     "agentInfo": {
       "name": "research-assistant",
       "version": "1.0.0"
@@ -1567,7 +1707,7 @@ If the Agent does not support the requested `protocolVersion`, it MUST respond w
   "error": {
     "code": -32001,
     "message": "Protocol version not supported",
-    "data": { "supported": ["0.2.0"] }
+    "data": { "supported": ["0.3.0"] }
   }
 }
 ```
@@ -2244,7 +2384,7 @@ A Level 2 Claw can do everything in Level 1, plus:
 
 ### Level 3: Full (Autonomous Swarm Agent)
 
-**Required primitives:** All 9 core primitives (Telemetry optional at all levels)
+**Required primitives:** All 9 core primitives (`WorldModel` and `Telemetry` optional at all levels)
 
 A Level 3 Claw can do everything in Level 2, plus:
 - Persist and retrieve memory across sessions
@@ -2253,6 +2393,8 @@ A Level 3 Claw can do everything in Level 2, plus:
 - Operate autonomously within policy boundaries
 
 **Target:** Enterprise deployments, research teams, complex multi-agent workflows.
+
+> **Normative:** `WorldModel` support is OPTIONAL in CKP 0.3.0 and is not part of the Level 1/2/3 wire-method requirements. When declared, it is validated at manifest/schema level and MAY influence runtime planning behavior.
 
 ### Conformance Declaration
 
@@ -2264,7 +2406,7 @@ runtime:
   name: "zeroclaw"
   version: "0.8.0"
   clawkernel:
-    version: "0.2.0"
+    version: "0.3.0"
     conformance: "level-3"
     primitives_supported:
       - Identity
@@ -2276,6 +2418,8 @@ runtime:
       - Sandbox
       - Policy
       - Swarm
+      - Telemetry
+      # WorldModel MAY be declared here when implemented, but is not required for any level.
 ```
 
 ### Method Support by Conformance Level
@@ -2301,7 +2445,7 @@ A complete, production-ready agent manifest:
 
 ```yaml
 # claw.yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "project-assistant"
@@ -2322,6 +2466,7 @@ spec:
     - "./tools/file-ops.yaml"
     - "./tools/shell.yaml"
     - "./tools/calendar.yaml"
+    - "./tools/scenario-simulator.yaml"
     - inline:
         name: "mcp-github"
         mcp_source:
@@ -2331,6 +2476,8 @@ spec:
     - "./skills/report-generation.yaml"
     - "./skills/data-analysis.yaml"
   memory: "./memory.yaml"
+  world_models:
+    - "./world-models/environment-model.yaml"
   sandbox: "./sandbox.yaml"
   policies:
     - "./policies/security.yaml"
@@ -2339,7 +2486,7 @@ spec:
 
 ```yaml
 # identity.yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Identity
 metadata:
   name: "project-assistant"
@@ -2363,7 +2510,7 @@ spec:
 
 ```yaml
 # providers/primary.yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Provider
 metadata:
   name: "primary-llm"
@@ -2390,7 +2537,7 @@ spec:
 
 ```yaml
 # providers/local.yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Provider
 metadata:
   name: "local-llm"
@@ -2410,7 +2557,7 @@ spec:
 
 ```yaml
 # channels/slack.yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Channel
 metadata:
   name: "team-slack"
@@ -2441,7 +2588,7 @@ spec:
 
 ```yaml
 # memory.yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Memory
 metadata:
   name: "hybrid-memory"
@@ -2450,15 +2597,23 @@ spec:
   stores:
     - name: "conversations"
       type: "conversation"
+      role: "episodic"
       backend: "sqlite"
       retention:
-        max_age: "90d"
         max_entries: 50000
       compaction:
         enabled: true
         strategy: "summarize"
+      lifecycle:
+        acquisition: "event-driven"
+        consolidation: "adaptive"
+        retrieval: "contextual"
+      forgetting:
+        strategy: "adaptive"
+        signals: ["recency", "reuse", "task_outcome"]
     - name: "knowledge"
       type: "semantic"
+      role: "semantic"
       backend: "sqlite-vec"
       embedding:
         provider_ref: "fast-llm"
@@ -2470,18 +2625,50 @@ spec:
         top_k: 10
     - name: "preferences"
       type: "key-value"
+      role: "semantic"
       backend: "sqlite"
       scope: "per-identity"
     - name: "workspace"
       type: "workspace"
+      role: "procedural"
       path: "~/.claw/workspaces/project-assistant/"
       isolation: "per-channel"
       max_size_mb: 1000
 ```
 
 ```yaml
+# world-models/environment-model.yaml
+claw: "0.3.0"
+kind: WorldModel
+metadata:
+  name: "environment-model"
+  version: "1.0.0"
+spec:
+  paradigm: "hybrid"
+  scope: "agent-wide"
+  memory_ref: "hybrid-memory"
+  backend:
+    type: "tool"
+    ref: "scenario-simulator"
+  predicts:
+    state: true
+    observation: true
+    risk: true
+    cost: true
+  planning:
+    horizon: "adaptive"
+    uncertainty_mode: "bounded"
+    fallback: "conservative"
+  update:
+    mode: "hybrid"
+    evidence: "observations+outcomes"
+  constraints:
+    policy_ref: "security-policy"
+```
+
+```yaml
 # sandbox.yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Sandbox
 metadata:
   name: "standard-sandbox"
@@ -2528,7 +2715,7 @@ spec:
 
 ```yaml
 # policies/security.yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Policy
 metadata:
   name: "security-policy"
@@ -2587,7 +2774,7 @@ spec:
 
 ```yaml
 # policies/spending.yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Policy
 metadata:
   name: "spending-policy"
@@ -2613,14 +2800,14 @@ spec:
 
 The TypeScript schema is the **canonical source of truth** for all type definitions in this specification. Where the prose specification and the TypeScript schema conflict, the TypeScript schema takes precedence. The JSON Schema is auto-generated from the TypeScript source and is provided for tooling convenience.
 
-> The TypeScript schema and JSON Schema files for version 0.2.0 are published in the `schema/0.2.0/` directory of this repository.
+> The TypeScript schema and JSON Schema files for version 0.3.0 are published in the `schema/0.3.0/` directory of this repository.
 
 > **Publication policy:** Resources listed in this table MUST exist in the repository at the time of release. Placeholder or planned resources MUST NOT be listed.
 
 | Resource | Path |
 |----------|------|
-| TypeScript schema (source of truth) | [`schema/0.2.0/schema.ts`](https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.2.0/schema.ts) |
-| JSON Schemas (per-primitive, 12 files) | [`schema/0.2.0/*.schema.json`](https://github.com/angelgalvisc/clawkernel/tree/main/schema/0.2.0) |
+| TypeScript schema (source of truth) | [`schema/0.3.0/schema.ts`](https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.3.0/schema.ts) |
+| JSON Schemas (per-primitive, 13 files) | [`schema/0.3.0/*.schema.json`](https://github.com/angelgalvisc/clawkernel/tree/main/schema/0.3.0) |
 | Conformance test harness | [`@clawkernel/ckp-test`](https://github.com/angelgalvisc/ckp-test) |
 | Example manifests | [`profiles/`](https://github.com/angelgalvisc/clawkernel/tree/main/profiles) |
 
@@ -2631,11 +2818,12 @@ The TypeScript schema is the **canonical source of truth** for all type definiti
 | Term | Definition |
 |------|------------|
 | **Claw** | An autonomous AI agent runtime — a long-lived process that receives messages, reasons with LLMs, executes tools, and maintains persistent state. |
-| **Primitive** | One of the 10 fundamental units (Identity, Provider, Channel, Tool, Skill, Memory, Sandbox, Policy, Swarm, Telemetry) that compose a Claw. |
+| **Primitive** | One of the 11 fundamental units (Identity, Provider, Channel, Tool, Skill, Memory, WorldModel, Sandbox, Policy, Swarm, Telemetry) that compose a Claw. |
 | **Manifest** | A `claw.yaml` file that declares all primitives for an agent. |
 | **Provider** | An LLM inference endpoint (cloud API or local model). |
 | **Channel** | A communication surface (Telegram, Slack, CLI, etc.) through which humans interact with a Claw. |
 | **Skill** | A composed workflow built from multiple tools with natural-language instructions. |
+| **WorldModel** | An optional predictive planning surface that estimates possible future states before acting. |
 | **Sandbox** | An isolated execution environment with declared capabilities and resource limits. |
 | **Policy** | A set of behavioral rules governing what an agent can do. |
 | **Swarm** | A coordinated group of Claws working together on shared objectives. |

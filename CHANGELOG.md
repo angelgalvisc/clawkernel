@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-03-24
+
+### Added
+
+- CKP `v0.3.0` specification release with 11 declarative primitives: 9 core primitives plus optional `WorldModel` and optional `Telemetry`.
+- Optional `WorldModel` primitive and runtime planning profile for predictive simulation, bounded futures, risk estimation, and cost-aware planning without adding new JSON-RPC wire methods.
+- Richer `Memory` schema with cognitive hints for `role`, `lifecycle`, `forgetting`, `salience`, and `confidence`, plus explicit `checkpoint` store guidance.
+- New canonical schema bundle under `schema/0.3.0/`, including `world-model.schema.json` and updated TypeScript definitions.
+- New SDK manifest example `sdk/examples/world-model.claw.yaml` and exported `WorldModel` / extended `Memory` types.
+- Harness support for both CKP `0.2.0` and `0.3.0` manifests, with schema-level validation of `world_models` and `skills[].world_model_ref`.
+
+### Changed
+
+- README, spec docs, runtime profile, and public site now describe CKP `0.3.0`, 11 primitives, and the optional `WorldModel` planning surface consistently.
+- Compatibility and release guidance now treat `WorldModel` as schema/runtime-profile optional in `0.3.0`, while the core conformance suite remains 31 wire vectors.
+- Public diagrams, `llms.txt`, and SDK documentation now align with the `0.3.0` release line and updated primitive count.
+
 ## [0.2.6] - 2026-03-07
 
 ### Added

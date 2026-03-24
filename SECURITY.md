@@ -4,9 +4,9 @@
 
 | Component | Supported |
 |---|---|
-| CKP specification `v0.2.x` | Yes |
-| `@clawkernel/sdk` `0.2.x` | Yes |
-| `@clawkernel/ckp-test` `0.2.x` | Yes |
+| CKP specification `v0.3.x` | Yes |
+| `@clawkernel/sdk` `0.3.x` | Yes |
+| `@clawkernel/ckp-test` `0.3.x` | Yes |
 
 ## Reporting a Vulnerability
 

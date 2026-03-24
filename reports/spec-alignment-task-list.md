@@ -2,7 +2,7 @@
 
 External repos were updated locally. To publish cleanly without breaking CI, use this order:
 
-1. Push `ckp-test` commit `9b91298a222cfd35d1f338fc1372355ce132aa57`.
+1. Push `ckp-test` commit `d2e1da3e489f2ba5c3c35688d2cd3191fb6a2e7e`.
 2. Push `clawkernel` after the harness commit exists remotely, so the CI pin resolves.
 3. Push `clawkernel-docs` once the main repo changes are live.
 

@@ -1,7 +1,7 @@
 # NanoClaw CKP Bridge Manifest — LIVE (consumed by ckp-test harness)
-# Maps NanoClaw's real architecture to CKP v0.2.0 primitives.
+# Maps NanoClaw's real architecture to CKP v0.3.0 primitives.
 
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: nanoclaw-bridge

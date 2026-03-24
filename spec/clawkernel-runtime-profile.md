@@ -1,7 +1,7 @@
 # Claw Kernel Protocol Runtime Profile
 
-**Version:** 0.2.0
-**Date:** February 2026
+**Version:** 0.3.0
+**Date:** March 2026
 **Status:** Informative Companion Document
 **Companion to:** Claw Kernel Protocol Specification (`clawkernel-spec.md`)
 
@@ -25,8 +25,10 @@ The normative specification is defined in `clawkernel-spec.md`. Where this docum
 6. [Transport Extensions](#6-transport-extensions)
 7. [Secret Resolution](#7-secret-resolution)
 8. [Memory Consistency](#8-memory-consistency)
-9. [Policy Composition](#9-policy-composition)
-10. [Tool Execution Lifecycle](#10-tool-execution-lifecycle)
+9. [WorldModel Planning](#9-worldmodel-planning)
+10. [Policy Composition](#10-policy-composition)
+11. [Tool Execution Lifecycle](#11-tool-execution-lifecycle)
+12. [Release Checklist (Informative)](#12-release-checklist-informative)
 
 ---
 
@@ -175,11 +177,80 @@ Memory stores provide **eventual consistency** by default:
 - When multiple agent instances access the same memory store, runtimes SHOULD use optimistic concurrency (request_id-based deduplication) rather than distributed locks.
 - If a write conflict is detected, the runtime SHOULD return an error rather than silently overwriting.
 
+### Cognitive Memory Guidance
+
+CKP 0.3.0 adds optional cognitive semantics to Memory declarations. Runtimes that choose to use them SHOULD interpret the fields as *policies*, not hard-coded algorithms:
+
+- `role` SHOULD influence retrieval ranking and consolidation strategy, not backend selection by itself.
+- `lifecycle.acquisition` SHOULD determine when entries become eligible for consolidation or indexing.
+- `lifecycle.consolidation` SHOULD be applied opportunistically, during idle windows or explicit compaction, rather than on every write.
+- `forgetting.strategy` SHOULD prefer reversible degradation (`summarize`, metadata decay) before permanent deletion when auditability matters.
+- `salience.signals` SHOULD be treated as adjustable scoring inputs. A runtime MAY weigh them differently based on workload or deployment constraints.
+- `confidence.source_tracking` SHOULD cause provenance metadata to be preserved when available so later retrievals can differentiate observation from inference.
+
+Recommended interpretation by role:
+
+| Role | Recommended Runtime Behavior |
+|------|-------------------------------|
+| `sensory` | Very short retention, high write volume, little or no compaction. |
+| `working` | Kept close to the active task window; aggressively pruned when the task completes. |
+| `episodic` | Preserves chronological context; summarize when the interaction becomes stale. |
+| `semantic` | Favors deduplication, provenance, and retrieval quality over insertion order. |
+| `procedural` | Stores reusable plans, scripts, or workflows; update conservatively and keep version lineage when possible. |
+
+Runtimes SHOULD emit Telemetry when memory lifecycle policies materially change what is retained or retrieved, using `memory_ops` and, when available, `retrieval_hit_rate`.
+
 ---
 
-## 9. Policy Composition
+## 9. WorldModel Planning
 
-When multiple Policy primitives are referenced in a manifest's `policies` array, the runtime SHOULD evaluate them as described in the specification's Policy Validation Rules (Section 5.8): a single concatenated rule list in manifest order, with first-match-wins semantics.
+CKP 0.3.0 introduces `WorldModel` as an optional primitive. It does **not** define new wire methods. This section describes how runtimes can integrate world models into planning without changing the JSON-RPC surface.
+
+### Recommended Planning Loop
+
+When a Skill references `world_model_ref`, or when runtime policy requires predictive planning, a runtime SHOULD:
+
+1. Gather current task context and relevant Memory entries
+2. Select the referenced WorldModel backend
+3. Generate one or more bounded candidate futures
+4. Score those futures against risk, cost, and task constraints
+5. Choose an action, revise the plan, or fall back conservatively
+6. Compare observed outcomes with predictions and update internal state
+
+### Adjustable Policies
+
+The values in `WorldModel.spec.planning` are intentionally policy-like:
+
+- `horizon: "adaptive"` means the runtime chooses planning depth based on available budget, latency, or task complexity.
+- `uncertainty_mode: "bounded"` means the runtime should refuse overconfident plans when uncertainty exceeds internal thresholds.
+- `fallback: "conservative"` means the runtime should prefer safer actions or human-supervised execution when predictions are weak.
+
+Runtimes SHOULD avoid treating these as fixed numeric defaults unless their deployment profile demands it.
+
+### Backend Selection
+
+- `backend.type: "tool"` is RECOMMENDED when prediction depends on an external simulator, search system, or environment model.
+- `backend.type: "provider"` is RECOMMENDED when the runtime uses an LLM or specialized model endpoint for rollouts.
+- `backend.type: "custom"` is RECOMMENDED for embedded or highly specialized deployments that do not expose the world model as a CKP Tool.
+
+If `memory_ref` is present, the runtime SHOULD load relevant memory before invoking the world model. If `constraints.policy_ref` is present, the runtime SHOULD apply that policy to planning-time side effects or expensive simulations.
+
+### Telemetry Recommendations
+
+When Telemetry is enabled, runtimes SHOULD emit:
+
+- `world_model_ops` when predictions, simulations, or updates occur
+- `planning_ops` when a plan is generated, revised, or downgraded
+- `prediction_error` when the realized outcome diverges materially from the selected forecast
+- `plan_revision_count` when multiple planning passes occur before action
+
+These signals belong to evaluation and observability. They do not change wire conformance.
+
+---
+
+## 10. Policy Composition
+
+When multiple Policy primitives are referenced in a manifest's `policies` array, the runtime SHOULD evaluate them as described in the specification's Policy Validation Rules (Section 5.9): a single concatenated rule list in manifest order, with first-match-wins semantics.
 
 ### Multi-Policy Patterns
 
@@ -201,7 +272,7 @@ policies:
 
 ---
 
-## 10. Tool Execution Lifecycle
+## 11. Tool Execution Lifecycle
 
 ### Synchronous Execution (Default)
 
@@ -243,7 +314,7 @@ When a Policy rule evaluates to `require-approval`:
 
 ---
 
-## 11. Release Checklist (Informative)
+## 12. Release Checklist (Informative)
 
 Before tagging a new specification version, verify:
 
@@ -270,11 +341,12 @@ The following content provides background context on the Claw ecosystem and is n
 |-----------|-----|-------------|
 | **Primary focus** | Tool/resource discovery for LLM hosts | Complete autonomous agent definition |
 | **Architecture** | Client-Host-Server (tool-centric) | Agent-centric (identity-first) |
-| **Primitives** | 6 (Tools, Resources, Prompts, Sampling, Roots, Elicitation) | 10 (9 core + Telemetry: Identity, Provider, Channel, Tool, Skill, Memory, Sandbox, Policy, Swarm, Telemetry) |
+| **Primitives** | 6 (Tools, Resources, Prompts, Sampling, Roots, Elicitation) | 11 (9 core + optional WorldModel + optional Telemetry) |
 | **Agent identity** | None (server has name/version only) | First-class: personality, context files, autonomy level |
 | **Communication** | Host-mediated (server cannot initiate contact) | Multi-channel: 16+ platform types |
 | **Security** | Host enforces policies (not specified in protocol) | Declarative: Sandbox + Policy as first-class primitives |
 | **Memory** | Session-scoped (stateful but ephemeral) | Persistent: conversation, semantic, key-value, workspace |
+| **Predictive planning** | Not specified | Optional `WorldModel` primitive plus runtime planning profile |
 | **Multi-agent** | None (servers are isolated by design) | Swarm primitive with 5 topologies |
 | **Tool execution** | Atomic call/response | Sandboxed, policy-governed, approval-gated |
 | **Skill composition** | Not supported (host orchestrates opaquely) | First-class: Skills compose Tools with LLM instructions |
@@ -309,6 +381,7 @@ Despite independent development, all projects converge on the same fundamental n
 | Tool execution | **Tool** |
 | Composed workflows | **Skill** |
 | Persistent memory | **Memory** |
+| Predictive planning | **WorldModel** |
 | Execution isolation | **Sandbox** |
 | Behavioral rules | **Policy** |
 | Multi-agent coordination | **Swarm** |

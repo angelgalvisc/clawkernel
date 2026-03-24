@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.3.0/memory.schema.json",
+  "title": "CKP Memory Primitive",
+  "description": "Defines how the agent persists and retrieves information across sessions. Section 5.6.",
+  "type": "object",
+  "properties": {
+    "claw": {
+      "$ref": "definitions.schema.json#/$defs/protocolVersion"
+    },
+    "kind": {
+      "const": "Memory"
+    },
+    "metadata": {
+      "$ref": "definitions.schema.json#/$defs/metadata"
+    },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "stores": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "conversation",
+                  "semantic",
+                  "key-value",
+                  "workspace",
+                  "checkpoint"
+                ]
+              },
+              "backend": {
+                "type": "string",
+                "enum": [
+                  "sqlite",
+                  "postgresql",
+                  "filesystem",
+                  "sqlite-vec",
+                  "pgvector",
+                  "qdrant",
+                  "custom"
+                ]
+              },
+              "retention": {
+                "type": "object",
+                "properties": {
+                  "max_age": {
+                    "$ref": "definitions.schema.json#/$defs/durationString"
+                  },
+                  "max_entries": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "additionalProperties": false
+              },
+              "compaction": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "strategy": {
+                    "type": "string",
+                    "enum": [
+                      "summarize",
+                      "truncate",
+                      "sliding-window"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "embedding": {
+                "type": "object",
+                "properties": {
+                  "provider_ref": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "dimensions": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "provider_ref",
+                  "model",
+                  "dimensions"
+                ],
+                "additionalProperties": false
+              },
+              "search": {
+                "type": "object",
+                "properties": {
+                  "strategy": {
+                    "type": "string",
+                    "enum": [
+                      "vector-only",
+                      "fts-only",
+                      "hybrid"
+                    ]
+                  },
+                  "fusion": {
+                    "type": "string",
+                    "enum": [
+                      "reciprocal-rank",
+                      "linear-combination"
+                    ]
+                  },
+                  "top_k": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "additionalProperties": false
+              },
+              "scope": {
+                "type": "string",
+                "enum": [
+                  "global",
+                  "per-identity",
+                  "per-channel"
+                ]
+              },
+              "encryption": {
+                "type": "boolean"
+              },
+              "path": {
+                "type": "string"
+              },
+              "isolation": {
+                "type": "string",
+                "enum": [
+                  "shared",
+                  "per-identity",
+                  "per-channel"
+                ]
+              },
+              "max_size_mb": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "checkpoint": {
+                "type": "object",
+                "properties": {
+                  "max_snapshots": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Maximum number of checkpoint snapshots retained per task."
+                  },
+                  "ttl": {
+                    "$ref": "definitions.schema.json#/$defs/durationString",
+                    "description": "Time-to-live for checkpoint entries before automatic cleanup."
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Checkpoint configuration. Applicable when store type is 'checkpoint'. Entries use task_id, step_index, state_blob, and resumable fields."
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "sensory",
+                  "working",
+                  "episodic",
+                  "semantic",
+                  "procedural"
+                ],
+                "description": "Optional cognitive role for this store."
+              },
+              "lifecycle": {
+                "type": "object",
+                "properties": {
+                  "acquisition": {
+                    "type": "string",
+                    "enum": [
+                      "event-driven",
+                      "continuous",
+                      "manual"
+                    ]
+                  },
+                  "consolidation": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "summarize",
+                      "merge",
+                      "adaptive"
+                    ]
+                  },
+                  "retrieval": {
+                    "type": "string",
+                    "enum": [
+                      "exact",
+                      "semantic",
+                      "contextual",
+                      "hybrid"
+                    ]
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Optional lifecycle policy for acquisition, consolidation, and retrieval."
+              },
+              "forgetting": {
+                "type": "object",
+                "properties": {
+                  "strategy": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "decay",
+                      "summarize",
+                      "adaptive"
+                    ]
+                  },
+                  "signals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Optional forgetting or decay policy."
+              },
+              "salience": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "signals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Optional salience signals used for ranking or retention."
+              },
+              "confidence": {
+                "type": "object",
+                "properties": {
+                  "source_tracking": {
+                    "type": "boolean"
+                  },
+                  "decay": {
+                    "type": "string",
+                    "enum": [
+                      "optional",
+                      "none",
+                      "adaptive"
+                    ]
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Optional provenance and confidence tracking configuration."
+              }
+            },
+            "required": [
+              "name",
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          "description": "REQUIRED. At least one memory store."
+        }
+      },
+      "required": [
+        "stores"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "claw",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "additionalProperties": false
+}

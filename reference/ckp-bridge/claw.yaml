@@ -1,8 +1,8 @@
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "ckp-bridge"
-  version: "0.2.0"
+  version: "0.3.0"
   description: "CKP L1 reference bridge for conformance testing"
 spec:
   identity:

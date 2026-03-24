@@ -1,7 +1,7 @@
 /**
  * @clawkernel/sdk — Type Definitions
  *
- * Snapshot of types from clawkernel/schema/0.2.0/schema.ts
+ * Snapshot of types from clawkernel/schema/0.3.0/schema.ts
  * plus SDK-specific types (AgentOptions, handlers, etc.)
  */
 
@@ -75,6 +75,34 @@ export interface ApprovalConfig {
 
 // ── L3: Memory Types ───────────────────────────────────────────────────────
 
+export type MemoryRole = "sensory" | "working" | "episodic" | "semantic" | "procedural";
+export type MemoryAcquisitionMode = "event-driven" | "continuous" | "manual";
+export type MemoryConsolidationMode = "none" | "summarize" | "merge" | "adaptive";
+export type MemoryRetrievalMode = "exact" | "semantic" | "contextual" | "hybrid";
+export type MemoryForgettingStrategy = "none" | "decay" | "summarize" | "adaptive";
+export type ConfidenceDecayMode = "optional" | "none" | "adaptive";
+
+export interface MemoryLifecyclePolicy {
+  acquisition?: MemoryAcquisitionMode;
+  consolidation?: MemoryConsolidationMode;
+  retrieval?: MemoryRetrievalMode;
+}
+
+export interface MemoryForgettingPolicy {
+  strategy?: MemoryForgettingStrategy;
+  signals?: string[];
+}
+
+export interface MemorySaliencePolicy {
+  enabled?: boolean;
+  signals?: string[];
+}
+
+export interface MemoryConfidencePolicy {
+  source_tracking?: boolean;
+  decay?: ConfidenceDecayMode;
+}
+
 export interface MemoryEntry {
   content: string | Record<string, unknown>;
   key?: string;
@@ -100,6 +128,55 @@ export interface MemoryHandler {
   store: (storeName: string, entries: MemoryEntry[]) => Promise<{ stored: number; ids: string[] }>;
   query: (storeName: string, query: MemoryQuery) => Promise<{ entries: MemoryQueryEntry[] }>;
   compact: (storeName: string) => Promise<{ entries_before: number; entries_after: number }>;
+}
+
+// ── Optional WorldModel Types ──────────────────────────────────────────────
+
+export type WorldModelParadigm = "implicit" | "explicit" | "simulator" | "hybrid";
+export type WorldModelScope = "agent-wide" | "task-scoped";
+export type WorldModelBackendType = "tool" | "provider" | "custom";
+export type WorldModelPlanningHorizon = "adaptive" | "bounded" | "fixed";
+export type WorldModelUncertaintyMode = "none" | "bounded" | "calibrated";
+export type WorldModelFallback = "conservative" | "retry" | "escalate";
+export type WorldModelUpdateMode = "online" | "batch" | "hybrid";
+export type WorldModelEvidence = "observations" | "observations+outcomes";
+
+export interface WorldModelBackend {
+  type: WorldModelBackendType;
+  ref: string;
+}
+
+export interface WorldModelPredicts {
+  state?: boolean;
+  observation?: boolean;
+  risk?: boolean;
+  cost?: boolean;
+}
+
+export interface WorldModelPlanning {
+  horizon?: WorldModelPlanningHorizon;
+  uncertainty_mode?: WorldModelUncertaintyMode;
+  fallback?: WorldModelFallback;
+}
+
+export interface WorldModelUpdate {
+  mode?: WorldModelUpdateMode;
+  evidence?: WorldModelEvidence;
+}
+
+export interface WorldModelConstraints {
+  policy_ref?: string;
+}
+
+export interface WorldModelSpec {
+  paradigm: WorldModelParadigm;
+  scope?: WorldModelScope;
+  memory_ref?: string;
+  backend: WorldModelBackend;
+  predicts?: WorldModelPredicts;
+  planning?: WorldModelPlanning;
+  update?: WorldModelUpdate;
+  constraints?: WorldModelConstraints;
 }
 
 // ── L3: Swarm Types ────────────────────────────────────────────────────────
@@ -202,6 +279,8 @@ export interface TaskHandler {
 export type TelemetryEventType =
   | "tool_call"
   | "memory_op"
+  | "world_model_op"
+  | "planning_op"
   | "swarm_op"
   | "task_op"
   | "lifecycle"

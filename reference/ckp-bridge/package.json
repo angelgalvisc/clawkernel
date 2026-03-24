@@ -1,6 +1,6 @@
 {
   "name": "@clawkernel/ckp-bridge",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "CKP L1 Reference Bridge — standalone JSON-RPC 2.0 agent for conformance testing",
   "type": "module",
   "main": "dist/bridge.js",
@@ -11,7 +11,13 @@
     "build": "tsc",
     "start": "node dist/bridge.js"
   },
-  "keywords": ["clawkernel", "ckp", "reference", "bridge", "json-rpc"],
+  "keywords": [
+    "clawkernel",
+    "ckp",
+    "reference",
+    "bridge",
+    "json-rpc"
+  ],
   "author": "Angel Galvis Caballero <a@datastrat.co>",
   "license": "Apache-2.0",
   "devDependencies": {

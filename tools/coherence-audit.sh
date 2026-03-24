@@ -205,7 +205,7 @@ done
 # ── R06: ABNF vs usage ─────────────────────────────────────────────────────
 echo "[R06] ABNF vs usage..."
 
-VALID_KINDS="identity|provider|channel|tool|skill|memory|sandbox|policy|swarm"
+VALID_KINDS="identity|provider|channel|tool|skill|memory|world-model|sandbox|policy|swarm|telemetry"
 
 for f in "$SPEC" "$RUNTIME" "$VECTORS"; do
   fname=$(bname "$f")
@@ -350,8 +350,8 @@ echo "[R10] Editorial consistency..."
 
 for f in "$SPEC" "$RUNTIME" "$VECTORS"; do
   fname=$(bname "$f")
-  if ! head -5 "$f" | grep -q '0\.2\.0'; then
-    add_finding minor R10 "$fname" "1" "Header does not contain version 0.2.0"
+  if ! head -5 "$f" | grep -q '0\.3\.0'; then
+    add_finding minor R10 "$fname" "1" "Header does not contain version 0.3.0"
   fi
 done
 

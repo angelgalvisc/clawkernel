@@ -1,7 +1,7 @@
 # CKP-A2A Compatibility Profile
 
 **Profile Version:** 0.1.0-draft  
-**Date:** 2026-02-24  
+**Date:** 2026-03-24  
 **Status:** Draft (implementation profile)  
 **Scope:** CKP runtime interoperability with A2A task/discovery surfaces, while preserving CKP core primitives and MCP compatibility.
 
@@ -11,14 +11,14 @@
 
 This profile targets the following protocol baselines:
 
-- **CKP:** `v0.2.0` (released)
+- **CKP:** `v0.3.0` (released)
 - **A2A baseline:** `0.3.0`
 - **A2A forward-compat target:** `1.0` Release Candidate (compatibility tracked separately; not asserted as GA)
 - **MCP:** protocol revision `2025-11-25`
 
-Version references above were last reviewed on **2026-03-02**.
+Version references above were last reviewed on **2026-03-24**.
 
-This profile is designed to be additive and non-breaking for CKP `v0.2.x` runtimes.
+This profile is designed to be additive and non-breaking for CKP `v0.3.x` runtimes.
 
 ---
 
@@ -50,7 +50,7 @@ Enable a CKP runtime to interoperate with A2A clients/servers for agent-to-agent
 
 ### 4.1 CKP Core Terms (MUST remain canonical in CKP manifests)
 
-- `Identity`, `Provider`, `Channel`, `Tool`, `Skill`, `Memory`, `Sandbox`, `Policy`, `Swarm`, `Telemetry`
+- `Identity`, `Provider`, `Channel`, `Tool`, `Skill`, `Memory`, `WorldModel`, `Sandbox`, `Policy`, `Swarm`, `Telemetry`
 
 ### 4.2 A2A Terms (MUST be used at A2A boundary)
 

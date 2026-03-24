@@ -4,7 +4,7 @@ import { Agent, CKP_ERROR_CODES } from "../dist/index.js";
 
 /** Canonical spec-compliant initialize params (all 4 REQUIRED fields per §9.3.1). */
 const INIT_PARAMS = {
-  protocolVersion: "0.2.0",
+  protocolVersion: "0.3.0",
   clientInfo: { name: "test-operator", version: "1.0.0" },
   manifest: { kind: "Claw", metadata: { name: "test" }, spec: {} },
   capabilities: {},
@@ -75,7 +75,7 @@ test("agent initializes and then serves status", () => {
   );
 
   assert.equal(transport.messages.length, 1);
-  assert.equal(transport.messages[0].result.protocolVersion, "0.2.0");
+  assert.equal(transport.messages[0].result.protocolVersion, "0.3.0");
   assert.equal(transport.messages[0].result.agentInfo.name, "test-agent");
 
   transport.emit(
@@ -153,7 +153,7 @@ test("agent rejects initialize with missing clientInfo", () => {
       jsonrpc: "2.0",
       id: 1,
       method: "claw.initialize",
-      params: { protocolVersion: "0.2.0" },
+      params: { protocolVersion: "0.3.0" },
     }),
   );
 
@@ -186,7 +186,7 @@ test("agent returns version mismatch with data.supported", () => {
 
   assert.equal(transport.messages[0].error.code, CKP_ERROR_CODES.PROTOCOL_VERSION_NOT_SUPPORTED);
   assert.ok(Array.isArray(transport.messages[0].error.data.supported));
-  assert.ok(transport.messages[0].error.data.supported.includes("0.2.0"));
+  assert.ok(transport.messages[0].error.data.supported.includes("0.3.0"));
   agent.close();
 });
 

@@ -1,7 +1,7 @@
 # NullClaw CKP Bridge Manifest — LIVE (consumed by ckp-test harness)
-# Maps NullClaw's real architecture (96K LOC Zig runtime) to CKP v0.2.0 primitives.
+# Maps NullClaw's real architecture (96K LOC Zig runtime) to CKP v0.3.0 primitives.
 
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: nullclaw-bridge

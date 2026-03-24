@@ -1,4 +1,4 @@
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: test-l2-agent

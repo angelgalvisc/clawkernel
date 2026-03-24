@@ -12,7 +12,7 @@
   <strong>Claw Kernel Protocol (CKP)</strong> — The missing protocol between AI agents
 </p>
 
-[![Version](https://img.shields.io/badge/spec-v0.2.0-blue)](spec/clawkernel-spec.md)
+[![Version](https://img.shields.io/badge/spec-v0.3.0-blue)](spec/clawkernel-spec.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![Coherence Gate](https://img.shields.io/badge/coherence-PASS-brightgreen)](reports/coherence-report.md)
 [![Spec tokens](https://img.shields.io/badge/spec_suite-~30k_tokens-orange)](spec/)
@@ -22,7 +22,7 @@
 
 🌐 **Documentation:** [clawkernel.com](https://www.clawkernel.com/) · Built by [Datastrat](https://datastrat.co)
 
-> **TL;DR** — CKP is to agent orchestration what MCP is to tool discovery. One YAML manifest describes your agent's identity, providers, tools, security, memory, and multi-agent coordination. One SDK implements the wire protocol. One test harness proves conformance.
+> **TL;DR** — CKP is to agent orchestration what MCP is to tool discovery. One YAML manifest describes your agent's identity, providers, tools, security, memory, predictive planning, and multi-agent coordination. One SDK implements the wire protocol. One test harness proves conformance.
 >
 > ```bash
 > npm install @clawkernel/sdk
@@ -32,10 +32,10 @@
 
 ## What is CKP?
 
-The Claw Kernel Protocol defines ten primitives for describing, composing, and interoperating autonomous AI agents. It provides a declarative manifest format (`claw.yaml`) with ABNF grammar, a JSON-RPC 2.0 wire format, and a `claw://` URI scheme for addressing agent components.
+The Claw Kernel Protocol defines eleven primitives for describing, composing, and interoperating autonomous AI agents. It provides a declarative manifest format (`claw.yaml`) with ABNF grammar, a JSON-RPC 2.0 wire format, and a `claw://` URI scheme for addressing agent components.
 
 <p align="center">
-  <img src="assets/ckp-diagram.svg" alt="CKP Architecture: Agent runtimes on the left, CKP standardized protocol in the center, 10 primitives by conformance level on the right" width="720" />
+  <img src="assets/ckp-diagram.svg" alt="CKP Architecture: agent runtimes on the left, CKP standardized protocol in the center, 11 primitives by conformance level on the right" width="720" />
 </p>
 
 CKP is complementary to MCP (Model Context Protocol). Where MCP standardizes how LLM hosts discover and invoke tools, CKP standardizes how autonomous agents are assembled, secured, and orchestrated as first-class runtime entities.
@@ -67,6 +67,12 @@ You want a research agent, a writer, and an editor working together — but ther
 When your agent misbehaves at 3 AM, you can't trace why. No tracing across tool calls, no token dashboards, no cost tracking.
 
 **→** The **Telemetry** primitive exports structured events to OpenTelemetry-compatible backends (Datadog, Jaeger, Grafana) with sampling control and automatic redaction of sensitive data.
+
+### Predictive planning is usually ad hoc
+
+Most agent runtimes either bury planning inside prompts or wire a simulator directly into one workflow. There is rarely a declarative way to say how an agent predicts consequences before acting.
+
+**→** The optional **WorldModel** primitive defines a reusable predictive planning surface. Skills can reference it, Memory can ground it, and Policy can constrain it without introducing new wire methods in CKP `0.3.0`.
 
 ### Security is a patchwork
 
@@ -103,11 +109,12 @@ PicoClaw targets $10 hardware. ZeroClaw embeds everything in SQLite. Each solves
 | 3 | **Channel** | Ingress surface — Telegram, Slack, CLI, webhook, cron, queue, IMAP, db-trigger |
 | 4 | **Tool** | Executable function with sandbox and policy bindings (supports `composite` flag) |
 | 5 | **Skill** | Composed workflow built from multiple tools |
-| 6 | **Memory** | Persistent state — conversation, semantic, key-value, workspace, checkpoint |
-| 7 | **Sandbox** | Isolated execution environment with resource limits |
-| 8 | **Policy** | Behavioral rules governing what an agent can and cannot do |
-| 9 | **Swarm** | Multi-agent coordination across topologies |
-| 10 | **Telemetry** | Structured observability — latency, cost, traces (optional at all levels) |
+| 6 | **Memory** | Persistent state — conversation, semantic, key-value, workspace, checkpoint, plus cognitive lifecycle hints |
+| 7 | **WorldModel** | Optional predictive planning surface for simulation, risk, and cost estimation |
+| 8 | **Sandbox** | Isolated execution environment with resource limits |
+| 9 | **Policy** | Behavioral rules governing what an agent can and cannot do |
+| 10 | **Swarm** | Multi-agent coordination across topologies |
+| 11 | **Telemetry** | Structured observability — latency, cost, planning, traces (optional at all levels) |
 
 ---
 
@@ -117,7 +124,7 @@ PicoClaw targets $10 hardware. ZeroClaw embeds everything in SQLite. Each solves
 |-------|------|---------------------|--------|
 | **L1** | Core | Identity, Provider | Embedded devices, simple chatbots |
 | **L2** | Standard | + Channel, Tool, Sandbox, Policy | Personal assistants, team bots |
-| **L3** | Full | All 9 core primitives (Telemetry optional at all levels) | Enterprise swarms, multi-agent systems |
+| **L3** | Full | All 9 core primitives (`WorldModel` and Telemetry optional at all levels) | Enterprise swarms, multi-agent systems |
 
 ---
 
@@ -131,7 +138,7 @@ PicoClaw targets $10 hardware. ZeroClaw embeds everything in SQLite. Each solves
 
 4. **[Test Vectors](spec/clawkernel-test-vectors.md)** — Informative. 31 conformance test vectors organized by level (L1 / L2 / L3).
 
-5. **[JSON Schema + TypeScript](schema/0.2.0/)** — Canonical type definitions for all 10 primitives, the manifest, and JSON-RPC methods.
+5. **[JSON Schema + TypeScript](schema/0.3.0/)** — Canonical type definitions for all 11 primitives, the manifest, and JSON-RPC methods.
 
 ---
 
@@ -155,19 +162,19 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 
 | Item | Status |
 |------|--------|
-| Specification | `v0.2.0` |
-| Release channel | **Public Beta (`v0.2.x`)** |
-| Primitives defined | 10 (9 core + Telemetry, optional at all levels) |
+| Specification | `v0.3.0` |
+| Release channel | **Public Beta (`v0.3.x`)** |
+| Primitives defined | 11 (9 core + optional WorldModel + optional Telemetry) |
 | JSON-RPC methods | 15 specified |
 | ABNF grammar | Complete |
 | Test vectors | 31 (13 L1 + 10 L2 + 8 L3) |
 | Error codes | 11 core |
 | Coherence gate | 10 rules, PASS |
-| JSON Schema | 12 schemas (10 primitives + manifest + definitions) |
+| JSON Schema | 13 schemas (11 primitives + manifest + definitions) |
 | TypeScript types | `schema.ts` — canonical source of truth |
 | Reference implementation | [`reference/ckp-bridge/`](reference/ckp-bridge/) — L1 CONFORMANT |
-| SDK | [`sdk/`](sdk/) — `@clawkernel/sdk@0.2.6` — L1+L2+L3 (0 runtime deps) |
-| Conformance harness | [`ckp-test`](https://github.com/angelgalvisc/ckp-test) — AJV + 31 vectors |
+| SDK | [`sdk/`](sdk/) — `@clawkernel/sdk@0.3.0` — L1+L2+L3 (0 runtime deps) |
+| Conformance harness | [`ckp-test`](https://github.com/angelgalvisc/ckp-test) — AJV + 31 core vectors + schema-level `WorldModel` validation |
 | Compatibility profiles | [`profiles/`](profiles/) + [`spec/compatibility/`](spec/compatibility/) — NanoClaw assessment + CKP-A2A interoperability profile |
 
 ---
@@ -179,7 +186,7 @@ Rules checked: error code coherence, method contracts, syntax validation (JSON/Y
 ```bash
 # Install the conformance harness
 git clone https://github.com/angelgalvisc/ckp-test.git
-cd ckp-test && npm install && npx tsc
+cd ckp-test && npm install && npm run build
 
 # Validate any claw.yaml
 node dist/cli.js validate path/to/claw.yaml
@@ -242,7 +249,7 @@ node dist/examples/l1-agent.js
 node dist/examples/l3-agent.js
 ```
 
-See [`sdk/examples/`](sdk/examples/) for L1, L2, and L3 example agents with their manifests.
+See [`sdk/examples/`](sdk/examples/) for L1, L2, and L3 example agents plus an optional `WorldModel` manifest example.
 
 ---
 
@@ -276,7 +283,7 @@ For protocol interoperability planning, see [`spec/compatibility/ckp-a2a-profile
 
 ## Contributing
 
-CKP `v0.2.x` is in **Public Beta**. Feedback, issues, and proposals are welcome.
+CKP `v0.3.x` is in **Public Beta**. Feedback, issues, and proposals are welcome.
 
 Please review [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [SECURITY.md](SECURITY.md).
 

@@ -27,7 +27,7 @@ import { MemoryExecutor } from "./memory.js";
 import { SwarmExecutor } from "./swarm.js";
 import { TaskExecutor } from "./task.js";
 
-const PROTOCOL_VERSION = "0.2.0";
+const PROTOCOL_VERSION = "0.3.0";
 const MIN_HEARTBEAT_MS = 1000;
 
 /** Methods that require READY state (post-initialize). */
@@ -154,7 +154,15 @@ export class Agent {
 
   /** Fire-and-forget telemetry emit. Never throws, never blocks. */
   private emitTelemetry(
-    event_type: "tool_call" | "memory_op" | "swarm_op" | "task_op" | "lifecycle" | "error",
+    event_type:
+      | "tool_call"
+      | "memory_op"
+      | "world_model_op"
+      | "planning_op"
+      | "swarm_op"
+      | "task_op"
+      | "lifecycle"
+      | "error",
     details: Record<string, unknown>,
   ): void {
     if (!this.telemetry) return;

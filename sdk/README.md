@@ -4,7 +4,7 @@ Zero-dependency TypeScript SDK for building [CKP](https://github.com/angelgalvis
 
 🌐 **Documentation:** [clawkernel.com](https://www.clawkernel.com/) · Built by [Datastrat](https://datastrat.co)
 
-[![Version](https://img.shields.io/badge/version-0.2.6-blue)](package.json)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue)](package.json)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](../LICENSE)
 [![Dependencies](https://img.shields.io/badge/runtime_deps-0-brightgreen)]()
 
@@ -14,7 +14,7 @@ Zero-dependency TypeScript SDK for building [CKP](https://github.com/angelgalvis
 npm install @clawkernel/sdk
 ```
 
-Current npm release: `@clawkernel/sdk@0.2.6`.
+Current npm release: `@clawkernel/sdk@0.3.0`.
 
 ## Quick Start
 
@@ -31,7 +31,7 @@ agent.listen(); // L1 CONFORMANT — stdio JSON-RPC 2.0
 
 That's it. This agent passes all 13 L1 test vectors.
 
-> Release status: **Public Beta** (`v0.2.x`).
+> Release status: **Public Beta** (`v0.3.x`).
 
 ## Conformance Levels
 
@@ -40,6 +40,8 @@ That's it. This agent passes all 13 L1 test vectors.
 | **L1** | `name` + `version`                                  | 13/13        |
 | **L2** | + `tools`, `policy`, `sandbox`, `quota`, `approval` | +10          |
 | **L3** | + `memory`, `swarm`                                 | +8           |
+
+In CKP `0.3.0`, the SDK also exports typed manifest helpers for richer Memory declarations and the optional `WorldModel` primitive. Those are schema-level/runtime-profile features; the SDK does not add new wire methods for world-model execution in this release.
 
 ## L2 Example — Tools + Gates
 
@@ -266,7 +268,7 @@ The SDK validates all incoming JSON-RPC messages:
 ```bash
 # Install conformance harness
 git clone https://github.com/angelgalvisc/ckp-test.git
-cd ckp-test && npm install && npx tsc
+cd ckp-test && npm install && npm run build
 
 # Run against SDK examples
 cd ../clawkernel/sdk && npm run build:dev

@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/angelgalvisc/clawkernel/blob/main/schema/0.3.0/world-model.schema.json",
+  "title": "CKP WorldModel Primitive",
+  "description": "Defines an optional predictive planning surface used to simulate consequences, estimate risk, and guide action selection. Section 5.7.",
+  "type": "object",
+  "properties": {
+    "claw": {
+      "$ref": "definitions.schema.json#/$defs/protocolVersion"
+    },
+    "kind": {
+      "const": "WorldModel"
+    },
+    "metadata": {
+      "$ref": "definitions.schema.json#/$defs/metadata"
+    },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "paradigm": {
+          "type": "string",
+          "enum": [
+            "implicit",
+            "explicit",
+            "simulator",
+            "hybrid"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "agent-wide",
+            "task-scoped"
+          ]
+        },
+        "memory_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "backend": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "tool",
+                "provider",
+                "custom"
+              ]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "type",
+            "ref"
+          ],
+          "additionalProperties": false
+        },
+        "predicts": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "boolean"
+            },
+            "observation": {
+              "type": "boolean"
+            },
+            "risk": {
+              "type": "boolean"
+            },
+            "cost": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "planning": {
+          "type": "object",
+          "properties": {
+            "horizon": {
+              "type": "string",
+              "enum": [
+                "adaptive",
+                "bounded",
+                "fixed"
+              ]
+            },
+            "uncertainty_mode": {
+              "type": "string",
+              "enum": [
+                "none",
+                "bounded",
+                "calibrated"
+              ]
+            },
+            "fallback": {
+              "type": "string",
+              "enum": [
+                "conservative",
+                "retry",
+                "escalate"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "update": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "online",
+                "batch",
+                "hybrid"
+              ]
+            },
+            "evidence": {
+              "type": "string",
+              "enum": [
+                "observations",
+                "observations+outcomes"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "constraints": {
+          "type": "object",
+          "properties": {
+            "policy_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "paradigm",
+        "backend"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "claw",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "additionalProperties": false
+}

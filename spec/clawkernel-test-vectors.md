@@ -1,6 +1,6 @@
 # Claw Kernel Protocol Conformance Test Vectors
 
-**Version:** 0.2.0
+**Version:** 0.3.0
 **Status:** Informative
 **Companion to:** Claw Kernel Protocol Specification (`clawkernel-spec.md`)
 
@@ -9,6 +9,14 @@
 ## Purpose
 
 These test vectors verify conformance to the CKP specification. Each vector specifies an input, the expected outcome, and the normative reference. Implementations SHOULD pass all vectors for their declared conformance level.
+
+CKP 0.3.0 keeps the core wire-protocol conformance suite at **31 vectors**:
+
+- 13 vectors for Level 1
+- 10 vectors for Level 2
+- 8 vectors for Level 3
+
+`WorldModel` is intentionally **not** part of the core wire suite in CKP 0.3.0. It is validated first at the manifest/schema layer, while its runtime behavior is described in the companion Runtime Profile.
 
 ---
 
@@ -19,7 +27,7 @@ These test vectors verify conformance to the CKP specification. Each vector spec
 **Input (YAML):**
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "minimal-bot"
@@ -46,7 +54,7 @@ spec:
 **Input (YAML):**
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "no-identity"
@@ -70,7 +78,7 @@ spec:
 **Input (YAML):**
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "no-providers"
@@ -95,7 +103,7 @@ spec:
   "id": 1,
   "method": "claw.initialize",
   "params": {
-    "protocolVersion": "0.2.0",
+    "protocolVersion": "0.3.0",
     "clientInfo": { "name": "test-operator", "version": "1.0.0" },
     "manifest": {
       "kind": "Claw",
@@ -198,7 +206,7 @@ spec:
 **Input (YAML):**
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "empty-providers"
@@ -288,7 +296,7 @@ spec:
 **Input (YAML):**
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "standard-agent"
@@ -612,7 +620,7 @@ spec:
 **Input (YAML):**
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "full-agent"
@@ -668,7 +676,7 @@ spec:
         strategy: "merge"
 ```
 
-**Expected:** Accept. Valid Level 3 manifest with all 9 core primitives (Telemetry optional).
+**Expected:** Accept. Valid Level 3 manifest with all 9 core primitives (`WorldModel` and Telemetry optional).
 **Reference:** Section 11, Conformance Levels.
 
 ---
@@ -757,7 +765,7 @@ This vector intentionally covers `claw.swarm.report`; there is no separate stand
 **Input (YAML — Channel primitive):**
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Channel
 metadata:
   name: "bad-channel"
@@ -786,7 +794,7 @@ Harness note: this is a manifest-validation vector, not a live wire-protocol exc
 **Input (YAML — Channel primitive):**
 
 ```yaml
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Channel
 metadata:
   name: "bad-channel-2"

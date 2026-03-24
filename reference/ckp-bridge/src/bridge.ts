@@ -3,7 +3,7 @@
 /**
  * CKP L1 Reference Bridge
  *
- * Standalone JSON-RPC 2.0 agent implementing CKP v0.2.0 L1 lifecycle methods.
+ * Standalone JSON-RPC 2.0 agent implementing CKP v0.3.0 L1 lifecycle methods.
  * Transport: stdin/stdout (line-delimited JSON).
  * Conformance target: L1 CONFORMANT (13/13 vectors, 0 skips, 0 fails).
  *
@@ -19,7 +19,7 @@ import { createInterface } from "node:readline";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const PROTOCOL_VERSION = "0.2.0";
+const PROTOCOL_VERSION = "0.3.0";
 const SUPPORTED_MAJOR = 0;
 const HEARTBEAT_INTERVAL_MS = 30_000;
 

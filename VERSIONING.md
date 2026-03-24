@@ -2,7 +2,7 @@
 
 ## CKP Specification
 
-- The core specification uses protocol versions like `v0.2.0`.
+- The core specification uses protocol versions like `v0.3.0`.
 - Changes in `v0.x` may include breaking changes with clear migration notes.
 - `v1.0.0` will indicate stability commitments for normative sections.
 

@@ -1,7 +1,7 @@
 # CKP Conformance Report
 
-**Harness:** @clawkernel/ckp-test v0.2.0
-**Date:** 2026-03-07T17:58:53.134Z
+**Harness:** @clawkernel/ckp-test v0.3.0
+**Date:** 2026-03-24T06:50:12.953Z
 **Target:** node /Users/agc/Documents/clawkernel/reference/nullclaw-bridge/dist/bridge.js
 **Manifest:** VALID
 **Detected Level:** level-3
@@ -19,41 +19,41 @@
 
 ### Level 1
 
-- ✓ **TV-L1-01** Valid Minimal Manifest (1ms)
-- ✓ **TV-L1-02** Missing Identity (1ms)
+- ✓ **TV-L1-01** Valid Minimal Manifest (2ms)
+- ✓ **TV-L1-02** Missing Identity (0ms)
 - ✓ **TV-L1-03** Missing Providers (0ms)
-- ✓ **TV-L1-04** Initialize Happy Path (12ms)
-- ✓ **TV-L1-05** Initialize Version Mismatch (0ms)
+- ✓ **TV-L1-04** Initialize Happy Path (3ms)
+- ✓ **TV-L1-05** Initialize Version Mismatch (1ms)
 - ✓ **TV-L1-06** Status Query (1ms)
 - ✓ **TV-L1-07** Shutdown Happy Path (0ms)
 - ✓ **TV-L1-08** Unknown Method (0ms)
-- ✓ **TV-L1-09** Invalid Params (0ms)
+- ✓ **TV-L1-09** Invalid Params (1ms)
 - ✓ **TV-L1-10** Empty Provider Personality (0ms)
-- ✓ **TV-L1-11** Invalid Request (Missing Method) (1ms)
+- ✓ **TV-L1-11** Invalid Request (Missing Method) (0ms)
 - ✓ **TV-L1-12** Parse Error (Malformed JSON) (0ms)
 - ✓ **TV-L1-13** Heartbeat Notification (5001ms)
 
 ### Level 2
 
-- ✓ **TV-L2-01** Valid Level 2 Manifest (1ms)
-- ✓ **TV-L2-02** Tool Call Happy Path (2ms)
-- ✓ **TV-L2-03** Tool Call — Invalid Params (0ms)
-- ✓ **TV-L2-04** Policy Denied (1ms)
-- ✓ **TV-L2-05** Tool Execution Timeout (103ms)
+- ✓ **TV-L2-01** Valid Level 2 Manifest (0ms)
+- ✓ **TV-L2-02** Tool Call Happy Path (0ms)
+- ✓ **TV-L2-03** Tool Call — Invalid Params (1ms)
+- ✓ **TV-L2-04** Policy Denied (0ms)
+- ✓ **TV-L2-05** Tool Execution Timeout (102ms)
 - ✓ **TV-L2-06** Approval Happy Path (0ms)
-- ✓ **TV-L2-07** Approval Timeout (201ms)
-- ✓ **TV-L2-08** Approval Denied (0ms)
-- ✓ **TV-L2-09** Sandbox Denied (1ms)
+- ✓ **TV-L2-07** Approval Timeout (202ms)
+- ✓ **TV-L2-08** Approval Denied (1ms)
+- ✓ **TV-L2-09** Sandbox Denied (0ms)
 - ✓ **TV-L2-10** Provider Quota Exceeded (0ms)
 
 ### Level 3
 
-- ✓ **TV-L3-01** Valid Level 3 Manifest (0ms)
+- ✓ **TV-L3-01** Valid Level 3 Manifest (1ms)
 - ✓ **TV-L3-02** Swarm Delegate + Report Round-Trip (0ms)
-- ✓ **TV-L3-03** Memory Store + Query (1ms)
+- ✓ **TV-L3-03** Memory Store + Query (2ms)
 - ✓ **TV-L3-04** Allowlist Mode with Roles Field (Invalid Manifest) (0ms)
 - ✓ **TV-L3-05** Role-Based Mode with Allowed IDs (Invalid Manifest) (0ms)
-- ✓ **TV-L3-06** Swarm Broadcast (5001ms)
+- ✓ **TV-L3-06** Swarm Broadcast (5002ms)
 - ✓ **TV-L3-07** Swarm Discover (1ms)
 - ✓ **TV-L3-08** Memory Compact (1ms)
 

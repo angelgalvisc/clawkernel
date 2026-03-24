@@ -2,7 +2,7 @@
 """
 CKP L3 Reference Agent — Pure Python
 
-Independent implementation of the CKP v0.2.0 wire protocol (L1+L2+L3) using
+Independent implementation of the CKP v0.3.0 wire protocol (L1+L2+L3) using
 only the Python 3.9+ standard library.  Shares no code with the TypeScript SDK.
 
 Transport : stdin/stdout, line-delimited JSON-RPC 2.0.
@@ -37,7 +37,7 @@ from typing import Any, Callable
 
 # ── Protocol Constants ───────────────────────────────────────────────────────
 
-PROTOCOL_VERSION: str = "0.2.0"
+PROTOCOL_VERSION: str = "0.3.0"
 SUPPORTED_MAJOR: int = 0
 HEARTBEAT_INTERVAL_S: float = 30.0
 DEFAULT_TOOL_TIMEOUT_MS: int = 30_000
@@ -387,7 +387,7 @@ class Agent:
 
         self._ok(msg_id, {
             "protocolVersion": PROTOCOL_VERSION,
-            "agentInfo": {"name": "ckp-python", "version": "0.2.0"},
+            "agentInfo": {"name": "ckp-python", "version": "0.3.0"},
             "conformanceLevel": "level-3",
             "capabilities": capabilities,
         })

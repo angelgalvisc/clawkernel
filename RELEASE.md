@@ -1,6 +1,6 @@
 # Release Process
 
-This repository publishes CKP artifacts under a **Public Beta** policy for `v0.2.x`.
+This repository publishes CKP artifacts under a **Public Beta** policy for `v0.3.x`.
 
 ## Release Gates
 
@@ -38,15 +38,18 @@ node dist/cli.js run \
 
 node dist/cli.js run \
   --target "node ../clawkernel/sdk/dist/examples/l3-agent.js" \
-  --manifest ../clawkernel/sdk/examples/l3.claw.yaml
+  --manifest ../clawkernel/sdk/examples/l3.claw.yaml \
+  --level 3
 ```
 
-## Public Beta Criteria (`v0.2.x`)
+## Public Beta Criteria (`v0.3.x`)
 
 - L1: `CONFORMANT`
 - L2: `CONFORMANT`
 - L3: `CONFORMANT`
 - Full suite: `CONFORMANT` (31/31 pass, no skips).
+- `WorldModel` and extended `Memory` features validate at schema level and remain optional for wire conformance.
+- Public README, compatibility docs, and docs site must all point to the same CKP and SDK release numbers before tagging.
 
 ## GA / `v1.0` Criteria
 

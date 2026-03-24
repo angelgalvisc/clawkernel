@@ -2,7 +2,7 @@
 # This describes NanoBot architecture in CKP terms.
 # It is NOT a native runtime manifest consumed by NanoBot.
 
-claw: "0.2.0"
+claw: "0.3.0"
 kind: Claw
 metadata:
   name: "nanobot"

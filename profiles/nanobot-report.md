@@ -1,7 +1,7 @@
 # CKP Conformance Report
 
-**Harness:** @clawkernel/ckp-test v0.2.0
-**Date:** 2026-02-24T08:44:10.986Z
+**Harness:** @clawkernel/ckp-test v0.3.0
+**Date:** 2026-03-24T06:50:02.652Z
 **Target:** /Users/agc/Documents/clawkernel/profiles/nanobot.claw.yaml
 **Manifest:** VALID
 **Detected Level:** level-3
@@ -13,7 +13,7 @@
 |-------|-------|------|------|------|-------|--------|
 | L1 | 13 | 4 | 0 | 9 | 0 | **PARTIAL** |
 | L2 | 10 | 1 | 0 | 9 | 0 | **PARTIAL** |
-| L3 | 8 | 1 | 0 | 7 | 0 | **PARTIAL** |
+| L3 | 8 | 3 | 0 | 5 | 0 | **PARTIAL** |
 
 ## Detailed Results
 
@@ -27,7 +27,7 @@
 - — **TV-L1-06** Status Query (No transport configured (manifest-only mode)) (0ms)
 - — **TV-L1-07** Shutdown Happy Path (No transport configured (manifest-only mode)) (0ms)
 - — **TV-L1-08** Unknown Method (No transport configured (manifest-only mode)) (0ms)
-- — **TV-L1-09** Invalid Params (No transport configured (manifest-only mode)) (1ms)
+- — **TV-L1-09** Invalid Params (No transport configured (manifest-only mode)) (0ms)
 - ✓ **TV-L1-10** Empty Provider Personality (0ms)
 - — **TV-L1-11** Invalid Request (Missing Method) (No transport configured (manifest-only mode)) (0ms)
 - — **TV-L1-12** Parse Error (Malformed JSON) (No transport configured (manifest-only mode)) (0ms)
@@ -41,7 +41,7 @@
 - — **TV-L2-04** Policy Denied (No transport configured (manifest-only mode)) (0ms)
 - — **TV-L2-05** Tool Execution Timeout (No transport configured (manifest-only mode)) (0ms)
 - — **TV-L2-06** Approval Happy Path (No transport configured (manifest-only mode)) (0ms)
-- — **TV-L2-07** Approval Timeout (Scenario-based: requires multi-step orchestration (not supported by current harness)) (0ms)
+- — **TV-L2-07** Approval Timeout (No transport configured (manifest-only mode)) (0ms)
 - — **TV-L2-08** Approval Denied (No transport configured (manifest-only mode)) (0ms)
 - — **TV-L2-09** Sandbox Denied (No transport configured (manifest-only mode)) (0ms)
 - — **TV-L2-10** Provider Quota Exceeded (No transport configured (manifest-only mode)) (0ms)
@@ -49,13 +49,13 @@
 ### Level 3
 
 - ✓ **TV-L3-01** Valid Level 3 Manifest (0ms)
-- — **TV-L3-02** Swarm Delegate + Report (No transport configured (manifest-only mode)) (0ms)
-- — **TV-L3-03** Swarm Discover (No transport configured (manifest-only mode)) (0ms)
-- — **TV-L3-04** Memory Store + Query (No transport configured (manifest-only mode)) (0ms)
-- — **TV-L3-05** Memory Query (No transport configured (manifest-only mode)) (0ms)
-- — **TV-L3-06** Memory Compact (No transport configured (manifest-only mode)) (0ms)
-- — **TV-L3-07** Swarm Broadcast (No transport configured (manifest-only mode)) (0ms)
-- — **TV-L3-08** Swarm Report (No transport configured (manifest-only mode)) (0ms)
+- — **TV-L3-02** Swarm Delegate + Report Round-Trip (No transport configured (manifest-only mode)) (0ms)
+- — **TV-L3-03** Memory Store + Query (No transport configured (manifest-only mode)) (0ms)
+- ✓ **TV-L3-04** Allowlist Mode with Roles Field (Invalid Manifest) (0ms)
+- ✓ **TV-L3-05** Role-Based Mode with Allowed IDs (Invalid Manifest) (0ms)
+- — **TV-L3-06** Swarm Broadcast (No transport configured (manifest-only mode)) (0ms)
+- — **TV-L3-07** Swarm Discover (No transport configured (manifest-only mode)) (0ms)
+- — **TV-L3-08** Memory Compact (No transport configured (manifest-only mode)) (0ms)
 
 ## Skip Justifications
 
@@ -75,14 +75,12 @@
 | TV-L2-04 | No transport configured (manifest-only mode) |
 | TV-L2-05 | No transport configured (manifest-only mode) |
 | TV-L2-06 | No transport configured (manifest-only mode) |
-| TV-L2-07 | Scenario-based: requires multi-step orchestration (not supported by current harness) |
+| TV-L2-07 | No transport configured (manifest-only mode) |
 | TV-L2-08 | No transport configured (manifest-only mode) |
 | TV-L2-09 | No transport configured (manifest-only mode) |
 | TV-L2-10 | No transport configured (manifest-only mode) |
 | TV-L3-02 | No transport configured (manifest-only mode) |
 | TV-L3-03 | No transport configured (manifest-only mode) |
-| TV-L3-04 | No transport configured (manifest-only mode) |
-| TV-L3-05 | No transport configured (manifest-only mode) |
 | TV-L3-06 | No transport configured (manifest-only mode) |
 | TV-L3-07 | No transport configured (manifest-only mode) |
 | TV-L3-08 | No transport configured (manifest-only mode) |

@@ -1,8 +1,8 @@
 # NanoClaw CKP Compatibility Assessment
 
-**Date:** 2026-02-24  
-**Assessed by:** @clawkernel/ckp-test v0.2.0  
-**CKP version:** 0.2.0  
+**Date:** 2026-03-24  
+**Assessed by:** @clawkernel/ckp-test v0.3.0  
+**CKP version:** 0.3.0  
 **Source:** https://github.com/qwibitai/nanoclaw
 
 ---
@@ -20,8 +20,8 @@ This document includes both so there is no ambiguity between architectural mappi
 
 ## Live Conformance (CKP Bridge)
 
-**Bridge entrypoint:** `/Users/agc/Documents/nanoclaw/src/ckp-bridge.ts`  
-**Target command:** `node /Users/agc/Documents/nanoclaw/dist/ckp-bridge.js`
+**Bridge entrypoint:** `reference/nanoclaw-bridge/src/bridge.ts`  
+**Target command:** `node /Users/agc/Documents/clawkernel/reference/nanoclaw-bridge/dist/bridge.js`
 
 ### Core CKP vectors (31)
 
@@ -29,17 +29,17 @@ Run:
 
 ```bash
 node /Users/agc/Documents/ckp-test/dist/cli.js run \
-  --target "node /Users/agc/Documents/nanoclaw/dist/ckp-bridge.js" \
-  --manifest /Users/agc/Documents/clawkernel/profiles/nanoclaw.claw.yaml \
+  --target "node /Users/agc/Documents/clawkernel/reference/nanoclaw-bridge/dist/bridge.js" \
+  --manifest /Users/agc/Documents/clawkernel/reference/nanoclaw-bridge/nanoclaw.claw.yaml \
   --output /Users/agc/Documents/clawkernel/profiles/nanoclaw-live-report.md
 ```
 
 Result:
 
 - **L1:** 13/13 — **CONFORMANT**
-- **L2:** 9/10 — **PARTIAL** (official scenario skip `TV-L2-07`)
+- **L2:** 10/10 — **CONFORMANT**
 - **L3:** 8/8 — **CONFORMANT**
-- **Overall:** **L3 PARTIAL**
+- **Overall:** **L3 CONFORMANT**
 
 Report: `profiles/nanoclaw-live-report.md`
 
@@ -49,19 +49,21 @@ Run:
 
 ```bash
 node /Users/agc/Documents/ckp-test/dist/cli.js a2a \
-  --target "node /Users/agc/Documents/nanoclaw/dist/ckp-bridge.js" \
+  --target "node /Users/agc/Documents/clawkernel/reference/nanoclaw-bridge/dist/bridge.js" \
   --output /Users/agc/Documents/clawkernel/profiles/nanoclaw-a2a-live-report.md
 ```
 
 Result:
 
-- **PASS:** 8
-- **FAIL:** 0
+- **PASS:** 0
+- **FAIL:** 8
 - **SKIP:** 0
 - **ERROR:** 0
-- **Overall:** **A2A-COMPATIBLE**
+- **Overall:** **A2A-NON-COMPATIBLE**
 
 Report: `profiles/nanoclaw-a2a-live-report.md`
+
+At the moment, `reference/nanoclaw-bridge` implements the CKP core wire surface (`claw.initialize`, `claw.status`, `claw.tool.*`, `claw.memory.*`, `claw.swarm.*`) but not the optional `claw.task.*` A2A bridge methods.
 
 ---
 
